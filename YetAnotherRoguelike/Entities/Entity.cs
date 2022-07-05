@@ -17,6 +17,8 @@ namespace YetAnotherRoguelike
         public PhysicsBody physics;
         protected Vector2 spriteOrigin;
 
+        public static float renderScale = 5f;
+
         public Entity(Species _species, PhysicsBody _physics, Point _size)
         {
             collection.Add(this);
@@ -44,7 +46,7 @@ namespace YetAnotherRoguelike
 
         public virtual void Update()
         {
-            rect = new Rectangle(position.ToPoint(), size);
+            rect = new Rectangle((position - (spriteOrigin * renderScale)).ToPoint(), size);
             ApplyPhysics();
         }
 

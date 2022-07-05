@@ -12,7 +12,7 @@ namespace YetAnotherRoguelike
         public static Player Instance;
 
         public static Texture2D sprite;
-        public static float renderScale = 5f;
+        public static new float renderScale = 5f;
         public static float speed = 8f;
 
         public PhysicsBody walkingPhysics;
@@ -49,20 +49,22 @@ namespace YetAnotherRoguelike
             walkingPhysics.Update();
             physics.Update();
 
-            Rectangle targetRect = new Rectangle((position - (spriteOrigin * renderScale) + physics.velocity).ToPoint(), size);
-            Vector2 target = position + TotalVelocity();
             Vector2 totalVelocity = TotalVelocity();
+            Vector2 targetPosition = position + totalVelocity;
 
-            /*if (!Map.CollideTiles(targetRect))
+            Vector2 xVelocity = new Vector2(totalVelocity.X, 0);
+            Rectangle xRect = new Rectangle((position - (spriteOrigin * renderScale) + xVelocity + new Vector2(0, size.Y/2f)).ToPoint(), new Point(size.X, (size.Y / 2)));
+            if (!Map.CollideTiles(xRect))
             {
-                position = target;
-                return;
-            }*/
-            Cursor.state = Cursor.CursorStates.Select_pressed;
+                position.X = targetPosition.X;
+            }
 
-            // TODO : Collision
-
-            /*position += totalVelocity;*/
+            Vector2 yVelocity = new Vector2(0, totalVelocity.Y);
+            Rectangle yRect = new Rectangle((position - (spriteOrigin * renderScale) + yVelocity + new Vector2(0, size.Y / 2f)).ToPoint(), new Point(size.X, (size.Y / 2)));
+            if (!Map.CollideTiles(yRect))
+            {
+                position.Y = targetPosition.Y;
+            }
         }
 
         public override Vector2 TotalVelocity()
