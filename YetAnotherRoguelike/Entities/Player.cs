@@ -47,24 +47,8 @@ namespace YetAnotherRoguelike
         public override void ApplyPhysics()
         {
             walkingPhysics.Update();
-            physics.Update();
 
-            Vector2 totalVelocity = TotalVelocity();
-            Vector2 targetPosition = position + totalVelocity;
-
-            Vector2 xVelocity = new Vector2(totalVelocity.X, 0);
-            Rectangle xRect = new Rectangle((position - (spriteOrigin * renderScale) + xVelocity + new Vector2(0, size.Y/2f)).ToPoint(), new Point(size.X, (size.Y / 2)));
-            if (!Map.CollideTiles(xRect))
-            {
-                position.X = targetPosition.X;
-            }
-
-            Vector2 yVelocity = new Vector2(0, totalVelocity.Y);
-            Rectangle yRect = new Rectangle((position - (spriteOrigin * renderScale) + yVelocity + new Vector2(0, size.Y / 2f)).ToPoint(), new Point(size.X, (size.Y / 2)));
-            if (!Map.CollideTiles(yRect))
-            {
-                position.Y = targetPosition.Y;
-            }
+            base.ApplyPhysics();
         }
 
         public override Vector2 TotalVelocity()
