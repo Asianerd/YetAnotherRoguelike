@@ -70,6 +70,7 @@ namespace YetAnotherRoguelike
             if (Game.playArea.Intersects(rect))
             {
                 spriteBatch.Draw(blockSprites[type][spriteIndex], rect, Color.White);
+                //spriteBatch.DrawString(UI.defaultFont, Map.Fetch(position).type.ToString(), rect.Location.ToVector2(), Color.White);
             }
         }
 

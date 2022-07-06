@@ -36,6 +36,14 @@ namespace YetAnotherRoguelike
                 position = Vector2.Zero;
             }
 
+            if (Input.collection[Keys.F].active)
+            {
+                foreach (Chunk x in Map.chunks)
+                {
+                    x.Update(true);
+                }
+            }
+
             base.Update();
         }
 
@@ -48,7 +56,11 @@ namespace YetAnotherRoguelike
         {
             walkingPhysics.Update();
 
-            base.ApplyPhysics();
+            physics.Update();
+
+            position += TotalVelocity();
+
+            //base.ApplyPhysics();
         }
 
         public override Vector2 TotalVelocity()
