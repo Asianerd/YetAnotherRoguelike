@@ -26,9 +26,6 @@ namespace YetAnotherRoguelike
             /// <summary>
             /// Converts tile-coordinates to chunk-coordinates
             /// </summary>
-            // return new Vector2((int)((x / realSize) - (x < 0 ? 1 : 0)), (int)((y / realSize) - (y < 0 ? 1 : 0)));
-            //return new Vector2((int)((x / size) - (x < 0 ? 1 : 0)), (int)((y / size) - (y < 0 ? 1 : 0)));
-            //return new Vector2(x / (size), y / (size));
             Vector2 result = new Vector2((x + (x < 0 ? 1 : 0)) / size, (y + (y < 0 ? 1 : 0)) / size);
             if (y < 0) { result.Y -= 1; }
             if (x < 0) { result.X -= 1; }
@@ -46,7 +43,7 @@ namespace YetAnotherRoguelike
             return new int[] { (int)result.X, (int)result.Y };
         }
 
-        public static Vector2 FixTilePos(int x, int y) // Works, tested
+        public static Vector2 FixTilePos(int x, int y)
         {
             // Takes in tile coordinates and returns tile coordinates
             /* Fixes tile coordinates
@@ -94,7 +91,6 @@ namespace YetAnotherRoguelike
             worldPosition = (pos * size * Tile.tileSize);
             rect = new Rectangle(worldPosition.ToPoint(), new Point(realSize));
 
-            int count = 0;
             for (int y = 0; y < size; y++)
             {
                 collection.Add(new List<Tile>());
@@ -102,8 +98,6 @@ namespace YetAnotherRoguelike
                 {
                     Vector2 chunkPos = new Vector2(x + (position.X * size), y + (position.Y * size));
                     collection[y].Add(new Tile(Game.random.Next(0, 100) >= 30 ? Tile.Type.Air : Tile.Type.Stone, chunkPos));
-                    //collection[y].Add(new Tile(count == 0 ? Tile.Type.Stone : Tile.Type.Air, chunkPos));
-                    count++;
                 }
             }
         }
@@ -113,7 +107,7 @@ namespace YetAnotherRoguelike
             active = Vector2.Distance(Player.Instance.position, worldPosition) <= 2000;
 
 
-            if ((!active) || (!hard)) // TODO : Remove the or gate
+            if ((!active) && (!hard)) // TODO : Remove the or gate
             {
                 return;
             }
@@ -139,8 +133,6 @@ namespace YetAnotherRoguelike
                     item.Draw(spriteBatch);
                 }
             }
-
-            //spriteBatch.DrawString(UI.defaultFont, $"{Map.ChunkAt(rect.Center.X, rect.Center.Y).position}\n{position.ToString()}", rect.Location.ToVector2(), Color.White);
         }
     }
 }

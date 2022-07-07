@@ -13,7 +13,7 @@ namespace YetAnotherRoguelike
 
         public static GraphicsDeviceManager graphics;
         public static SpriteBatch spriteBatch;
-        public static Vector2 screenSize = new Vector2(700, 1080);
+        public static Vector2 screenSize = new Vector2(1920, 1080);
         public static Rectangle playArea = new Rectangle(0, 0, 0, 0);
 
         public static KeyboardState keyboardState;
@@ -75,7 +75,12 @@ namespace YetAnotherRoguelike
                 Keys.Space,
                 Keys.LeftShift,
 
-                Keys.F11
+                Keys.F11,
+
+                Keys.Up,
+                Keys.Down,
+                Keys.Left,
+                Keys.Right
             });
 
             base.Initialize();

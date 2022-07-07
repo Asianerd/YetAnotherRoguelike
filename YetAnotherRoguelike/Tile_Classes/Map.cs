@@ -14,7 +14,7 @@ namespace YetAnotherRoguelike
         {
             Chunk.Initialize();
 
-            int resolution = 2;
+            int resolution = 5;
             for (int y = -resolution; y <= resolution; y++)
             {
                 for (int x = -resolution; x <= resolution; x++)
@@ -23,32 +23,15 @@ namespace YetAnotherRoguelike
                 }
             }
 
-            //chunks.Add(new Chunk(new Vector2(0, 0)));
-            //chunks.Add(new Chunk(new Vector2(-3, 0)));
-            /*chunks.Add(new Chunk(new Vector2(-3, 1)));
-            chunks.Add(new Chunk(new Vector2(-2, 0)));
-            chunks.Add(new Chunk(new Vector2(-2, 1)));*/
-
             foreach (Chunk x in chunks)
             {
                 Debug.WriteLine(x.position);
             }
-
-            /*foreach (Chunk chunk in chunks)
-            {
-                foreach (List<Tile> column in chunk.collection)
-                {
-                    foreach (Tile item in column)
-                    {
-                        Debug.WriteLine(item.position);
-                    }
-                }
-            }*/
         }
 
         public static void Update()
         {
-            int resolution = 0;
+            /*int resolution = 0;
             for (int y = -resolution; y <= resolution; y++)
             {
                 for (int x = -resolution; x <= resolution; x++)
@@ -56,6 +39,21 @@ namespace YetAnotherRoguelike
                     if (ChunkAt((int)Player.Instance.position.X + (x * Chunk.realSize), (int)Player.Instance.position.Y + (y * Chunk.realSize)) == null)
                     {
                         //chunks.Add(new Chunk(Chunk.ChunkPosition(Player.Instance.position) + new Vector2(x, y)));
+                    }
+                }
+            }*/
+
+            int resolution = 2;
+            Vector2 playerChunk = Chunk.ChunkPosition(Chunk.WorldToTile(Player.Instance.position));
+            for (int y = -resolution; y <= resolution; y++)
+            {
+                for (int x = -resolution; x <= resolution; x++)
+                {
+                    Vector2 target = playerChunk + new Vector2(x, y);
+                    Chunk result = FetchChunk(target);
+                    if (result == null)
+                    {
+                        chunks.Add(new Chunk(target));
                     }
                 }
             }
@@ -86,9 +84,6 @@ namespace YetAnotherRoguelike
             // 2. return block
 
             Vector2 chunkPosition = Chunk.ChunkPosition(x, y);
-            Debug.WriteLine($"Input : ({x}, {y})");
-            Debug.WriteLine(chunkPosition);
-            Debug.WriteLine("\n");
             Chunk chunk = FetchChunk(chunkPosition);
             if (chunk == null)
             {

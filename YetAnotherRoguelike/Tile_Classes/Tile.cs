@@ -51,13 +51,6 @@ namespace YetAnotherRoguelike
                 return;
             }
 
-
-            // PROBLEM : chunk position not added properly
-            /*Debug.WriteLine(parent.position);
-            Debug.WriteLine(Chunk.size);
-            Debug.WriteLine(parent.position * Chunk.size);
-            Debug.WriteLine(position - Vector2.UnitY);
-            Debug.WriteLine((Chunk.FixTilePos(position) - Vector2.UnitY) + (parent.position * Chunk.size));*/
             int right, left, up, down;
             up = Map.TypeAt(tPosition - Vector2.UnitY + (parent.position * Chunk.size)) == type ? 0 : 1;
             right = Map.TypeAt(tPosition + Vector2.UnitX + (parent.position * Chunk.size)) == type ? 0 : 2;
@@ -80,8 +73,6 @@ namespace YetAnotherRoguelike
             if (Game.playArea.Intersects(rect))
             {
                 spriteBatch.Draw(blockSprites[type][spriteIndex], rect, Color.White);
-                //spriteBatch.DrawString(UI.defaultFont, , rect.Location.ToVector2(), Map.Fetch(position).type == Type.Air ? Color.Red : Color.LightBlue);
-                spriteBatch.DrawString(UI.defaultFont, $"{Chunk.FixTilePos(position)}", rect.Location.ToVector2(), Color.White);
             }
         }
 

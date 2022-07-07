@@ -21,7 +21,7 @@ namespace YetAnotherRoguelike
         public void Update()
         {
             /*Vector2 final = Vector2.Zero;
-            foreach (Keys x in new Keys[] { Keys.W, Keys.A, Keys.S, Keys.D })
+            foreach (Keys x in new Keys[] { Keys.Up, Keys.Left, Keys.Down, Keys.Right })
             {
                 if (Input.collection[x].isPressed)
                 {
