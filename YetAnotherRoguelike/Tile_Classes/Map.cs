@@ -14,17 +14,17 @@ namespace YetAnotherRoguelike
         {
             Chunk.Initialize();
 
-            /*int resolution = 2;
+            int resolution = 2;
             for (int y = -resolution; y <= resolution; y++)
             {
                 for (int x = -resolution; x <= resolution; x++)
                 {
                     chunks.Add(new Chunk(new Vector2(x, y)));
                 }
-            }*/
+            }
 
-            //chunks.Add(new Chunk(new Vector2(-1, 0)));
-            chunks.Add(new Chunk(new Vector2(-3, 0)));
+            //chunks.Add(new Chunk(new Vector2(0, 0)));
+            //chunks.Add(new Chunk(new Vector2(-3, 0)));
             /*chunks.Add(new Chunk(new Vector2(-3, 1)));
             chunks.Add(new Chunk(new Vector2(-2, 0)));
             chunks.Add(new Chunk(new Vector2(-2, 1)));*/
@@ -77,78 +77,71 @@ namespace YetAnotherRoguelike
         #region Tile fetching
         public static Tile Fetch(int x, int y)
         {
-            // Returns the tile at the real world coordinate
-            // null if no tile is found / coordinates isnt in an existing chunk
+            /// <summary>
+            /// Returns tile at the position; null if no tile
+            /// Takes in block-coordinates
+            /// </summary>
 
-            // 1. locate chunk
-            // 2. calculate coordinates in chunk
-            // 3. return tile
+            // 1. find chunk
+            // 2. return block
 
-            Chunk chunkResult = ChunkAt(x, y, true); // problem maybe?
-            if (chunkResult == null)
+            Vector2 chunkPosition = Chunk.ChunkPosition(x, y);
+            Debug.WriteLine($"Input : ({x}, {y})");
+            Debug.WriteLine(chunkPosition);
+            Debug.WriteLine("\n");
+            Chunk chunk = FetchChunk(chunkPosition);
+            if (chunk == null)
             {
                 return null;
             }
 
-            int fixedX = x >= 0 ? (x % Chunk.size) : (((x + 1) % Chunk.size - 1) + Chunk.size); // problem maybe?
-            int fixedY = y >= 0 ? (y % Chunk.size) : (((y + 1) % Chunk.size - 1) + Chunk.size); //
+            int[] tilePosition = Chunk.FixTilePos(x, y, true);
+            return chunk.collection[tilePosition[1]][tilePosition[0]];
+        }
 
-/*            Debug.WriteLine($"{x} : {y}");
-            Debug.WriteLine($"{fixedX} : {fixedY}");
-            Debug.WriteLine("\n");*/
+        public static Tile Fetch(Vector2 position)
+        {
+            return Fetch((int)position.X, (int)position.Y);
+        }
 
+        public static Chunk FetchChunk(Vector2 position)
+        {
+            /// <summary>
+            /// Returns chunk at the position
+            /// Takes in chunk-coordinates
+            /// </summary>
 
-            return chunkResult.collection[fixedY][fixedX];
+            foreach(Chunk chunk in chunks)
+            {
+                if (chunk.position == position)
+                {
+                    return chunk;
+                }
+            }
+            return null;
+        }
+
+        public static Chunk ChunkAt(Vector2 position)
+        {
+            // Return chunk that contains the world position
+            return FetchChunk(Chunk.ChunkPosition(Chunk.WorldToTile(position)));
+        }
+
+        public static Chunk ChunkAt(int x, int y)
+        {
+            // Return chunk that contains the world position
+            return ChunkAt(new Vector2(x, y));
         }
 
         public static Tile.Type TypeAt(Vector2 position)
         {
-            // Returns the tile type at the real world coordinate
-            // null if no tile is found / coordinates isnt in an existing chunk
-
-            Tile result = Fetch((int)position.X, (int)position.Y);
+            // Takes tile-coordinate and returns the tile type there
+            Tile result = Fetch(position);
             if (result == null)
             {
                 return Tile.Type.Air;
             }
-
             return result.type;
-        }
-
-        public static Chunk ChunkAt(int x, int y, bool print = false)
-        {
-            // Takes in real world coordinates and returns a chunk that contains that coordinate
-            // If no chunk is found, null is returned
-            if (print)
-            {
-                Debug.WriteLine($"ChunkAt Input : ({x}, {y})");
-            }
-            Vector2 chunkPosition = Chunk.ChunkPosition(x, y);
-            if (print)
-            {
-                Debug.WriteLine(chunkPosition);
-                Debug.WriteLine("\n\n");
-            }
-            foreach (Chunk chunk in chunks)
-            {
-                if (chunk.position == chunkPosition)
-                {
-                    if (print)
-                    {
-                        Debug.WriteLine($"Chunk pos : {chunk.position}");
-                    }
-                    return chunk;
-                }
-            }
-            /*Point target = new Point(x, y);
-            foreach (Chunk chunk in chunks)
-            {
-                if (chunk.rect.Contains(target))
-                {
-                    return chunk;
-                }
-            }*/
-            return null;
         }
         #endregion
 

@@ -23,10 +23,53 @@ namespace YetAnotherRoguelike
 
         public static Vector2 ChunkPosition(int x, int y) // THE PROBLEM
         {
-            // Takes in world coordinates and returns which chunk coordinate its in
-            return new Vector2((int)((x / realSize) - (x < 0 ? 1 : 0)), (int)((y / realSize) - (y < 0 ? 1 : 0)));
+            /// <summary>
+            /// Converts tile-coordinates to chunk-coordinates
+            /// </summary>
+            // return new Vector2((int)((x / realSize) - (x < 0 ? 1 : 0)), (int)((y / realSize) - (y < 0 ? 1 : 0)));
             //return new Vector2((int)((x / size) - (x < 0 ? 1 : 0)), (int)((y / size) - (y < 0 ? 1 : 0)));
             //return new Vector2(x / (size), y / (size));
+            Vector2 result = new Vector2((x + (x < 0 ? 1 : 0)) / size, (y + (y < 0 ? 1 : 0)) / size);
+            if (y < 0) { result.Y -= 1; }
+            if (x < 0) { result.X -= 1; }
+            return result;
+        }
+
+        public static Vector2 FixTilePos(Vector2 position)
+        {
+            return FixTilePos((int)position.X, (int)position.Y);
+        }
+
+        public static int[] FixTilePos(int x, int y, bool trigger) // trigger does nothing, just so that overloading works
+        {
+            Vector2 result = FixTilePos(x, y);
+            return new int[] { (int)result.X, (int)result.Y };
+        }
+
+        public static Vector2 FixTilePos(int x, int y) // Works, tested
+        {
+            // Takes in tile coordinates and returns tile coordinates
+            /* Fixes tile coordinates
+             *      chunk size : 8
+             *      possible tile positions : 0-7
+             *      
+             *      input : 20
+             *      output : 4
+             *      
+             *      input : 7
+             *      output : 7
+             *      
+             *      input : 8
+             *      output : 1
+             */
+            int X = (x % size) + (x >= 0 ? 0 : size);
+            int Y = (y % size) + (y >= 0 ? 0 : size);
+            return new Vector2(X == size ? 0 : X, Y == size ? 0 : Y);
+        }
+
+        public static Vector2 WorldToTile(Vector2 position)
+        {
+            return position / Tile.tileSize;
         }
 
 
@@ -58,8 +101,8 @@ namespace YetAnotherRoguelike
                 for (int x = 0; x < size; x++)
                 {
                     Vector2 chunkPos = new Vector2(x + (position.X * size), y + (position.Y * size));
-                    //collection[y].Add(new Tile(Game.random.Next(0, 100) >= 30 ? Tile.Type.Air : Tile.Type.Stone, chunkPos));
-                    collection[y].Add(new Tile(y == 0 ? Tile.Type.Stone : Tile.Type.Air, chunkPos));
+                    collection[y].Add(new Tile(Game.random.Next(0, 100) >= 30 ? Tile.Type.Air : Tile.Type.Stone, chunkPos));
+                    //collection[y].Add(new Tile(count == 0 ? Tile.Type.Stone : Tile.Type.Air, chunkPos));
                     count++;
                 }
             }
@@ -69,7 +112,8 @@ namespace YetAnotherRoguelike
         {
             active = Vector2.Distance(Player.Instance.position, worldPosition) <= 2000;
 
-            if ((!active) || (!hard))
+
+            if ((!active) || (!hard)) // TODO : Remove the or gate
             {
                 return;
             }
@@ -79,7 +123,7 @@ namespace YetAnotherRoguelike
                 foreach (Tile item in column)
                 {
                     item.Update();
-                    item.UpdateSprite();
+                    item.UpdateSprite(this);
                 }
             }
         }
@@ -96,7 +140,7 @@ namespace YetAnotherRoguelike
                 }
             }
 
-            spriteBatch.DrawString(UI.defaultFont, $"{Map.ChunkAt(rect.Center.X, rect.Center.Y).position}\n{position.ToString()}", rect.Location.ToVector2(), Color.White);
+            //spriteBatch.DrawString(UI.defaultFont, $"{Map.ChunkAt(rect.Center.X, rect.Center.Y).position}\n{position.ToString()}", rect.Location.ToVector2(), Color.White);
         }
     }
 }

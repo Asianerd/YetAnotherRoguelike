@@ -27,6 +27,8 @@ namespace YetAnotherRoguelike
 
         public Type type;
         public Vector2 position;
+        public Vector2 tPosition;   // Position in own chunk
+                                    // Top left = (0, 0)
         public Rectangle rect;
         int spriteIndex = 0;
 
@@ -34,10 +36,11 @@ namespace YetAnotherRoguelike
         {
             type = _type;
             position = pos;
+            tPosition = Chunk.FixTilePos(position);
             rect = new Rectangle((pos * tileSize).ToPoint(), new Point(tileSize, tileSize));
         }
 
-        public void UpdateSprite()
+        public void UpdateSprite(Chunk parent)
         {
             if (type == Type.Air)
             {
@@ -48,11 +51,18 @@ namespace YetAnotherRoguelike
                 return;
             }
 
+
+            // PROBLEM : chunk position not added properly
+            /*Debug.WriteLine(parent.position);
+            Debug.WriteLine(Chunk.size);
+            Debug.WriteLine(parent.position * Chunk.size);
+            Debug.WriteLine(position - Vector2.UnitY);
+            Debug.WriteLine((Chunk.FixTilePos(position) - Vector2.UnitY) + (parent.position * Chunk.size));*/
             int right, left, up, down;
-            up = Map.TypeAt(position - Vector2.UnitY) == type ? 0 : 1;
-            right = Map.TypeAt(position + Vector2.UnitX) == type ? 0 : 2;
-            down = Map.TypeAt(position + Vector2.UnitY) == type ? 0 : 4;
-            left = Map.TypeAt(position - Vector2.UnitX) == type ? 0 : 8;
+            up = Map.TypeAt(tPosition - Vector2.UnitY + (parent.position * Chunk.size)) == type ? 0 : 1;
+            right = Map.TypeAt(tPosition + Vector2.UnitX + (parent.position * Chunk.size)) == type ? 0 : 2;
+            down = Map.TypeAt(tPosition + Vector2.UnitY + (parent.position * Chunk.size)) == type ? 0 : 4;
+            left = Map.TypeAt(tPosition - Vector2.UnitX + (parent.position * Chunk.size)) == type ? 0 : 8;
             spriteIndex = right + left + up + down;
         }
 
@@ -70,7 +80,8 @@ namespace YetAnotherRoguelike
             if (Game.playArea.Intersects(rect))
             {
                 spriteBatch.Draw(blockSprites[type][spriteIndex], rect, Color.White);
-                //spriteBatch.DrawString(UI.defaultFont, Map.Fetch(position).type.ToString(), rect.Location.ToVector2(), Color.White);
+                //spriteBatch.DrawString(UI.defaultFont, , rect.Location.ToVector2(), Map.Fetch(position).type == Type.Air ? Color.Red : Color.LightBlue);
+                spriteBatch.DrawString(UI.defaultFont, $"{Chunk.FixTilePos(position)}", rect.Location.ToVector2(), Color.White);
             }
         }
 

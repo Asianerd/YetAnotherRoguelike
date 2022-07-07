@@ -13,7 +13,7 @@ namespace YetAnotherRoguelike
 
         public static GraphicsDeviceManager graphics;
         public static SpriteBatch spriteBatch;
-        public static Vector2 screenSize = new Vector2(1920, 1080);
+        public static Vector2 screenSize = new Vector2(700, 1080);
         public static Rectangle playArea = new Rectangle(0, 0, 0, 0);
 
         public static KeyboardState keyboardState;
@@ -123,7 +123,7 @@ namespace YetAnotherRoguelike
             Cursor.Draw();
             spriteBatch.DrawString(UI.defaultFont,
                 $"FPS : {1f / gameTime.ElapsedGameTime.TotalSeconds}\n" +
-                $"Chunk : {(Player.Instance != null ? Chunk.ChunkPosition(Player.Instance.position).ToString() : "?")}",
+                $"Chunk : {(Player.Instance != null ? Chunk.ChunkPosition(Chunk.WorldToTile(Player.Instance.position)).ToString() : "?")}",
                 Vector2.Zero, Color.Purple);
             spriteBatch.End();
 
