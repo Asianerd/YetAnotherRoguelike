@@ -21,10 +21,11 @@ namespace YetAnotherRoguelike
             return ChunkPosition((int)position.X, (int)position.Y);
         }
 
-        public static Vector2 ChunkPosition(int x, int y)
+        public static Vector2 ChunkPosition(int x, int y) // THE PROBLEM
         {
-            // Takes in world coordinates and returns which chunk its in
-            return new Vector2((int)((x / 512) - (x < 0 ? 1 : 0)), (int)((y / 512) - (y < 0 ? 1 : 0)));
+            // Takes in world coordinates and returns which chunk coordinate its in
+            return new Vector2((int)((x / realSize) - (x < 0 ? 1 : 0)), (int)((y / realSize) - (y < 0 ? 1 : 0)));
+            //return new Vector2((int)((x / size) - (x < 0 ? 1 : 0)), (int)((y / size) - (y < 0 ? 1 : 0)));
             //return new Vector2(x / (size), y / (size));
         }
 
@@ -49,14 +50,17 @@ namespace YetAnotherRoguelike
             position = pos;
             worldPosition = (pos * size * Tile.tileSize);
             rect = new Rectangle(worldPosition.ToPoint(), new Point(realSize));
+
+            int count = 0;
             for (int y = 0; y < size; y++)
             {
                 collection.Add(new List<Tile>());
                 for (int x = 0; x < size; x++)
                 {
                     Vector2 chunkPos = new Vector2(x + (position.X * size), y + (position.Y * size));
-                    collection[y].Add(new Tile(Game.random.Next(0, 100) >= 30 ? Tile.Type.Air : Tile.Type.Stone, chunkPos));
-                    //collection[y].Add(new Tile(y % 2 == 0 ? Tile.Type.Air : Tile.Type.Stone, chunkPos));
+                    //collection[y].Add(new Tile(Game.random.Next(0, 100) >= 30 ? Tile.Type.Air : Tile.Type.Stone, chunkPos));
+                    collection[y].Add(new Tile(y == 0 ? Tile.Type.Stone : Tile.Type.Air, chunkPos));
+                    count++;
                 }
             }
         }
@@ -65,7 +69,7 @@ namespace YetAnotherRoguelike
         {
             active = Vector2.Distance(Player.Instance.position, worldPosition) <= 2000;
 
-            if ((!active) && (!hard))
+            if ((!active) || (!hard))
             {
                 return;
             }
