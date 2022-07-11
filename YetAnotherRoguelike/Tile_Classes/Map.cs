@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
@@ -9,24 +10,15 @@ namespace YetAnotherRoguelike
     class Map
     {
         public static List<Chunk> chunks = new List<Chunk>();
+        //public static List<LightSource> lightSources = new List<LightSource>();
 
         public static void Initialize()
         {
             Chunk.Initialize();
 
-            int resolution = 5;
-            for (int y = -resolution; y <= resolution; y++)
-            {
-                for (int x = -resolution; x <= resolution; x++)
-                {
-                    chunks.Add(new Chunk(new Vector2(x, y)));
-                }
-            }
-
-            foreach (Chunk x in chunks)
-            {
-                Debug.WriteLine(x.position);
-            }
+            LightSource.Append(new LightSource(Vector2.Zero, 80, 20, Color.Red));
+            LightSource.Append(new LightSource(new Vector2(10, 0), 80, 20, Color.Blue));
+            LightSource.Append(new LightSource(new Vector2(5, 10), 80, 20, Color.Green));
         }
 
         public static void Update()
@@ -62,6 +54,8 @@ namespace YetAnotherRoguelike
             {
                 x.Update();
             }
+
+            chunks = chunks.Where(n => n.active || n.custom).ToList();
         }
 
         public static void Draw(SpriteBatch spriteBatch)
@@ -183,6 +177,51 @@ namespace YetAnotherRoguelike
                 }
             }
             return false;*/
+        }
+        #endregion
+
+
+        #region Tile Manipulation (destroy/place)
+        public static void Break(Vector2 position)
+        {
+            Break((int)position.X, (int)position.Y);
+        }
+
+        public static void Break(int x, int y)
+        {
+            // Takes in tile-coordinates and breaks the block there
+            Chunk chunk = ChunkAt(x, y);
+            if (chunk == null)
+            {
+                return;
+            }
+            if (Tile.Destroy(Fetch(Chunk.WorldToTile(new Vector2(x, y)))))
+            {
+                chunk.custom = true;
+            }
+        }
+
+
+        public static void Place(Tile.Type block, Vector2 position)
+        {
+            Place(block, (int)position.X, (int)position.Y);
+        }
+
+        public static void Place(Tile.Type block, int x, int y)
+        {
+            // Takes in world-coordinates and places the block there
+            Chunk chunk = ChunkAt(x, y);
+            if (chunk == null)
+            {
+                return;
+            }
+            if (Fetch(Chunk.WorldToTile(new Vector2(x, y))).type != Tile.Type.Air)
+            {
+                return;
+            }
+            Point pos = Chunk.FixTilePos(Chunk.WorldToTile(new Vector2(x, y))).ToPoint();
+            chunk.collection[pos.Y][pos.X] = Tile.CreateTile(block, Chunk.WorldToTile(new Vector2(x, y)).ToPoint().ToVector2(), chunk);
+            chunk.custom = true;
         }
         #endregion
     }

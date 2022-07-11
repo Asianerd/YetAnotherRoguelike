@@ -23,10 +23,13 @@ namespace YetAnotherRoguelike
             rate = (float)(Max / Regeneration) / 60f;
         }
 
-        public void Regenerate(double _multiplier = 1)
+        public void Regenerate(double _multiplier = 1, bool clamp = true)
         {
             I += Regeneration * _multiplier;
-            I = Math.Clamp(I, Min, Max);
+            if (clamp)
+            {
+                I = Math.Clamp(I, Min, Max);
+            }
         }
 
         public void AffectValue(double _amount, bool _limit = true)
@@ -43,9 +46,9 @@ namespace YetAnotherRoguelike
             I = (Max - Min) * _percent; // Percent = 0f to 1f
         }
 
-        public double Percent()
+        public float Percent()
         {
-            return I / (Max - Min);
+            return (float)(I / (Max - Min));
         }
 
         public double PercentToValue(float _percent)

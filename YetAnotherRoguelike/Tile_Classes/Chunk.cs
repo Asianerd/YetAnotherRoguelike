@@ -66,7 +66,18 @@ namespace YetAnotherRoguelike
 
         public static Vector2 WorldToTile(Vector2 position)
         {
-            return position / Tile.tileSize;
+            return new Vector2((position.X / Tile.tileSize) - (position.X < 0 ? 1 : 0), (position.Y / Tile.tileSize) - (position.Y < 0 ? 1 : 0));
+        }
+
+        public static Vector2 CorrectedTileToWorld(Vector2 position)
+        {
+            return new Vector2((position.X * Tile.tileSize) - (position.X < 0 ? Tile.tileSize : 0), (position.Y * Tile.tileSize) - (position.Y < 0 ? Tile.tileSize : 0));
+        }
+
+        public static Vector2 TileToWorld(Vector2 position)
+        {
+            // used when the tile position is already corrected
+            return new Vector2(position.X * Tile.tileSize, position.Y * Tile.tileSize);
         }
 
 
@@ -76,6 +87,7 @@ namespace YetAnotherRoguelike
         public Rectangle rect;
 
         public bool active = true;
+        public bool custom = false; // Whether the chunk has been customized by the player
 
         public Chunk(Vector2 pos, List<List<Tile>> tiles)
         {
@@ -97,7 +109,10 @@ namespace YetAnotherRoguelike
                 for (int x = 0; x < size; x++)
                 {
                     Vector2 chunkPos = new Vector2(x + (position.X * size), y + (position.Y * size));
-                    collection[y].Add(new Tile(Game.random.Next(0, 100) >= 30 ? Tile.Type.Air : Tile.Type.Stone, chunkPos));
+                    //collection[y].Add(new Tile(Game.random.Next(0, 100) >= 30 ? Tile.Type.Air : Tile.Type.Stone, chunkPos));
+                    //                                                              around 0.4f is good
+                    //collection[y].Add(new Tile(Perlin_Noise.Fetch(CorrectedTileToWorld(chunkPos)), chunkPos, this));
+                    collection[y].Add(Tile.GenerateTile(Perlin_Noise.Fetch(CorrectedTileToWorld(chunkPos), 300f), chunkPos, this));
                 }
             }
         }
@@ -106,9 +121,9 @@ namespace YetAnotherRoguelike
         {
             active = Vector2.Distance(Player.Instance.position, worldPosition) <= 2000;
 
-
-            if ((!active) && (!hard)) // TODO : Remove the or gate
+            if ((!active) && (!hard))
             {
+                UnloadPrepare();
                 return;
             }
 
@@ -124,13 +139,25 @@ namespace YetAnotherRoguelike
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(UI.blank, new Rectangle(rect.X + 10, rect.Y + 10, rect.Width - 20, rect.Height - 20), active ? Color.Green : Color.Red);
+            //spriteBatch.Draw(UI.blank, new Rectangle(rect.X + 10, rect.Y + 10, rect.Width - 20, rect.Height - 20), custom ? Color.Purple : Color.Transparent);
 
             foreach (List<Tile> column in collection)
             {
                 foreach (Tile item in column)
                 {
                     item.Draw(spriteBatch);
+                }
+            }
+        }
+
+        public void UnloadPrepare()
+        {
+            // called before unloading chunk
+            foreach (List<Tile> column in collection)
+            {
+                foreach (Tile item in column)
+                {
+                    item.HardUnload();
                 }
             }
         }

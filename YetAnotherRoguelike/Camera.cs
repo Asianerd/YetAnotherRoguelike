@@ -20,20 +20,21 @@ namespace YetAnotherRoguelike
 
         public void Update()
         {
-            /*Vector2 final = Vector2.Zero;
-            foreach (Keys x in new Keys[] { Keys.Up, Keys.Left, Keys.Down, Keys.Right })
-            {
-                if (Input.collection[x].isPressed)
-                {
-                    final += GeneralDependencies.axialVectors[x];
-                }
-            }
-            if ((final.X != 0) || (final.Y != 0))
-            {
-                final.Normalize();
-            }
-            final *= 10f;
-            target += final;*/
+            Vector2 final = Vector2.Zero;
+            //foreach (Keys x in new Keys[] { Keys.Up, Keys.Left, Keys.Down, Keys.Right })
+            /*            foreach (Keys x in new Keys[] { Keys.W, Keys.A, Keys.S, Keys.D })
+                        {
+                            if (Input.collection[x].isPressed)
+                            {
+                                final += GeneralDependencies.axialVectors[x];
+                            }
+                        }
+                        if ((final.X != 0) || (final.Y != 0))
+                        {
+                            final.Normalize();
+                        }
+                        final *= Input.collection[Keys.LeftShift].isPressed ? 50f : 20f;
+                        target += final;*/
             if (Player.Instance != null)
             {
                 target = Player.Instance.position;

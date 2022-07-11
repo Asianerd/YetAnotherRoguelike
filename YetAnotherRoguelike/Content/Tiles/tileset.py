@@ -1,5 +1,5 @@
 from PIL import Image
-name = "air"
+name = "stone"
 image = Image.open(f"{name}_tileset.png")
 
 pixel_size = 16

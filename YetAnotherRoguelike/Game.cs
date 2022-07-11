@@ -9,17 +9,25 @@ namespace YetAnotherRoguelike
 {
     public class Game : Microsoft.Xna.Framework.Game
     {
+        /* Todo :
+            - Perlin noise
+            - Block breaking animation
+                - Refer to block health
+            - Lighting
+         */
+
         public static Game Instance;
 
         public static GraphicsDeviceManager graphics;
         public static SpriteBatch spriteBatch;
         public static Vector2 screenSize = new Vector2(1920, 1080);
+        //public static Vector2 screenSize = new Vector2(1000, 1000);
         public static Rectangle playArea = new Rectangle(0, 0, 0, 0);
 
         public static KeyboardState keyboardState;
         public static MouseState mouseState;
 
-        public static Random random = new Random(65);
+        public static Random random = new Random(8192);
 
         public Game()
         {
@@ -37,6 +45,8 @@ namespace YetAnotherRoguelike
         protected override void Initialize()
         {
             playArea = new Rectangle(Vector2.Zero.ToPoint(), screenSize.ToPoint());
+
+            Perlin_Noise.Initialize();
 
             GeneralDependencies.Initialize();
             var x = new Camera();
@@ -82,6 +92,7 @@ namespace YetAnotherRoguelike
                 Keys.Left,
                 Keys.Right
             });
+            MouseInput.Initialize();
 
             base.Initialize();
         }
@@ -100,6 +111,7 @@ namespace YetAnotherRoguelike
             mouseState = Mouse.GetState();
             Cursor.Update();
 
+            MouseInput.UpdateAll();
             Input.UpdateAll(keyboardState);
 
             if (Input.collection[Keys.F11].active)
@@ -116,7 +128,7 @@ namespace YetAnotherRoguelike
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Scene.sceneLibrary[Scene.activeScene].backgroundColor);
 
             Matrix renderPosition = Matrix.CreateTranslation(new Vector3(Camera.Instance.renderOffset, 0));
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: renderPosition);
@@ -126,10 +138,12 @@ namespace YetAnotherRoguelike
             spriteBatch.Begin(samplerState:SamplerState.PointClamp);
             Scene.sceneLibrary[Scene.activeScene].DrawUI(gameTime);
             Cursor.Draw();
+            spriteBatch.Draw(UI.blank, new Rectangle(0, 0, 370, 120), Color.Black * 0.4f);
             spriteBatch.DrawString(UI.defaultFont,
                 $"FPS : {1f / gameTime.ElapsedGameTime.TotalSeconds}\n" +
-                $"Chunk : {(Player.Instance != null ? Chunk.ChunkPosition(Chunk.WorldToTile(Player.Instance.position)).ToString() : "?")}",
-                Vector2.Zero, Color.Purple);
+                $"Position : {(Player.Instance != null ? Player.Instance.position.ToString() : "?")}\n" +
+                $"Lights : {LightSource.sources.Count}",
+                Vector2.Zero, Color.White);
             spriteBatch.End();
 
             base.Draw(gameTime);

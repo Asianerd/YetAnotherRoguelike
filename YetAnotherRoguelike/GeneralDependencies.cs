@@ -25,5 +25,22 @@ namespace YetAnotherRoguelike
                 { Keys.Right, new Vector2(1, 0) },
             };
         }
+
+        public static Color Blend(Color a, Color b)
+        {
+            return new Color(
+                ((float)a.R / 2f) + ((float)b.R / 2f),
+                ((float)a.G / 2f) + ((float)b.G / 2f),
+                ((float)a.B / 2f) + ((float)b.B / 2f)
+                );
+        }
+
+        public static Color Blend(Color a, Color b, float compensation)
+        {
+            a.R += (byte)(b.R * compensation);
+            a.G += (byte)(b.G * compensation);
+            a.B += (byte)(b.B * compensation);
+            return a;
+        }
     }
 }

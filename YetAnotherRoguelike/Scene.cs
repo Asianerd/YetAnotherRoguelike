@@ -37,6 +37,7 @@ namespace YetAnotherRoguelike
 
             var _ = new MainGame();
             var __ = new MainMenu();
+            var ___ = new DebugScene();
 
             ChangeScene(Scenes.MainGame);
         }
@@ -54,6 +55,7 @@ namespace YetAnotherRoguelike
 
         #region Object-tied
         Scenes sceneType;
+        public Color backgroundColor = Color.CornflowerBlue;
 
         public Scene(Scenes type)
         {
@@ -86,6 +88,7 @@ namespace YetAnotherRoguelike
         {
             MainMenu,
             MainGame,
+            Debug,
             Credits
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
@@ -15,7 +16,10 @@ namespace YetAnotherRoguelike
         public static new float renderScale = 5f;
         public static float speed = 8f;
 
+        public static Vector2 renderOffset;
+
         public PhysicsBody walkingPhysics;
+        public LightSource bodyLight;
 
         public Player() : base(Species.Player, new PhysicsBody(Vector2.Zero), new Point(60, 60))
         {
@@ -23,25 +27,51 @@ namespace YetAnotherRoguelike
 
             sprite = Game.Instance.Content.Load<Texture2D>("Entities/Player/body");
             spriteOrigin = sprite.Bounds.Size.ToVector2() / 2f;
+            renderOffset = spriteOrigin * 2f * renderScale;
 
             walkingPhysics = new PhysicsBody(Vector2.Zero, maxVel:10f);
+            bodyLight = new LightSource(Vector2.Zero, 10, 5, Color.White);
+            //LightSource.Append(bodyLight);
         }
 
         public override void Update()
         {
             Movement();
 
+            bodyLight.position = Chunk.WorldToTile(position);
+
             if (Input.collection[Keys.Space].active)
             {
                 position = Vector2.Zero;
             }
 
-            if (Input.collection[Keys.F].active)
+            /*if (Input.collection[Keys.F].active)
             {
-                foreach (Chunk x in Map.chunks)
+                Chunk result = Map.ChunkAt(position);
+                if (result != null)
                 {
-                    x.Update(true);
+                    result.custom = true;
                 }
+            }*/
+
+            if (Input.collection[Keys.E].active)
+            {
+                LightSource.Append(new LightSource(Chunk.WorldToTile(Cursor.WorldPosition()), 20, 10, Color.White));
+            }
+
+            if (Input.collection[Keys.F].isPressed)
+            {
+                Particle.particles.Add(new Particles.Smoke(Cursor.WorldPosition()));
+            }
+
+            if (MouseInput.left.isPressed)
+            {
+                Map.Break(Cursor.WorldPosition());
+            }
+
+            if (MouseInput.right.isPressed)
+            {
+                Map.Place(Tile.Type.Neon, Cursor.WorldPosition());
             }
 
             base.Update();
@@ -49,18 +79,55 @@ namespace YetAnotherRoguelike
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            float highest = 0;
+            List<Color> colors = new List<Color>();
+            List<float> intensities = new List<float>();
+            foreach (LightSource light in LightSource.sources)
+            {
+                if (light == bodyLight)
+                {
+                    continue;
+                }
+
+                float distance = Vector2.Distance(light.position, Chunk.WorldToTile(position));
+                if (distance > light.range)
+                {
+                    continue;
+                }
+
+                float percent = (1f - (distance / light.range));
+                float intensity = (light.strength * percent);
+                colors.Add(light.color * percent);
+                intensities.Add(percent);
+
+                if (intensity >= highest)
+                {
+                    highest = intensity;
+                }
+            }
+            float lightLevel = highest;
+            float compensation = 1f / intensities.Sum();
+            Color final = Color.Black;
+            foreach (Color color in colors)
+            {
+                final.R += (byte)(color.R * compensation);
+                final.G += (byte)(color.G * compensation);
+                final.B += (byte)(color.B * compensation);
+            }
+            Color lightColour = final;
             spriteBatch.Draw(sprite, position, null, Color.White, 0f, spriteOrigin, renderScale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(sprite, position, null, lightColour * (lightLevel / 80f), 0f, spriteOrigin, renderScale, SpriteEffects.None, 0f);
         }
 
         public override void ApplyPhysics()
         {
             walkingPhysics.Update();
 
-            physics.Update();
+            /*physics.Update();
 
-            position += TotalVelocity();
+            position += TotalVelocity();*/
 
-            //base.ApplyPhysics();
+            base.ApplyPhysics();
         }
 
         public override Vector2 TotalVelocity()
