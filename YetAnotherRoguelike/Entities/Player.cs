@@ -18,6 +18,8 @@ namespace YetAnotherRoguelike
 
         public static Vector2 renderOffset;
 
+        public static Tile targetedTile;
+
         public PhysicsBody walkingPhysics;
         public LightSource bodyLight;
 
@@ -36,9 +38,11 @@ namespace YetAnotherRoguelike
 
         public override void Update()
         {
+            targetedTile = Map.Fetch(Chunk.CorrectedWorldToTile(Cursor.worldPosition));
+
             Movement();
 
-            bodyLight.position = Chunk.WorldToTile(position);
+            bodyLight.position = Chunk.CorrectedWorldToTile(position);
 
             if (Input.collection[Keys.Space].active)
             {
@@ -56,22 +60,35 @@ namespace YetAnotherRoguelike
 
             if (Input.collection[Keys.E].active)
             {
-                LightSource.Append(new LightSource(Chunk.WorldToTile(Cursor.WorldPosition()), 20, 10, Color.White));
+                LightSource.Append(new LightSource(Chunk.CorrectedWorldToTile(Cursor.WorldPosition()), 20, 10, Color.White));
             }
 
-            if (Input.collection[Keys.F].isPressed)
+            if (Input.collection[Keys.F].active)
             {
-                Particle.particles.Add(new Particles.Smoke(Cursor.WorldPosition()));
+                //Particle.particles.Add(new Particles.Smoke(Cursor.WorldPosition()));
+                foreach(Gameplay.GroundItem x in Gameplay.GroundItem.collection)
+                {
+                    x.follow = true;
+                }
             }
 
             if (MouseInput.left.isPressed)
             {
-                Map.Break(Cursor.WorldPosition());
+                //Map.Break(Cursor.WorldPosition());
+                targetedTile.DegenerateDurability(-1f);
             }
 
-            if (MouseInput.right.isPressed)
+            if (MouseInput.right.active)
             {
                 Map.Place(Tile.Type.Neon, Cursor.WorldPosition());
+            }
+
+            if (Input.collection[Keys.R].active)
+            {
+                if (targetedTile.type == Tile.Type.Air)
+                {
+                    position = Cursor.WorldPosition();
+                }
             }
 
             base.Update();
@@ -89,7 +106,7 @@ namespace YetAnotherRoguelike
                     continue;
                 }
 
-                float distance = Vector2.Distance(light.position, Chunk.WorldToTile(position));
+                float distance = Vector2.Distance(light.position, Chunk.CorrectedWorldToTile(position));
                 if (distance > light.range)
                 {
                     continue;

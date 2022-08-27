@@ -9,10 +9,9 @@ namespace YetAnotherRoguelike.Tile_Classes.Blocks
     class NeonBlock : Tile
     {
         LightSource light;
-
         public NeonBlock(Vector2 pos, Chunk _parent) : base(Type.Neon, pos, _parent)
         {
-            light = new LightSource(position, 50, 10, Color.Aquamarine);
+            light = new LightSource(position, 50, 20, Color.Aquamarine);
             LightSource.Append(light);
         }
 

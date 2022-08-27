@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <SourceFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Entities/shadow.png</SourceFile>
-  <SourceTime>2022-07-11T23:58:15.6770568+08:00</SourceTime>
+  <SourceTime>2022-07-12T00:05:32.562119+08:00</SourceTime>
   <DestFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/bin/Windows/Entities/shadow.xnb</DestFile>
-  <DestTime>2022-07-11T23:58:36.9936379+08:00</DestTime>
+  <DestTime>2022-07-15T18:31:08.0332433+08:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2020-08-10T16:17:54+08:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

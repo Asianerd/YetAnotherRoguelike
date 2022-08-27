@@ -8,7 +8,7 @@ namespace YetAnotherRoguelike
     class Perlin_Noise
     {
         public static List<List<float>> map = new List<List<float>>();
-        public static Random random = new Random(2048);
+        public static Random random = new Random(Game.seed);
         // size means how many chunks are generated in each cardinal direction
         public static int size = 512;
         public static int scale = 256;

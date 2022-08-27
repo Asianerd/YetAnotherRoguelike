@@ -66,6 +66,11 @@ namespace YetAnotherRoguelike
 
         public static Vector2 WorldToTile(Vector2 position)
         {
+            return new Vector2(position.X / Tile.tileSize, position.Y / Tile.tileSize);
+        }
+
+        public static Vector2 CorrectedWorldToTile(Vector2 position)
+        {
             return new Vector2((position.X / Tile.tileSize) - (position.X < 0 ? 1 : 0), (position.Y / Tile.tileSize) - (position.Y < 0 ? 1 : 0));
         }
 
@@ -123,16 +128,26 @@ namespace YetAnotherRoguelike
 
             if ((!active) && (!hard))
             {
-                UnloadPrepare();
+                if (!custom)
+                {
+                    UnloadPrepare();
+                }
                 return;
             }
 
-            foreach (List<Tile> column in collection)
+
+            for (int y = 0; y < size; y++)
             {
-                foreach (Tile item in column)
+                for (int x = 0; x < size; x++)
                 {
+                    Tile item = collection[y][x];
                     item.Update();
                     item.UpdateSprite(this);
+                    if (item.durability.Percent() <= 0f)
+                    {
+                        Map.Break(TileToWorld(item.position), true);
+                        custom = true;
+                    }
                 }
             }
         }

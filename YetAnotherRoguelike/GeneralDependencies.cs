@@ -42,5 +42,10 @@ namespace YetAnotherRoguelike
             a.B += (byte)(b.B * compensation);
             return a;
         }
+
+        public static int CantorPairing(int a, int b)
+        {
+            return (int)(0.5 * (a + b) * (a + b + 1) + b);
+        }
     }
 }

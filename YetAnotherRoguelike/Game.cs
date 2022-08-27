@@ -21,6 +21,7 @@ namespace YetAnotherRoguelike
         public static GraphicsDeviceManager graphics;
         public static SpriteBatch spriteBatch;
         public static Vector2 screenSize = new Vector2(1920, 1080);
+        //public static Vector2 screenSize = new Vector2(500, 500);
         //public static Vector2 screenSize = new Vector2(1000, 1000);
         public static Rectangle playArea = new Rectangle(0, 0, 0, 0);
 
@@ -28,6 +29,10 @@ namespace YetAnotherRoguelike
         public static MouseState mouseState;
 
         public static Random random = new Random(8192);
+        public static int seed = random.Next(0, 10000);
+
+        public static float fps = 0f;
+        public static int fpsOffset = 0; // a little timer just for ease of reading fps
 
         public Game()
         {
@@ -37,6 +42,10 @@ namespace YetAnotherRoguelike
             graphics.PreferredBackBufferWidth = (int)screenSize.X;
             graphics.PreferredBackBufferHeight = (int)screenSize.Y;
             graphics.IsFullScreen = screenSize == new Vector2(1920, 1080);
+
+            IsFixedTimeStep = false;
+
+            graphics.ApplyChanges();
 
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
@@ -130,6 +139,13 @@ namespace YetAnotherRoguelike
         {
             GraphicsDevice.Clear(Scene.sceneLibrary[Scene.activeScene].backgroundColor);
 
+            fpsOffset++;
+            if (fpsOffset >= 60)
+            {
+                fpsOffset = 0;
+                fps = (float)Math.Round(1f / gameTime.ElapsedGameTime.TotalSeconds);
+            }
+
             Matrix renderPosition = Matrix.CreateTranslation(new Vector3(Camera.Instance.renderOffset, 0));
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: renderPosition);
             Scene.sceneLibrary[Scene.activeScene].Draw(gameTime);
@@ -140,8 +156,8 @@ namespace YetAnotherRoguelike
             Cursor.Draw();
             spriteBatch.Draw(UI.blank, new Rectangle(0, 0, 370, 120), Color.Black * 0.4f);
             spriteBatch.DrawString(UI.defaultFont,
-                $"FPS : {1f / gameTime.ElapsedGameTime.TotalSeconds}\n" +
-                $"Position : {(Player.Instance != null ? Player.Instance.position.ToString() : "?")}\n" +
+                $"FPS : {fps}\n" +
+                $"Position : {(Player.Instance != null ? $"X : {(int)Player.Instance.position.X}, Y : {(int)Player.Instance.position.Y}" : "?")}\n" +
                 $"Lights : {LightSource.sources.Count}",
                 Vector2.Zero, Color.White);
             spriteBatch.End();

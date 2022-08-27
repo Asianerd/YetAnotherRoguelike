@@ -32,11 +32,11 @@ namespace YetAnotherRoguelike.Particles
 
 
             float highest = 0;
-            List<Color> colors = new List<Color>() { _color * 0.5f } ;
-            List<float> intensities = new List<float>() { 0.5f };
+            List<Color> colors = new List<Color>() { _color * 1f } ;
+            List<float> intensities = new List<float>() { 1f };
             foreach (LightSource light in LightSource.sources)
             {
-                float distance = Vector2.Distance(light.position, Chunk.WorldToTile(position));
+                float distance = Vector2.Distance(light.position, Chunk.CorrectedWorldToTile(position));
                 if (distance > light.range)
                 {
                     continue;
@@ -62,7 +62,7 @@ namespace YetAnotherRoguelike.Particles
                 final.B += (byte)(c.B * compensation);
             }
             color = final * (highest / 80f);
-            final.A = 255;
+            color.A = 255;
         }
 
         public override void Update()
@@ -74,8 +74,6 @@ namespace YetAnotherRoguelike.Particles
 
             //position.Y = start - ((Math.Abs(MathF.Sin(i * 2f * MathF.PI)) * 20f) / (i >= 0.5 ? 1f : 1f));
             position.Y = start - (((-16 * MathF.Pow((i < fallDistance ? i : fallDistance) - 0.25f, 2)) + 1) * 20f);
-            // TODO : make it so it doesnt bounce
-            // refer to minecraft block breaking
 
             if (i <= fallDistance)
             {

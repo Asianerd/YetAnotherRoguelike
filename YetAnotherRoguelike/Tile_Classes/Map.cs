@@ -16,27 +16,15 @@ namespace YetAnotherRoguelike
         {
             Chunk.Initialize();
 
-            LightSource.Append(new LightSource(Vector2.Zero, 80, 20, Color.Red));
+            /*LightSource.Append(new LightSource(Vector2.Zero, 80, 20, Color.Red));
             LightSource.Append(new LightSource(new Vector2(10, 0), 80, 20, Color.Blue));
-            LightSource.Append(new LightSource(new Vector2(5, 10), 80, 20, Color.Green));
+            LightSource.Append(new LightSource(new Vector2(5, 10), 80, 20, Color.Green));*/
         }
 
         public static void Update()
         {
-            /*int resolution = 0;
-            for (int y = -resolution; y <= resolution; y++)
-            {
-                for (int x = -resolution; x <= resolution; x++)
-                {
-                    if (ChunkAt((int)Player.Instance.position.X + (x * Chunk.realSize), (int)Player.Instance.position.Y + (y * Chunk.realSize)) == null)
-                    {
-                        //chunks.Add(new Chunk(Chunk.ChunkPosition(Player.Instance.position) + new Vector2(x, y)));
-                    }
-                }
-            }*/
-
             int resolution = 2;
-            Vector2 playerChunk = Chunk.ChunkPosition(Chunk.WorldToTile(Player.Instance.position));
+            Vector2 playerChunk = Chunk.ChunkPosition(Chunk.CorrectedWorldToTile(Player.Instance.position));
             for (int y = -resolution; y <= resolution; y++)
             {
                 for (int x = -resolution; x <= resolution; x++)
@@ -113,7 +101,7 @@ namespace YetAnotherRoguelike
         public static Chunk ChunkAt(Vector2 position)
         {
             // Return chunk that contains the world position
-            return FetchChunk(Chunk.ChunkPosition(Chunk.WorldToTile(position)));
+            return FetchChunk(Chunk.ChunkPosition(Chunk.CorrectedWorldToTile(position)));
         }
 
         public static Chunk ChunkAt(int x, int y)
@@ -187,15 +175,34 @@ namespace YetAnotherRoguelike
             Break((int)position.X, (int)position.Y);
         }
 
-        public static void Break(int x, int y)
+        public static void Break(Vector2 position, bool noPosCorrection)
         {
-            // Takes in tile-coordinates and breaks the block there
+            Break((int)position.X, (int)position.Y, true);
+        }
+
+        public static void Break(int x, int y, bool noPosCorrection)
+        {
+            // Takes in world-coordinates and breaks the block there
             Chunk chunk = ChunkAt(x, y);
             if (chunk == null)
             {
                 return;
             }
             if (Tile.Destroy(Fetch(Chunk.WorldToTile(new Vector2(x, y)))))
+            {
+                chunk.custom = true;
+            }
+        }
+
+        public static void Break(int x, int y)
+        {
+            // Takes in world-coordinates and breaks the block there
+            Chunk chunk = ChunkAt(x, y);
+            if (chunk == null)
+            {
+                return;
+            }
+            if (Tile.Destroy(Fetch(Chunk.CorrectedWorldToTile(new Vector2(x, y)))))
             {
                 chunk.custom = true;
             }
@@ -215,12 +222,12 @@ namespace YetAnotherRoguelike
             {
                 return;
             }
-            if (Fetch(Chunk.WorldToTile(new Vector2(x, y))).type != Tile.Type.Air)
+            if (Fetch(Chunk.CorrectedWorldToTile(new Vector2(x, y))).type != Tile.Type.Air)
             {
                 return;
             }
-            Point pos = Chunk.FixTilePos(Chunk.WorldToTile(new Vector2(x, y))).ToPoint();
-            chunk.collection[pos.Y][pos.X] = Tile.CreateTile(block, Chunk.WorldToTile(new Vector2(x, y)).ToPoint().ToVector2(), chunk);
+            Point pos = Chunk.FixTilePos(Chunk.CorrectedWorldToTile(new Vector2(x, y))).ToPoint();
+            chunk.collection[pos.Y][pos.X] = Tile.CreateTile(block, Chunk.CorrectedWorldToTile(new Vector2(x, y)).ToPoint().ToVector2(), chunk);
             chunk.custom = true;
         }
         #endregion

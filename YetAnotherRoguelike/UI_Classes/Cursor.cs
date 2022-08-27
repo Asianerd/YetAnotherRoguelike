@@ -14,6 +14,7 @@ namespace YetAnotherRoguelike
 
         public static LightSource cursorLight;
         public static float colorAge = 0;
+        public static Vector2 worldPosition;
 
         public static void Initialize()
         {
@@ -28,18 +29,20 @@ namespace YetAnotherRoguelike
         public static void Update()
         {
             state = CursorStates.Default;
-            cursorLight.position = Chunk.WorldToTile(WorldPosition());
+            cursorLight.position = Chunk.CorrectedWorldToTile(WorldPosition());
             colorAge += 0.1f;
             if (colorAge >= Math.PI * 2f)
             {
                 colorAge = 0;
             }
             cursorLight.color = new Color((MathF.Sin(colorAge - MathF.PI) + 1) / 2f, (MathF.Sin(colorAge) + 1) / 2f, (MathF.Sin(colorAge + MathF.PI) + 1) / 2f);
+
+            worldPosition = WorldPosition();
         }
 
         public static void Draw()
         {
-            Game.spriteBatch.Draw(cursorSprites[(state == CursorStates.Select) && (Game.mouseState.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed) ? CursorStates.Select_pressed : state], Game.mouseState.Position.ToVector2(), null, Color.White, 0f, Vector2.Zero, 5f, SpriteEffects.None, 0f);
+            Game.spriteBatch.Draw(cursorSprites[(state == CursorStates.Select) && (Game.mouseState.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed) ? CursorStates.Select_pressed : state], Game.mouseState.Position.ToVector2(), null, Color.White, 0f, Vector2.Zero, 3f, SpriteEffects.None, 0f);
         }
 
         public static Vector2 WorldPosition()

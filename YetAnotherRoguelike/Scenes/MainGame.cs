@@ -16,7 +16,7 @@ namespace YetAnotherRoguelike
             Tile.Initialize();
             Map.Initialize();
             Particle.Initialize();
-            Item.Initialize();
+            GroundItem.Initialize();
 
             worldBorder = (Perlin_Noise.size * Chunk.realSize) * 0.4f;
             var x = new Player();
@@ -36,7 +36,7 @@ namespace YetAnotherRoguelike
                 Math.Clamp(Player.Instance.position.X, -worldBorder, worldBorder),
                 Math.Clamp(Player.Instance.position.Y, -worldBorder, worldBorder)
                 );
-            Item.UpdateAll();
+            GroundItem.UpdateAll();
             Particle.UpdateAll();
             base.Update(gameTime);
         }
@@ -44,9 +44,9 @@ namespace YetAnotherRoguelike
         public override void Draw(GameTime gameTime)
         {
             Map.Draw(spriteBatch);
-            Item.DrawAll(spriteBatch);
             Particle.DrawAll(spriteBatch);
             Player.Instance.Draw(spriteBatch);
+            GroundItem.DrawAll(spriteBatch);
             base.Draw(gameTime);
         }
 
