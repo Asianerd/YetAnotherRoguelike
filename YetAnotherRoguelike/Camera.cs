@@ -40,7 +40,7 @@ namespace YetAnotherRoguelike
                 target = Player.Instance.position;
             }
 
-            position = Vector2.Lerp(position, target, 0.1f);
+            position = Vector2.Lerp(position, target, 0.1f * Game.compensation);
 
             renderOffset = (Game.screenSize / 2f) - position;
         }

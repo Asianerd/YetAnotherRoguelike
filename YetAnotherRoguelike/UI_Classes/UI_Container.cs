@@ -8,6 +8,9 @@ namespace YetAnotherRoguelike
 {
     class UI_Container
     {
+        public static UI_Container selected;
+
+        public bool active;
         public List<UI_Element> elements = new List<UI_Element>();
 
         public UI_Container(List<UI_Element> _elements)
@@ -15,7 +18,7 @@ namespace YetAnotherRoguelike
             elements = _elements;
         }
 
-        public void UpdateAll()
+        public virtual void UpdateAll()
         {
             foreach(UI_Element x in elements)
             {
@@ -27,7 +30,7 @@ namespace YetAnotherRoguelike
             }
         }
 
-        public void DrawAll(SpriteBatch spriteBatch)
+        public virtual void DrawAll(SpriteBatch spriteBatch, Point offset)
         {
             foreach(UI_Element x in elements)
             {
@@ -35,7 +38,7 @@ namespace YetAnotherRoguelike
                 {
                     continue;
                 }
-                x.Draw(spriteBatch);
+                x.Draw(spriteBatch, offset);
             }
         }
     }

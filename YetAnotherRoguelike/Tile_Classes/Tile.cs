@@ -237,7 +237,7 @@ namespace YetAnotherRoguelike
 
         public virtual void Update()
         {
-            durabilityCooldown.Regenerate();
+            durabilityCooldown.Regenerate(Game.compensation);
             if (durabilityCooldown.Percent() >= 1f)
             {
                 durability.AffectValue(1f);
@@ -293,7 +293,7 @@ namespace YetAnotherRoguelike
                             selfOrigin
                             ));
                 }
-                foreach (KeyValuePair<Item.Type, int> item in GroundItem.FetchDropChance(tile.type))
+                foreach (KeyValuePair<Item.Type, int> item in Item.FetchDropChance(tile.type))
                 {
                     GroundItem.Spawn(item.Key, selfPosition + new Vector2(
                                 tileSize * (Game.random.Next(0, 1000) / 1000f),

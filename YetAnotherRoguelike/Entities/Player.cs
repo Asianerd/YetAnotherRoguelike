@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
+using YetAnotherRoguelike.Gameplay.ItemStorage;
+using YetAnotherRoguelike.Gameplay;
 
 namespace YetAnotherRoguelike
 {
@@ -23,6 +25,8 @@ namespace YetAnotherRoguelike
         public PhysicsBody walkingPhysics;
         public LightSource bodyLight;
 
+        public List<Item> inventory;
+
         public Player() : base(Species.Player, new PhysicsBody(Vector2.Zero), new Point(60, 60))
         {
             Instance = this;
@@ -33,6 +37,11 @@ namespace YetAnotherRoguelike
 
             walkingPhysics = new PhysicsBody(Vector2.Zero, maxVel:10f);
             bodyLight = new LightSource(Vector2.Zero, 10, 5, Color.White);
+            inventory = new List<Item>();
+            for (int i = 0; i < Inventory.inventorySize; i++)
+            {
+                inventory.Add(new Item(Item.Type.None, 0));
+            }
             //LightSource.Append(bodyLight);
         }
 
@@ -60,28 +69,32 @@ namespace YetAnotherRoguelike
 
             if (Input.collection[Keys.E].active)
             {
-                LightSource.Append(new LightSource(Chunk.CorrectedWorldToTile(Cursor.WorldPosition()), 20, 10, Color.White));
+                //LightSource.Append(new LightSource(Chunk.CorrectedWorldToTile(Cursor.WorldPosition()), 20, 10, Color.White));
+                Inventory.Instance.Toggle();
             }
 
             if (Input.collection[Keys.F].active)
             {
                 //Particle.particles.Add(new Particles.Smoke(Cursor.WorldPosition()));
-                foreach(Gameplay.GroundItem x in Gameplay.GroundItem.collection)
+                foreach(GroundItem x in GroundItem.collection)
                 {
                     x.follow = true;
                 }
             }
 
-            if (MouseInput.left.isPressed)
-            {
-                //Map.Break(Cursor.WorldPosition());
-                targetedTile.DegenerateDurability(-1f);
-            }
+            /*if (!Inventory.Instance.active)
+            {*/
+                if (MouseInput.left.isPressed)
+                {
+                    //Map.Break(Cursor.WorldPosition());
+                    targetedTile.DegenerateDurability(-100f * Game.compensation);
+                }
 
-            if (MouseInput.right.active)
-            {
-                Map.Place(Tile.Type.Neon, Cursor.WorldPosition());
-            }
+                if (MouseInput.right.active)
+                {
+                    Map.Place(Tile.Type.Neon, Cursor.WorldPosition());
+                }
+            //}
 
             if (Input.collection[Keys.R].active)
             {
@@ -136,6 +149,7 @@ namespace YetAnotherRoguelike
             spriteBatch.Draw(sprite, position, null, lightColour * (lightLevel / 80f), 0f, spriteOrigin, renderScale, SpriteEffects.None, 0f);
         }
 
+        #region Physics
         public override void ApplyPhysics()
         {
             walkingPhysics.Update();
@@ -166,8 +180,76 @@ namespace YetAnotherRoguelike
             {
                 final.Normalize();
             }
-            final *= speed * (Input.collection[Keys.LeftShift].isPressed ? 2 : 1);
+            final *= speed * (Input.collection[Keys.LeftShift].isPressed ? 2 : 1) * Game.compensation;
             walkingPhysics.velocity += final;
         }
+        #endregion
+
+        #region Inventory
+        public bool Pickable(Item.Type type)
+        {
+            // possible memoization?
+            foreach(Item x in inventory)
+            {
+                if (x.type == Item.Type.None)
+                {
+                    return true;
+                }
+                if (x.type == type)
+                {
+                    if (x.amount < Item.stackSize)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public void Pickup(Item.Type type, int amount)
+        {
+            int balance;
+            bool success = false;
+            foreach(Item x in inventory)
+            {
+                if (x.type == Item.Type.None)
+                {
+                    x.type = type;
+                    x.amount = amount;
+                    success = true;
+                }
+                if (x.type == type)
+                {
+                    if (x.amount < Item.stackSize)
+                    {
+                        x.amount += amount;
+                        success = true;
+                    }
+                }
+                if (success)
+                {
+                    int added = x.amount - amount;
+                    balance = x.amount - Item.stackSize;
+                    if (balance > 0)
+                    {
+                        x.amount = Item.stackSize;
+                        Drop(new Item(x.type, balance));
+                    }
+
+                    ItemPopupParent.Instance.Add(type, added);
+                    return;
+                }
+            }
+        }
+
+        public void Drop(Item item)
+        {
+            float d = (Game.random.Next(0, 100) / 100f) * MathF.PI * 2f;
+            GroundItem.Spawn(item.type, position + new Vector2(
+                MathF.Cos(d),
+                MathF.Sin(d)
+                ), item.amount, position);
+        }
+        #endregion
     }
 }

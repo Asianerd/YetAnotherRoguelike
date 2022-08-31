@@ -8,6 +8,7 @@ namespace YetAnotherRoguelike
 {
     class UI_Element
     {
+        public Vector2 position;
         public bool active = true;
 
         public virtual void Update()
@@ -15,7 +16,7 @@ namespace YetAnotherRoguelike
 
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch, Point offset)
         {
 
         }

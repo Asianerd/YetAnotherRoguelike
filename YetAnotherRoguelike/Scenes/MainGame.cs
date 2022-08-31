@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using YetAnotherRoguelike.Gameplay;
+using YetAnotherRoguelike.Gameplay.ItemStorage;
+using YetAnotherRoguelike.UI_Classes.Player_UI;
 
 namespace YetAnotherRoguelike
 {
@@ -16,10 +18,14 @@ namespace YetAnotherRoguelike
             Tile.Initialize();
             Map.Initialize();
             Particle.Initialize();
+            Item.Initialize();
             GroundItem.Initialize();
 
             worldBorder = (Perlin_Noise.size * Chunk.realSize) * 0.4f;
-            var x = new Player();
+            var _ = new Player();
+            Inventory __ = new Inventory(new List<UI_Element>());
+            General_Container ___ = new General_Container(new List<UI_Element>());
+
 
             //backgroundColor = new Color(44, 173, 24);
             //backgroundColor = Color.Green * 1.5f;
@@ -36,6 +42,8 @@ namespace YetAnotherRoguelike
                 Math.Clamp(Player.Instance.position.X, -worldBorder, worldBorder),
                 Math.Clamp(Player.Instance.position.Y, -worldBorder, worldBorder)
                 );
+            Inventory.Instance.UpdateAll();
+            General_Container.Instance.UpdateAll();
             GroundItem.UpdateAll();
             Particle.UpdateAll();
             base.Update(gameTime);
@@ -48,6 +56,13 @@ namespace YetAnotherRoguelike
             Player.Instance.Draw(spriteBatch);
             GroundItem.DrawAll(spriteBatch);
             base.Draw(gameTime);
+        }
+
+        public override void DrawUI(GameTime gameTime)
+        {
+            General_Container.Instance.DrawAll(spriteBatch, Point.Zero);
+            Inventory.Instance.DrawAll(spriteBatch, Point.Zero);
+            base.DrawUI(gameTime);
         }
 
         public override void OnSceneLoad()

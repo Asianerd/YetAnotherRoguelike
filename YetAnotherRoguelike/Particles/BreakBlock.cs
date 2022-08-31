@@ -73,11 +73,11 @@ namespace YetAnotherRoguelike.Particles
             i = age.Percent();
 
             //position.Y = start - ((Math.Abs(MathF.Sin(i * 2f * MathF.PI)) * 20f) / (i >= 0.5 ? 1f : 1f));
-            position.Y = start - (((-16 * MathF.Pow((i < fallDistance ? i : fallDistance) - 0.25f, 2)) + 1) * 20f);
+            position.Y = (start - (((-16 * MathF.Pow((i < fallDistance ? i : fallDistance) - 0.25f, 2)) + 1) * 20f));
 
             if (i <= fallDistance)
             {
-                position += increment * (1f - i);
+                position += increment * (1f - i) * Game.compensation;
             }
         }
 

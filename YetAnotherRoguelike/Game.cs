@@ -25,6 +25,11 @@ namespace YetAnotherRoguelike
         //public static Vector2 screenSize = new Vector2(1000, 1000);
         public static Rectangle playArea = new Rectangle(0, 0, 0, 0);
 
+        public static float compensation = 1f;
+        public static float updateFrequency = 60; // treat this as a multiplier to time delta
+        // time delta * frequency = speed multiplier
+        // distance travelled per second is constant, no matter the fps
+
         public static KeyboardState keyboardState;
         public static MouseState mouseState;
 
@@ -113,6 +118,8 @@ namespace YetAnotherRoguelike
 
         protected override void Update(GameTime gameTime)
         {
+            compensation = (float)gameTime.ElapsedGameTime.TotalSeconds * updateFrequency;
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -154,11 +161,12 @@ namespace YetAnotherRoguelike
             spriteBatch.Begin(samplerState:SamplerState.PointClamp);
             Scene.sceneLibrary[Scene.activeScene].DrawUI(gameTime);
             Cursor.Draw();
-            spriteBatch.Draw(UI.blank, new Rectangle(0, 0, 370, 120), Color.Black * 0.4f);
+            spriteBatch.Draw(UI.blank, new Rectangle(0, 0, 370, 160), Color.Black * 0.4f);
             spriteBatch.DrawString(UI.defaultFont,
                 $"FPS : {fps}\n" +
                 $"Position : {(Player.Instance != null ? $"X : {(int)Player.Instance.position.X}, Y : {(int)Player.Instance.position.Y}" : "?")}\n" +
-                $"Lights : {LightSource.sources.Count}",
+                $"Lights : {LightSource.sources.Count}\n" +
+                $"Compensation : {MathF.Round(compensation, 3)}\n",
                 Vector2.Zero, Color.White);
             spriteBatch.End();
 

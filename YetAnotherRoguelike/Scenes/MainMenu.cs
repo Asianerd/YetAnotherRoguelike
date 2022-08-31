@@ -21,7 +21,7 @@ namespace YetAnotherRoguelike
 
         public override void Update(GameTime gameTime)
         {
-            titleAge.Regenerate();
+            titleAge.Regenerate(Game.compensation);
             if (titleAge.Percent() >= 1)
             {
                 titleAge.AffectValue(0f);
@@ -36,7 +36,7 @@ namespace YetAnotherRoguelike
         {
             spriteBatch.DrawString(defaultFont, titleString, Game.screenSize / 2, Color.White, 0.02f * (float)Math.Cos(titleAge.Percent() * 2 * Math.PI), defaultFont.MeasureString(titleString) / 2, 2.5f + (0.05f * (float)Math.Sin(titleAge.Percent() * 2 * Math.PI)), Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0f);
 
-            container.DrawAll(spriteBatch);
+            container.DrawAll(spriteBatch, Point.Zero);
 
             base.Draw(gameTime);
         }

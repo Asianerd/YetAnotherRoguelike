@@ -23,7 +23,7 @@ namespace YetAnotherRoguelike
 
         public void Update()
         {
-            velocity *= friction / mass;
+            velocity *= (friction / mass);
             if (velocityClamped)
             {
                 velocity = new Vector2(

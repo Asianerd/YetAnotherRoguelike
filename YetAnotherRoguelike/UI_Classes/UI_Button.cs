@@ -60,10 +60,10 @@ namespace YetAnotherRoguelike
                 action();
             }
 
-            hoverAge.Regenerate(hovered ? 1 : -1);
+            hoverAge.Regenerate(hovered ? Game.compensation : -Game.compensation);
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, Point offset)
         {
             int pixel = 32;
 

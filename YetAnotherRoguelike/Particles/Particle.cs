@@ -52,7 +52,7 @@ namespace YetAnotherRoguelike
 
         public virtual void Update()
         {
-            age.Regenerate(clamp: false);
+            age.Regenerate(Game.compensation, clamp: false);
             dead = age.Percent() >= 1;
         }
 

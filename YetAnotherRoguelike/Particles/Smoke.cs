@@ -17,8 +17,8 @@ namespace YetAnotherRoguelike.Particles
         {
             base.Update();
 
-            position.Y -= 1f;
-            position.X += Game.random.Next(-100, 100) / 100f;
+            position.Y -= 1f * Game.compensation;
+            position.X += (Game.random.Next(-100, 100) / 100f) * Game.compensation;
         }
 
         public override void Draw(SpriteBatch spriteBatch)

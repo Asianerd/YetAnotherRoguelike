@@ -10,11 +10,7 @@ namespace YetAnotherRoguelike.Gameplay
 {
     class GroundItem
     {
-        // Item class has own Random to ensure every drop is more randomized
-        public static Random dropRNG = new Random();
         public static Texture2D shadowSprite;
-        public static Dictionary<Item.Type, Texture2D> itemSprites = new Dictionary<Item.Type, Texture2D>();
-        public static Dictionary<Tile.Type, Dictionary<Item.Type, int>> lootTable = new Dictionary<Tile.Type, Dictionary<Item.Type, int>>();
         public static List<GroundItem> collection = new List<GroundItem>();
         public static Vector2 spriteOrigin;
 
@@ -28,47 +24,12 @@ namespace YetAnotherRoguelike.Gameplay
         {
             spriteOrigin = new Vector2(8);
             shadowSprite = Game.Instance.Content.Load<Texture2D>("Entities/shadow");
-
-            foreach(Item.Type t in Enum.GetValues(typeof(Item.Type)))
-            {
-                itemSprites.Add(t, Game.Instance.Content.Load<Texture2D>($"Item_sprites/{t}"));
-            }
-
-            //var x = JsonSerializer.Deserialize<List<ItemData>>(File.ReadAllText("Data/tile_data.json"));
-            foreach(KeyValuePair<string,ItemData> item in JsonSerializer.Deserialize<Dictionary<string, ItemData>>(File.ReadAllText("Data/tile_data.json")))
-            {
-                var x = item.Value;
-                x.blockType = Enum.GetValues(typeof(Tile.Type)).Cast<Tile.Type>().ToList().Where(n => n.ToString() == item.Key).First();
-                ItemData.collection.Add(x);
-            }
-            foreach(ItemData i in ItemData.collection)
-            {
-                i.AssignData();
-                lootTable.Add(i.blockType, i.lootTable);
-            }
-        }
-
-        public static Dictionary<Item.Type, int> FetchDropChance(Tile.Type type, bool addOffset = true)
-        {
-            Dictionary<Item.Type, int> result = lootTable.Keys.Contains(type) ? lootTable[type] : new Dictionary<Item.Type, int>() { };
-            if (addOffset)
-            {
-                List<Item.Type> k = result.Keys.ToList();
-                foreach(Item.Type t in k)
-                {
-                    result[t] += dropRNG.Next(-2, 2);
-                    if (result[t] <= 0)
-                    {
-                        result[t] = 1;
-                    }
-                }
-            }
-            return result;
         }
 
         public static void UpdateAll()
         {
-            foreach(GroundItem x in collection)
+            var t = new List<GroundItem>(collection);
+            foreach(GroundItem x in t)
             {
                 x.Update();
             }
@@ -146,7 +107,7 @@ namespace YetAnotherRoguelike.Gameplay
 
             if (d <= followDistance)
             {
-                follow = true;
+                follow = Player.Instance.Pickable(item.type);
             }
 
             if (d > deathDistance)
@@ -157,16 +118,21 @@ namespace YetAnotherRoguelike.Gameplay
 
             if (d < pickupDistance)
             {
-                dead = true;
+                if (follow)
+                {
+                    Player.Instance.Pickup(item.type, item.amount);
+                    dead = true;
+                    return;
+                }
             }
 
             if (follow)
             {
-                position = Vector2.Lerp(position, Player.Instance.position, 0.3f);
+                position = Vector2.Lerp(position, Player.Instance.position, 0.3f * Game.compensation);
             }
             else
             {
-                fall++;
+                fall += Game.compensation;
                 float p = fall / 40f;
                 if (p < fallDistance)
                 {
@@ -202,7 +168,7 @@ namespace YetAnotherRoguelike.Gameplay
                 }
             }
 
-            animationAge.Regenerate();
+            animationAge.Regenerate(Game.compensation);
             if (animationAge.Percent() >= 1f)
             {
                 animationAge.I = 0;
@@ -235,13 +201,13 @@ namespace YetAnotherRoguelike.Gameplay
                 return;
             }
             Vector2 renderPosition = new Vector2(position.X, position.Y + (MathF.Sin(animationAge.Percent() * 2f * MathF.PI)) * 10f);
-            spriteBatch.Draw(itemSprites[item.type], renderPosition, null, color, 0f, spriteOrigin, 3f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(Item.itemSprites[item.type], renderPosition, null, color, 0f, spriteOrigin, 3f, SpriteEffects.None, 0f);
             if (item.amount >= 2)
             {
-                spriteBatch.Draw(itemSprites[item.type], renderPosition + new Vector2(10, 10), null, color, 0f, spriteOrigin, 3f, SpriteEffects.None, 0f);
+                spriteBatch.Draw(Item.itemSprites[item.type], renderPosition + new Vector2(10, 10), null, color, 0f, spriteOrigin, 3f, SpriteEffects.None, 0f);
                 if (item.amount > 2)
                 {
-                    spriteBatch.Draw(itemSprites[item.type], renderPosition + new Vector2(5f, -5f), null, color, 0f, spriteOrigin, 3f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(Item.itemSprites[item.type], renderPosition + new Vector2(5f, -5f), null, color, 0f, spriteOrigin, 3f, SpriteEffects.None, 0f);
                 }
             }
             if (Vector2.Distance(Cursor.worldPosition, position) <= 30f)
@@ -272,30 +238,5 @@ namespace YetAnotherRoguelike.Gameplay
             Argentite, // Silver
             Bismuth,
             */
-
-        public class ItemData
-        {
-            public static List<ItemData> collection = new List<ItemData>();
-
-            public ItemData() { }
-
-            public void AssignData()
-            {
-                //Debug.WriteLine(_rawBlockType == null);
-                //blockType = Enum.GetValues(typeof(Tile.Type)).Cast<Tile.Type>().ToList().Where(n => n.ToString() == _rawBlockType).First();
-                foreach(string x in loot.Keys)
-                {
-                    lootTable.Add(
-                        Enum.GetValues(typeof(Item.Type)).Cast<Item.Type>().ToList().Where(n => n.ToString() == x).First(),
-                        loot[x]
-                        );
-                }
-            }
-
-            public Dictionary<string, int> loot { get; set; }
-
-            public Tile.Type blockType;
-            public Dictionary<Item.Type, int> lootTable = new Dictionary<Item.Type, int>();
-        }
     }
 }
