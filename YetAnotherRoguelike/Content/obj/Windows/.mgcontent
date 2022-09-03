@@ -23,6 +23,7 @@
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Tiles/argentite.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Tiles/bauxite.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Tiles/bismuth.png</File>
+    <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Tiles/blast_furnace.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Tiles/calamine.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Tiles/cinnabar.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Tiles/coal_ore.png</File>
@@ -45,10 +46,19 @@
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Cursors/default.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Cursors/select.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Cursors/select_pressed.png</File>
+    <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Hotbar/Hotbar_raw.png</File>
+    <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Hotbar/Hotbar_section.png</File>
+    <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Hotbar/marker.png</File>
+    <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Hotbar/Pointer.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Storage_Items/item_slot.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Storage_Items/selection_sprite.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

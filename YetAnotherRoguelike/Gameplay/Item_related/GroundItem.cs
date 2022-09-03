@@ -152,7 +152,7 @@ namespace YetAnotherRoguelike.Gameplay
                     {
                         continue;
                     }
-                    if (i.item.amount >= Item.stackSize)
+                    if (i.item.amount >= i.item.stackSize)
                     {
                         continue;
                     }

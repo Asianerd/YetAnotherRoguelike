@@ -32,6 +32,11 @@ namespace YetAnotherRoguelike
             containers.Add(this);
         }
 
+        public virtual void Toggle()
+        {
+            active = !active;
+        }
+
         public virtual void UpdateAll()
         {
             hovered = false;

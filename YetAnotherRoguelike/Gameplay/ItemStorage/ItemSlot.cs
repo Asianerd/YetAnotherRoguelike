@@ -39,7 +39,7 @@ namespace YetAnotherRoguelike.Gameplay.ItemStorage
                 {
                     if (Cursor.item.type == item.type)
                     {
-                        int toAdd, toRemove, canAdd = Item.stackSize - item.amount;
+                        int toAdd, toRemove, canAdd = item.stackSize - item.amount;
                         if (Cursor.item.amount > canAdd)
                         {
                             toAdd = canAdd;
@@ -75,7 +75,6 @@ namespace YetAnotherRoguelike.Gameplay.ItemStorage
                             int removed = item.amount / 2;
 
                             int added = item.amount - removed;
-                            Debug.WriteLine($"{item.amount} : {item.amount / 2} : {added}");
                             Cursor.item = new Item(item.type, added);
                             item.amount -= added;
                             if (item.amount <= 0)
@@ -133,7 +132,10 @@ namespace YetAnotherRoguelike.Gameplay.ItemStorage
                     drawnRect.Size.X + (hovered ? 10 : 0),
                     drawnRect.Size.Y + (hovered ? 10 : 0)
                     ), Color.White);
-                spriteBatch.DrawString(UI.defaultFont, item.amount.ToString(), drawnRect.Location.ToVector2(), Color.White);
+                if (item.amount != 1)
+                {
+                    spriteBatch.DrawString(UI.defaultFont, item.amount.ToString(), drawnRect.Location.ToVector2(), Color.White);
+                }
             }
         }
     }

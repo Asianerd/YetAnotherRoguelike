@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using YetAnotherRoguelike.Gameplay.ItemStorage;
 using YetAnotherRoguelike.Gameplay;
+using YetAnotherRoguelike.UI_Classes.Player_UI;
 
 namespace YetAnotherRoguelike
 {
@@ -62,6 +63,11 @@ namespace YetAnotherRoguelike
             {
                 //LightSource.Append(new LightSource(Chunk.CorrectedWorldToTile(Cursor.WorldPosition()), 20, 10, Color.White));
                 Inventory.Instance.Toggle();
+            }
+
+            if (Input.collection[Keys.Tab].active)
+            {
+                Hotbar.Instance.Toggle();
             }
 
             if (Input.collection[Keys.F].active)
@@ -191,7 +197,7 @@ namespace YetAnotherRoguelike
                 }
                 if (x.type == type)
                 {
-                    if (x.amount < Item.stackSize)
+                    if (x.amount < x.stackSize)
                     {
                         return true;
                     }
@@ -215,7 +221,7 @@ namespace YetAnotherRoguelike
                 }
                 else if (x.type == type)
                 {
-                    if (x.amount < Item.stackSize)
+                    if (x.amount < x.stackSize)
                     {
                         x.amount += amount;
                         success = true;
@@ -224,10 +230,10 @@ namespace YetAnotherRoguelike
                 }
                 if (success)
                 {
-                    balance = x.amount - Item.stackSize;
+                    balance = x.amount - x.stackSize;
                     if (balance > 0)
                     {
-                        x.amount = Item.stackSize;
+                        x.amount = x.stackSize;
                         Drop(new Item(x.type, balance));
                     }
 

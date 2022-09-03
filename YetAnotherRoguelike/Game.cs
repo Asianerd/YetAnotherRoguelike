@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using YetAnotherRoguelike.Gameplay;
 
 namespace YetAnotherRoguelike
 {
@@ -20,9 +21,9 @@ namespace YetAnotherRoguelike
 
         public static GraphicsDeviceManager graphics;
         public static SpriteBatch spriteBatch;
-        //public static Vector2 screenSize = new Vector2(1920, 1080);
+        public static Vector2 screenSize = new Vector2(1920, 1080);
         //public static Vector2 screenSize = new Vector2(500, 500);
-        public static Vector2 screenSize = new Vector2(1000, 1000);
+        //public static Vector2 screenSize = new Vector2(1000, 1000);
         public static Rectangle playArea = new Rectangle(0, 0, 0, 0);
 
         public static float compensation = 1f;
@@ -65,6 +66,7 @@ namespace YetAnotherRoguelike
             GeneralDependencies.Initialize();
             var x = new Camera();
 
+            Item.Initialize(); // item has to be initialized before cursor lmao
             UI.Initialize();
             Scene.Initialize();
 
@@ -100,6 +102,7 @@ namespace YetAnotherRoguelike
                 Keys.LeftShift,
 
                 Keys.F11,
+                Keys.Tab,
 
                 Keys.Up,
                 Keys.Down,
@@ -169,7 +172,8 @@ namespace YetAnotherRoguelike
                 $"FPS : {fps}\n" +
                 $"Position : {(Player.Instance != null ? $"X : {(int)Player.Instance.position.X}, Y : {(int)Player.Instance.position.Y}" : "?")}\n" +
                 $"Lights : {LightSource.sources.Count}\n" +
-                $"Compensation : {MathF.Round(compensation, 3)}\n",
+                $"Compensation : {MathF.Round(compensation, 3)}\n" +
+                $"Cursor speed : {Cursor.measuredSpeed}",
                 Vector2.Zero, Color.White);
             spriteBatch.End();
 

@@ -12,14 +12,26 @@ namespace YetAnotherRoguelike.Gameplay
     {
         // Item class has own Random to ensure every drop is more randomized
         public static Random dropRNG = new Random();
-        public static int stackSize = 256;
+        public static int regularStackSize = 256;
 
         public static Dictionary<Type, Texture2D> itemSprites = new Dictionary<Type, Texture2D>();
         public static Dictionary<Tile.Type, Dictionary<Type, int>> lootTable = new Dictionary<Tile.Type, Dictionary<Type, int>>();
+        public static Dictionary<Type, StackType> itemStackTypes = new Dictionary<Type, StackType>();
+        public static Dictionary<StackType, int> stackSizes = new Dictionary<StackType, int>();
 
         #region Statics
         public static void Initialize()
         {
+            stackSizes = new Dictionary<StackType, int>()
+            {
+                { StackType.Regular, regularStackSize },
+                { StackType.Single, 1 }
+            };
+            itemStackTypes = new Dictionary<Type, StackType>()
+            {
+
+            };
+
             foreach (Type t in Enum.GetValues(typeof(Type)))
             {
                 if (t == Type.None)
@@ -43,13 +55,13 @@ namespace YetAnotherRoguelike.Gameplay
             }
         }
 
-        public static Dictionary<Item.Type, int> FetchDropChance(Tile.Type type, bool addOffset = true)
+        public static Dictionary<Type, int> FetchDropChance(Tile.Type type, bool addOffset = true)
         {
-            Dictionary<Item.Type, int> result = lootTable.Keys.Contains(type) ? lootTable[type] : new Dictionary<Item.Type, int>() { };
+            Dictionary<Type, int> result = lootTable.Keys.Contains(type) ? lootTable[type] : new Dictionary<Item.Type, int>() { };
             if (addOffset)
             {
-                List<Item.Type> k = result.Keys.ToList();
-                foreach (Item.Type t in k)
+                List<Type> k = result.Keys.ToList();
+                foreach (Type t in k)
                 {
                     result[t] += dropRNG.Next(-2, 2);
                     if (result[t] <= 0)
@@ -62,13 +74,52 @@ namespace YetAnotherRoguelike.Gameplay
         }
         #endregion
 
-        public Type type;
-        public int amount;
 
-        public Item(Type _type, int _amount)
+        Type _type;
+        public Type type
         {
-            type = _type;
-            amount = _amount;
+            get { return _type; }
+            set
+            {
+                _type = value;
+                UpdateStackSize();
+            }
+        }
+        int _amount;
+        public int amount
+        {
+            get { return _amount; }
+            set
+            {
+                _amount = value;
+                UpdateStackSize();
+            }
+        }
+        public int stackSize;
+        public UsageType usageType;
+
+        public static Item Empty()
+        {
+            return new Item(Type.None, 0);
+        }
+
+        public Item(Type __type, int __amount)
+        {
+            type = __type;
+            amount = __amount;
+            usageType = UsageType.Block;
+
+            stackSize = itemStackTypes.ContainsKey(type) ? stackSizes[itemStackTypes[type]] : regularStackSize;
+        }
+
+        public void UpdateStackSize()
+        {
+            stackSize = itemStackTypes.ContainsKey(type) ? stackSizes[itemStackTypes[type]] : regularStackSize;
+        }
+
+        public bool Full()
+        {
+            return amount >= stackSize;
         }
 
 
@@ -89,6 +140,20 @@ namespace YetAnotherRoguelike.Gameplay
             Bismuth
         }
 
+        public enum StackType
+        {
+            Regular,
+            Single
+        }
+
+        public enum UsageType
+        {
+            Block,
+            Weapon
+        }
+
+
+
         public class ItemData
         {
             public static List<ItemData> collection = new List<ItemData>();
@@ -102,7 +167,7 @@ namespace YetAnotherRoguelike.Gameplay
                 foreach (string x in loot.Keys)
                 {
                     lootTable.Add(
-                        Enum.GetValues(typeof(Item.Type)).Cast<Item.Type>().ToList().Where(n => n.ToString() == x).First(),
+                        Enum.GetValues(typeof(Type)).Cast<Type>().ToList().Where(n => n.ToString() == x).First(),
                         loot[x]
                         );
                 }
@@ -111,7 +176,7 @@ namespace YetAnotherRoguelike.Gameplay
             public Dictionary<string, int> loot { get; set; }
 
             public Tile.Type blockType;
-            public Dictionary<Item.Type, int> lootTable = new Dictionary<Item.Type, int>();
+            public Dictionary<Type, int> lootTable = new Dictionary<Type, int>();
         }
     }
 }

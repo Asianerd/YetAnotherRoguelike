@@ -43,11 +43,6 @@ namespace YetAnotherRoguelike.Gameplay.ItemStorage
             }
         }
 
-        public void Toggle()
-        {
-            active = !active;
-        }
-
         public override void UpdateAll()
         {
             age.Regenerate(active ? Game.compensation : -Game.compensation);

@@ -343,6 +343,8 @@ namespace YetAnotherRoguelike
             Cinnabar, // Mercury
             Argentite, // Silver
             Bismuth,
+
+            Blast_Furnace
         }
     }
 }

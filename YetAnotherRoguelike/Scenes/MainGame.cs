@@ -18,13 +18,13 @@ namespace YetAnotherRoguelike
             Tile.Initialize();
             Map.Initialize();
             Particle.Initialize();
-            Item.Initialize();
             GroundItem.Initialize();
 
             worldBorder = (Perlin_Noise.size * Chunk.realSize) * 0.4f;
-            var _ = new Player();
+            Player _ = new Player();
             Inventory __ = new Inventory(new List<UI_Element>());
             General_Container ___ = new General_Container(new List<UI_Element>());
+            Hotbar ____ = new Hotbar(new List<UI_Element>());
 
 
             //backgroundColor = new Color(44, 173, 24);
@@ -43,6 +43,7 @@ namespace YetAnotherRoguelike
                 Math.Clamp(Player.Instance.position.Y, -worldBorder, worldBorder)
                 );
             Inventory.Instance.UpdateAll();
+            Hotbar.Instance.UpdateAll();
             General_Container.Instance.UpdateAll();
             GroundItem.UpdateAll();
             Particle.UpdateAll();
@@ -62,6 +63,7 @@ namespace YetAnotherRoguelike
         {
             General_Container.Instance.DrawAll(spriteBatch, Point.Zero);
             Inventory.Instance.DrawAll(spriteBatch, Point.Zero);
+            Hotbar.Instance.DrawAll(spriteBatch, Point.Zero);
             base.DrawUI(gameTime);
         }
 

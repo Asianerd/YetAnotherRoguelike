@@ -19,6 +19,8 @@ namespace YetAnotherRoguelike
         public static Vector2 worldPosition;
 
         public static Item item;
+        public static float measuredSpeed; // measured speed of the cursor ; pixels per frame
+        static Vector2 previousPosition;
 
         public static void Initialize()
         {
@@ -44,6 +46,9 @@ namespace YetAnotherRoguelike
             cursorLight.color = new Color((MathF.Sin(colorAge - MathF.PI) + 1) / 2f, (MathF.Sin(colorAge) + 1) / 2f, (MathF.Sin(colorAge + MathF.PI) + 1) / 2f);
 
             worldPosition = WorldPosition();
+
+            measuredSpeed = Vector2.Distance(Game.mouseState.Position.ToVector2(), previousPosition) / Game.compensation;
+            previousPosition = Game.mouseState.Position.ToVector2();
 
             if (item.type != Item.Type.None)
             {

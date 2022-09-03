@@ -49,6 +49,39 @@ namespace YetAnotherRoguelike
             return (int)(0.5 * (a + b) * (a + b + 1) + b);
         }
 
+        public static float FullRadian(float radian)
+        {
+            if (radian < 0)
+            {
+                return (float)((Math.PI - MathF.Abs(radian)) + Math.PI);
+            }
+            else
+            {
+                return radian;
+            }
+        }
+
+        public static float FullDegrees(float degrees)
+        {
+            if (degrees < 0)
+            {
+                return degrees + 360;
+            }
+            return degrees;
+        }
+
+        public static bool inBetween(float start, float end, float target)
+        {
+            if (end > start)
+            {
+                return (target > start) && (target < end);
+            }
+            else
+            {
+                return (target < start) && (target > end);
+            }
+        }
+
         // from stackoverflow
         // thanks @michael-hoffmann
         public static List<Texture2D> Split(Texture2D original, int partWidth, int partHeight)
