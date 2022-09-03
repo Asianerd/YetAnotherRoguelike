@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace YetAnotherRoguelike
@@ -46,6 +47,48 @@ namespace YetAnotherRoguelike
         public static int CantorPairing(int a, int b)
         {
             return (int)(0.5 * (a + b) * (a + b + 1) + b);
+        }
+
+        // from stackoverflow
+        // thanks @michael-hoffmann
+        public static List<Texture2D> Split(Texture2D original, int partWidth, int partHeight)
+        {
+            int yCount = original.Height / partHeight;
+            int xCount = original.Height / partHeight;
+            List<Texture2D> r = new List<Texture2D>();
+            int dataPerPart = partWidth * partHeight;
+
+            Color[] originalData = new Color[original.Width * original.Height];
+            original.GetData<Color>(originalData);
+
+            for (int y = 0; y < (yCount * partHeight); y += partHeight)
+            {
+                for (int x = 0; x < (xCount * partWidth); x += partWidth)
+                {
+                    Texture2D part = new Texture2D(original.GraphicsDevice, partWidth, partHeight);
+                    Color[] partData = new Color[dataPerPart];
+
+                    for (int py = 0; py < partHeight; py++)
+                    {
+                        for (int px = 0; px < partWidth; px++)
+                        {
+                            int partIndex = px + py * partWidth;
+                            if (y + py >= original.Height || x + px >= original.Width)
+                            {
+                                partData[partIndex] = Color.Transparent;
+                            }
+                            else
+                            {
+                                partData[partIndex] = originalData[(x + px) + ((y + py) * original.Width)];
+                            }
+                        }
+                    }
+
+                    part.SetData<Color>(partData);
+                    r.Add(part);
+                }
+            }
+            return r;
         }
     }
 }

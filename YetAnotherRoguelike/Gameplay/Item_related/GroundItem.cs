@@ -14,12 +14,6 @@ namespace YetAnotherRoguelike.Gameplay
         public static List<GroundItem> collection = new List<GroundItem>();
         public static Vector2 spriteOrigin;
 
-        /*
-        Things to store :
-            - Drop chances
-            - 
-         */
-
         public static void Initialize()
         {
             spriteOrigin = new Vector2(8);
@@ -62,12 +56,13 @@ namespace YetAnotherRoguelike.Gameplay
         public GameValue animationAge;
         public Color color;
 
+        public GameValue pickupCooldown;
         public bool follow = false;
         public bool dead = false;
 
         float increment, start, fall;
 
-        GroundItem(Item.Type t, int _amount, Vector2 pos, Vector2 origin)
+        GroundItem(Item.Type t, int _amount, Vector2 pos, Vector2 origin, bool _cooldown = false)
         {
             item = new Item(t, _amount);
             position = pos;
@@ -77,9 +72,11 @@ namespace YetAnotherRoguelike.Gameplay
 
             start = pos.Y + (Game.random.Next(-100, 100) / 100f);
             increment = ((pos - origin) * 0.05f).X;
+
+            pickupCooldown = new GameValue(0, 60, 1, _cooldown ? 0 : 100);
         }
 
-        public static void Spawn(Item.Type t, Vector2 pos, int _amount, Vector2 origin)
+        public static void Spawn(Item.Type t, Vector2 pos, int _amount, Vector2 origin, bool _cooldown = false)
         {
             /*foreach(Item i in collection)
             {
@@ -93,7 +90,7 @@ namespace YetAnotherRoguelike.Gameplay
                     return;
                 }
             }*/
-            collection.Add(new GroundItem(t, _amount, pos, origin));
+            collection.Add(new GroundItem(t, _amount, pos, origin, _cooldown));
         }
 
         public void Update()
@@ -103,26 +100,31 @@ namespace YetAnotherRoguelike.Gameplay
                 return;
             }
 
-            float d = Vector2.Distance(position, Player.Instance.position);
+            pickupCooldown.Regenerate(Game.compensation);
 
-            if (d <= followDistance)
+            if (pickupCooldown.Percent() == 1f)
             {
-                follow = Player.Instance.Pickable(item.type);
-            }
+                float d = Vector2.Distance(position, Player.Instance.position);
 
-            if (d > deathDistance)
-            {
-                dead = true;
-                return;
-            }
-
-            if (d < pickupDistance)
-            {
-                if (follow)
+                if (d <= followDistance)
                 {
-                    Player.Instance.Pickup(item.type, item.amount);
+                    follow = Player.Instance.Pickable(item.type);
+                }
+
+                if (d > deathDistance)
+                {
                     dead = true;
                     return;
+                }
+
+                if (d < pickupDistance)
+                {
+                    if (follow)
+                    {
+                        Player.Instance.Pickup(item.type, item.amount);
+                        dead = true;
+                        return;
+                    }
                 }
             }
 
@@ -140,7 +142,7 @@ namespace YetAnotherRoguelike.Gameplay
                     position.X += increment;
                 }
 
-                foreach(GroundItem i in collection)
+                foreach (GroundItem i in collection)
                 {
                     if (i.dead)
                     {
@@ -162,6 +164,7 @@ namespace YetAnotherRoguelike.Gameplay
                     if (Vector2.Distance(i.position, position) < mergeDistance)
                     {
                         i.item.amount += item.amount;
+                        item.amount = 0; // just in case
                         dead = true;
                         break;
                     }
@@ -210,10 +213,10 @@ namespace YetAnotherRoguelike.Gameplay
                     spriteBatch.Draw(Item.itemSprites[item.type], renderPosition + new Vector2(5f, -5f), null, color, 0f, spriteOrigin, 3f, SpriteEffects.None, 0f);
                 }
             }
-            if (Vector2.Distance(Cursor.worldPosition, position) <= 30f)
+/*            if (Vector2.Distance(Cursor.worldPosition, position) <= 30f)
             {
                 spriteBatch.DrawString(UI.defaultFont, $"{item.type} x{item.amount}", position, Color.White);
-            }
+            }*/
         }
 
         public void DrawShadow(SpriteBatch spriteBatch)

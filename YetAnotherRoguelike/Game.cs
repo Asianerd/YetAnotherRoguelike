@@ -20,9 +20,9 @@ namespace YetAnotherRoguelike
 
         public static GraphicsDeviceManager graphics;
         public static SpriteBatch spriteBatch;
-        public static Vector2 screenSize = new Vector2(1920, 1080);
+        //public static Vector2 screenSize = new Vector2(1920, 1080);
         //public static Vector2 screenSize = new Vector2(500, 500);
-        //public static Vector2 screenSize = new Vector2(1000, 1000);
+        public static Vector2 screenSize = new Vector2(1000, 1000);
         public static Rectangle playArea = new Rectangle(0, 0, 0, 0);
 
         public static float compensation = 1f;
@@ -126,6 +126,7 @@ namespace YetAnotherRoguelike
             keyboardState = Keyboard.GetState();
             mouseState = Mouse.GetState();
             Cursor.Update();
+            
 
             MouseInput.UpdateAll();
             Input.UpdateAll(keyboardState);
@@ -134,6 +135,8 @@ namespace YetAnotherRoguelike
             {
                 graphics.ToggleFullScreen();
             }
+
+            UI_Container.Update();
 
             Scene.sceneLibrary[Scene.activeScene].Update(gameTime);
 

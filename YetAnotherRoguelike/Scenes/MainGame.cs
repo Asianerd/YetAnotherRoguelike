@@ -69,5 +69,10 @@ namespace YetAnotherRoguelike
         {
             Camera.Instance.position = Camera.Instance.target;
         }
+
+        public override void OnSceneUnload()
+        {
+            UI_Container.Unload();
+        }
     }
 }

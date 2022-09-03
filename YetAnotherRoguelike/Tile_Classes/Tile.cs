@@ -17,14 +17,16 @@ namespace YetAnotherRoguelike
 
         public static void Initialize()
         {
-            foreach (Type x in Enum.GetValues(typeof(Type)).Cast<Type>())
+            foreach (Type t in Enum.GetValues(typeof(Type)).Cast<Type>())
             {
                 List<Texture2D> final = new List<Texture2D>();
-                for (int i = 1; i <= 16; i++)
+                Texture2D sprite = Game.Instance.Content.Load<Texture2D>($"Tiles/{t}");
+                /*for (int i = 1; i <= 16; i++)
                 {
                     final.Add(Game.Instance.Content.Load<Texture2D>($"Tiles/{x}/{i}"));
-                }
-                blockSprites.Add(x, final);
+                }*/
+                final = GeneralDependencies.Split(sprite, 16, 16);
+                blockSprites.Add(t, final);
 
                 // generating particle colors for when tile is broken (messy, i know)
                 Texture2D texture = final[15];
@@ -58,7 +60,7 @@ namespace YetAnotherRoguelike
                         highest = amount[item];
                     }
                 }
-                tileColors.Add(x, finalColor);
+                tileColors.Add(t, finalColor);
             }
             /*tileColors = new Dictionary<Type, Color>()
             {
@@ -110,8 +112,9 @@ namespace YetAnotherRoguelike
                         Type.Galena,
                         Type.Cinnabar, // Mercury
                         Type.Argentite, // Silver
-                        Type.Bismuth
-                    }[new Random(GeneralDependencies.CantorPairing((int)pos.X, (int)pos.Y)).Next(0, 9)];
+                        Type.Bismuth,
+                        Type.Neon
+                    }[new Random(GeneralDependencies.CantorPairing((int)pos.X, (int)pos.Y)).Next(0, 10)];
                 }
             }
 

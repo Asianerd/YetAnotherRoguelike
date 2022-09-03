@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <SourceFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Tiles/air.png</SourceFile>
-  <SourceTime>2022-07-04T08:20:08.4330124+08:00</SourceTime>
+  <SourceTime>2022-07-04T18:28:44.5080056+08:00</SourceTime>
   <DestFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/bin/Windows/Tiles/air.xnb</DestFile>
-  <DestTime>2022-07-04T08:20:20.2780113+08:00</DestTime>
+  <DestTime>2022-09-03T22:58:22.299549+08:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2020-08-10T16:17:54+08:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

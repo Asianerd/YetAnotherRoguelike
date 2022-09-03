@@ -44,6 +44,7 @@ namespace YetAnotherRoguelike
 
         public static void ChangeScene(Scenes scene)
         {
+            sceneLibrary[activeScene].OnSceneUnload();
             activeScene = scene;
             if (OnSceneChange != null)
             {
@@ -79,6 +80,11 @@ namespace YetAnotherRoguelike
         }
 
         public virtual void OnSceneLoad()
+        {
+
+        }
+
+        public virtual void OnSceneUnload()
         {
 
         }

@@ -9,16 +9,19 @@ namespace YetAnotherRoguelike
         public double Max;
         public double Regeneration;
         public float rate;
+
+        public bool repeat;
         //  |---------I----------|    |---I----------------|    |----------------I----|
         // Min                  Max  Min                  Max  Min                  Max
 
 
-        public GameValue(double _min, double _max, double _regeneration, double _iPercent = 100.0)
+        public GameValue(double _min, double _max, double _regeneration, double _iPercent = 100.0, bool _repeat = false)
         {
             Min = _min;
             Max = _max;
             Regeneration = _regeneration;
             I = (_max - _min) * (_iPercent / 100);
+            repeat = _repeat;
 
             rate = (float)(Max / Regeneration) / 60f;
         }
@@ -28,6 +31,14 @@ namespace YetAnotherRoguelike
             I += Regeneration * _multiplier;
             if (clamp)
             {
+                if (repeat)
+                {
+                    if (I > Max)
+                    {
+                        I = Min;
+                        return;
+                    }
+                }
                 I = Math.Clamp(I, Min, Max);
             }
         }

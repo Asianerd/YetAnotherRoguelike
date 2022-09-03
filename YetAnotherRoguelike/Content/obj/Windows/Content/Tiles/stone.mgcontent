@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <SourceFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Tiles/stone.png</SourceFile>
-  <SourceTime>2022-07-03T15:31:38.9807666+08:00</SourceTime>
+  <SourceTime>2022-07-11T16:46:58.9995866+08:00</SourceTime>
   <DestFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/bin/Windows/Content/Tiles/stone.xnb</DestFile>
-  <DestTime>2022-07-03T15:46:21.2545925+08:00</DestTime>
+  <DestTime>2022-09-03T22:58:22.7937534+08:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2020-08-10T16:17:54+08:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

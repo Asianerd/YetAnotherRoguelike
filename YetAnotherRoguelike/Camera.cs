@@ -20,7 +20,7 @@ namespace YetAnotherRoguelike
 
         public void Update()
         {
-            Vector2 final = Vector2.Zero;
+            //Vector2 final = Vector2.Zero;
             //foreach (Keys x in new Keys[] { Keys.Up, Keys.Left, Keys.Down, Keys.Right })
             /*            foreach (Keys x in new Keys[] { Keys.W, Keys.A, Keys.S, Keys.D })
                         {
@@ -43,6 +43,16 @@ namespace YetAnotherRoguelike
             position = Vector2.Lerp(position, target, 0.1f * Game.compensation);
 
             renderOffset = (Game.screenSize / 2f) - position;
+        }
+
+        public static Vector2 ScreenToWorld(Vector2 target)
+        {
+            return target - Instance.renderOffset;
+        }
+
+        public static Vector2 WorldToScreen(Vector2 target)
+        {
+            return target + Instance.renderOffset;
         }
     }
 }

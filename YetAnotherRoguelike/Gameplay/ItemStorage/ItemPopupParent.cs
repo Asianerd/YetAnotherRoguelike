@@ -28,12 +28,13 @@ namespace YetAnotherRoguelike.Gameplay.ItemStorage
             if (collection.Where(n => n.type == type).Count() >= 1)
             {
                 var item = collection.Where(n => n.type == type).First();
-                item.amount += amount;
+                item.AddAmount(amount);
                 item.age.AffectValue(1f);
 
                 int i = collection.IndexOf(item);
                 collection.RemoveAt(i);
-                collection.Add(item);
+                //collection.Add(item);
+                collection.Insert(0, item);
                 return;
             }
             collection.Add(new ItemPopupChild(type, amount));
@@ -46,7 +47,6 @@ namespace YetAnotherRoguelike.Gameplay.ItemStorage
                 x.Update();
             }
             collection = collection.Where(n => n.age.Percent() > 0.1f).ToList();
-            //TODO : fix bug
             base.Update();
         }
 

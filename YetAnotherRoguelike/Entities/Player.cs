@@ -58,15 +58,6 @@ namespace YetAnotherRoguelike
                 position = Vector2.Zero;
             }
 
-            /*if (Input.collection[Keys.F].active)
-            {
-                Chunk result = Map.ChunkAt(position);
-                if (result != null)
-                {
-                    result.custom = true;
-                }
-            }*/
-
             if (Input.collection[Keys.E].active)
             {
                 //LightSource.Append(new LightSource(Chunk.CorrectedWorldToTile(Cursor.WorldPosition()), 20, 10, Color.White));
@@ -82,19 +73,22 @@ namespace YetAnotherRoguelike
                 }
             }
 
-            /*if (!Inventory.Instance.active)
-            {*/
+            if (!UI_Container.hoverContainer && (Cursor.item.type == Item.Type.None))
+            {
                 if (MouseInput.left.isPressed)
                 {
                     //Map.Break(Cursor.WorldPosition());
-                    targetedTile.DegenerateDurability(-100f * Game.compensation);
+                    if (targetedTile != null)
+                    {
+                        targetedTile.DegenerateDurability(-100f * Game.compensation);
+                    }
                 }
 
                 if (MouseInput.right.active)
                 {
                     Map.Place(Tile.Type.Neon, Cursor.WorldPosition());
                 }
-            //}
+            }
 
             if (Input.collection[Keys.R].active)
             {
@@ -217,18 +211,19 @@ namespace YetAnotherRoguelike
                     x.type = type;
                     x.amount = amount;
                     success = true;
+                    break;
                 }
-                if (x.type == type)
+                else if (x.type == type)
                 {
                     if (x.amount < Item.stackSize)
                     {
                         x.amount += amount;
                         success = true;
+                        break;
                     }
                 }
                 if (success)
                 {
-                    int added = x.amount - amount;
                     balance = x.amount - Item.stackSize;
                     if (balance > 0)
                     {
@@ -236,7 +231,8 @@ namespace YetAnotherRoguelike
                         Drop(new Item(x.type, balance));
                     }
 
-                    ItemPopupParent.Instance.Add(type, added);
+                    //ItemPopupParent.Instance.Add(type, amount);
+                    // maybe not?
                     return;
                 }
             }

@@ -8,12 +8,13 @@ namespace YetAnotherRoguelike
 {
     class UI_Element
     {
-        public Vector2 position;
+        public Rectangle rect;
         public bool active = true;
+        public bool hovered = false;
 
         public virtual void Update()
         {
-
+            hovered = rect.Contains(Game.mouseState.Position);
         }
 
         public virtual void Draw(SpriteBatch spriteBatch, Point offset)

@@ -20,13 +20,11 @@ namespace YetAnotherRoguelike
         }
 
         string title;
-        Rectangle rect;
         Rectangle targetRect;
         Action action;
 
         GameValue hoverAge = new GameValue(0, 10, 1);
-
-        bool hovered = false;
+        
         public bool isPressed, wasPressed, currentPressed;
 
         public UI_Button(Rectangle _rect, Action _action, string _title = "") : base()

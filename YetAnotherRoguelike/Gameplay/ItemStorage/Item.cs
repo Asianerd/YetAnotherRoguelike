@@ -12,7 +12,7 @@ namespace YetAnotherRoguelike.Gameplay
     {
         // Item class has own Random to ensure every drop is more randomized
         public static Random dropRNG = new Random();
-        public static int stackSize = 64;
+        public static int stackSize = 256;
 
         public static Dictionary<Type, Texture2D> itemSprites = new Dictionary<Type, Texture2D>();
         public static Dictionary<Tile.Type, Dictionary<Type, int>> lootTable = new Dictionary<Tile.Type, Dictionary<Type, int>>();
