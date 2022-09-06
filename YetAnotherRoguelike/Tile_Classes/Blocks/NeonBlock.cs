@@ -8,15 +8,17 @@ namespace YetAnotherRoguelike.Tile_Classes.Blocks
 {
     class NeonBlock : Tile
     {
+        static Dictionary<Type, Color> neonBlockColors = new Dictionary<Type, Color>()
+        {
+            { Type.Neon_Blue, new Color(82, 241, 242) },
+            { Type.Neon_Pink, new Color(255, 0, 244) },
+            { Type.Neon_Yellow, Color.YellowGreen }
+        };
+
         LightSource light;
         public NeonBlock(Vector2 pos, Chunk _parent, Type t) : base(t, pos, _parent)
         {
-            light = new LightSource(position, 50, 10, t switch {
-                Type.Neon_Blue => new Color(82, 241, 242),
-                Type.Neon_Pink => new Color(255, 0, 244),
-                Type.Neon_Yellow => Color.YellowGreen,
-                _ => Color.Aquamarine
-            });
+            light = new LightSource(position, 50, 10, neonBlockColors[t]);
             LightSource.Append(light);
         }
 
