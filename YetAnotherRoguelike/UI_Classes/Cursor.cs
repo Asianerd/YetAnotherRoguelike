@@ -98,7 +98,9 @@ namespace YetAnotherRoguelike
         {
             Default,
             Select,
-            Select_pressed
+            Select_pressed,
+            Orb,
+            Hidden
         }
     }
 }

@@ -107,7 +107,18 @@ namespace YetAnotherRoguelike
                 Keys.Up,
                 Keys.Down,
                 Keys.Left,
-                Keys.Right
+                Keys.Right,
+
+                Keys.D0,
+                Keys.D1,
+                Keys.D2,
+                Keys.D3,
+                Keys.D4,
+                Keys.D5,
+                Keys.D6,
+                Keys.D7,
+                Keys.D8,
+                Keys.D9,
             });
             MouseInput.Initialize();
 
@@ -143,7 +154,7 @@ namespace YetAnotherRoguelike
 
             Scene.sceneLibrary[Scene.activeScene].Update(gameTime);
 
-            playArea = new Rectangle((-1f * Camera.Instance.renderOffset).ToPoint(), screenSize.ToPoint());
+            playArea = new Rectangle(((-1f * Camera.Instance.renderOffset) - (Vector2.One * 100)).ToPoint(), (screenSize + (Vector2.One * 200)).ToPoint());
 
             base.Update(gameTime);
         }

@@ -92,7 +92,14 @@ namespace YetAnotherRoguelike
 
                 if (MouseInput.right.active)
                 {
-                    Map.Place(Tile.Type.Neon, Cursor.WorldPosition());
+                    if (Hotbar.selectedItem.usageType == Item.UsageType.Block)
+                    {
+                        if (Hotbar.selectedItem.amount > 0)
+                        {
+                            Map.Place(Tile.Type.Neon_Pink, Cursor.WorldPosition());
+                            Hotbar.selectedItem.amount--;
+                        }
+                    }
                 }
             }
 
@@ -209,27 +216,12 @@ namespace YetAnotherRoguelike
         public void Pickup(Item.Type type, int amount)
         {
             int balance;
-            bool success = false;
             foreach(Item x in inventory)
             {
                 if (x.type == Item.Type.None)
                 {
                     x.type = type;
                     x.amount = amount;
-                    success = true;
-                    break;
-                }
-                else if (x.type == type)
-                {
-                    if (x.amount < x.stackSize)
-                    {
-                        x.amount += amount;
-                        success = true;
-                        break;
-                    }
-                }
-                if (success)
-                {
                     balance = x.amount - x.stackSize;
                     if (balance > 0)
                     {
@@ -240,6 +232,20 @@ namespace YetAnotherRoguelike
                     //ItemPopupParent.Instance.Add(type, amount);
                     // maybe not?
                     return;
+                }
+                else if (x.type == type)
+                {
+                    if (x.amount < x.stackSize)
+                    {
+                        x.amount += amount;
+                        balance = x.amount - x.stackSize;
+                        if (balance > 0)
+                        {
+                            x.amount = x.stackSize;
+                            Drop(new Item(x.type, balance));
+                        }
+                        return;
+                    }
                 }
             }
         }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Xna.Framework;
 
 namespace YetAnotherRoguelike.Gameplay
 {
@@ -14,6 +15,7 @@ namespace YetAnotherRoguelike.Gameplay
         public static Random dropRNG = new Random();
         public static int regularStackSize = 256;
 
+        public static Vector2 spriteOrigin;
         public static Dictionary<Type, Texture2D> itemSprites = new Dictionary<Type, Texture2D>();
         public static Dictionary<Tile.Type, Dictionary<Type, int>> lootTable = new Dictionary<Tile.Type, Dictionary<Type, int>>();
         public static Dictionary<Type, StackType> itemStackTypes = new Dictionary<Type, StackType>();
@@ -22,6 +24,7 @@ namespace YetAnotherRoguelike.Gameplay
         #region Statics
         public static void Initialize()
         {
+            spriteOrigin = new Vector2(8);
             stackSizes = new Dictionary<StackType, int>()
             {
                 { StackType.Regular, regularStackSize },
@@ -82,7 +85,6 @@ namespace YetAnotherRoguelike.Gameplay
             set
             {
                 _type = value;
-                UpdateStackSize();
             }
         }
         int _amount;
@@ -92,7 +94,7 @@ namespace YetAnotherRoguelike.Gameplay
             set
             {
                 _amount = value;
-                UpdateStackSize();
+                UpdateSelf();
             }
         }
         public int stackSize;
@@ -115,6 +117,16 @@ namespace YetAnotherRoguelike.Gameplay
         public void UpdateStackSize()
         {
             stackSize = itemStackTypes.ContainsKey(type) ? stackSizes[itemStackTypes[type]] : regularStackSize;
+        }
+
+        public void UpdateSelf()
+        {
+            UpdateStackSize();
+            if (_amount <= 0)
+            {
+                _type = Type.None;
+                _amount = 0;
+            }
         }
 
         public bool Full()

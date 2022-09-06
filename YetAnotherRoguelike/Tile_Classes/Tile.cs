@@ -20,7 +20,7 @@ namespace YetAnotherRoguelike
             foreach (Type t in Enum.GetValues(typeof(Type)).Cast<Type>())
             {
                 List<Texture2D> final = new List<Texture2D>();
-                Texture2D sprite = Game.Instance.Content.Load<Texture2D>($"Tiles/{t}");
+                Texture2D sprite = Game.Instance.Content.Load<Texture2D>($"Tiles/{t.ToString().ToLower()}");
                 /*for (int i = 1; i <= 16; i++)
                 {
                     final.Add(Game.Instance.Content.Load<Texture2D>($"Tiles/{x}/{i}"));
@@ -88,7 +88,9 @@ namespace YetAnotherRoguelike
         {
             return type switch
             {
-                Type.Neon => new Tile_Classes.Blocks.NeonBlock(pos, parent),
+                Type.Neon_Blue => new Tile_Classes.Blocks.NeonBlock(pos, parent, Type.Neon_Blue),
+                Type.Neon_Pink => new Tile_Classes.Blocks.NeonBlock(pos, parent, Type.Neon_Pink),
+                Type.Neon_Yellow => new Tile_Classes.Blocks.NeonBlock(pos, parent, Type.Neon_Yellow),
                 Type.Coal_ore => new Tile_Classes.Blocks.CoalOre(pos, parent),
                 _ => new Tile(type, pos, parent)
             };
@@ -113,8 +115,10 @@ namespace YetAnotherRoguelike
                         Type.Cinnabar, // Mercury
                         Type.Argentite, // Silver
                         Type.Bismuth,
-                        Type.Neon
-                    }[new Random(GeneralDependencies.CantorPairing((int)pos.X, (int)pos.Y)).Next(0, 10)];
+                        Type.Neon_Blue,
+                        Type.Neon_Pink
+                        /*Type.Neon_Yellow*/
+                    }[new Random(GeneralDependencies.CantorPairing((int)pos.X, (int)pos.Y)).Next(0, 11)];
                 }
             }
 
@@ -332,7 +336,10 @@ namespace YetAnotherRoguelike
             Air,
             Stone,
             Concrete,
-            Neon,
+
+            Neon_Blue,
+            Neon_Pink,
+            Neon_Yellow,
 
             Coal_ore,
             Bauxite,

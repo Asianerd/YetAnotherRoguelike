@@ -17,15 +17,8 @@ namespace YetAnotherRoguelike
         {
             Tile.Initialize();
             Map.Initialize();
-            Particle.Initialize();
-            GroundItem.Initialize();
 
             worldBorder = (Perlin_Noise.size * Chunk.realSize) * 0.4f;
-            Player _ = new Player();
-            Inventory __ = new Inventory(new List<UI_Element>());
-            General_Container ___ = new General_Container(new List<UI_Element>());
-            Hotbar ____ = new Hotbar(new List<UI_Element>());
-
 
             //backgroundColor = new Color(44, 173, 24);
             //backgroundColor = Color.Green * 1.5f;
@@ -69,6 +62,13 @@ namespace YetAnotherRoguelike
 
         public override void OnSceneLoad()
         {
+            Particle.Initialize();
+            GroundItem.Initialize();
+
+            Player _ = new Player();
+            Inventory __ = new Inventory(new List<UI_Element>());
+            General_Container ___ = new General_Container(new List<UI_Element>());
+
             Camera.Instance.position = Camera.Instance.target;
         }
 

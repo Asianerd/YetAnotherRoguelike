@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using YetAnotherRoguelike.UI_Classes;
 using YetAnotherRoguelike.UI_Classes.Player_UI;
 
 namespace YetAnotherRoguelike
@@ -19,6 +20,7 @@ namespace YetAnotherRoguelike
 
             Cursor.Initialize();
             UI_Button.Initialize();
+            Background.Initialize();
         }
     }
 }

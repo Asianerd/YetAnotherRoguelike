@@ -3,7 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Text;
+using YetAnotherRoguelike.UI_Classes.Player_UI;
+using YetAnotherRoguelike.UI_Classes;
+using Microsoft.Xna.Framework.Input;
 
 namespace YetAnotherRoguelike.Gameplay.ItemStorage
 {
@@ -27,6 +29,14 @@ namespace YetAnotherRoguelike.Gameplay.ItemStorage
             Instance = this;
 
             ItemSlot.Initialize();
+            var _ = new Hotbar(new List<UI_Element>());
+
+            elements.Add(new Background(new Rectangle(
+                -50,
+                (int)(Game.screenSize.Y/2) - 250,
+                550,
+                500
+                )));
 
             slots = new List<ItemSlot>();
             for (int x = 0; x < inventorySize; x++)
@@ -37,7 +47,12 @@ namespace YetAnotherRoguelike.Gameplay.ItemStorage
                     )));
             }
 
-            foreach(UI_Element x in slots)
+            foreach (HotbarSection x in Hotbar.Instance.sections)
+            {
+                slots.Add(new ItemSlot(x.item, new Vector2(400, (Game.screenSize.Y / 2f) + (((x.index - 2) * (ItemSlot.size + 16)) + 8))));
+            }
+
+            foreach (UI_Element x in slots)
             {
                 elements.Add(x);
             }
@@ -45,6 +60,14 @@ namespace YetAnotherRoguelike.Gameplay.ItemStorage
 
         public override void UpdateAll()
         {
+            foreach (var k in (new Keys[] { Keys.D1, Keys.D2, Keys.D3, Keys.D4 }).Select((value, index) => new { value, index }))
+            {
+                if (Input.collection[k.value].active)
+                {
+                    Hotbar.selectedSection = k.index;
+                }
+            }
+
             age.Regenerate(active ? Game.compensation : -Game.compensation);
 
             if (age.Percent() <= 0f)
@@ -77,7 +100,7 @@ namespace YetAnotherRoguelike.Gameplay.ItemStorage
             {
                 return;
             }
-            base.DrawAll(spriteBatch, new Point((int)(MathF.Sin(age.Percent() * MathF.PI / 2f) * 400) - 400, 0));
+            base.DrawAll(spriteBatch, new Point((int)(MathF.Sin(age.Percent() * MathF.PI / 2f) * 500) - 500, 0));
             spriteBatch.Draw(ItemSlot.selectionSprite, selectionBoxPosition, null, selectionAge.Percent() * Color.White, 0f, ItemSlot.selectionSpriteOrigin, 4f + (MathF.Sin(selectionBob.Percent() * 2 * MathF.PI) * 0.2f), SpriteEffects.None, 0f);
         }
     }
