@@ -4,344 +4,127 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using YetAnotherRoguelike.Gameplay;
-using YetAnotherRoguelike.Graphics;
-using YetAnotherRoguelike.Tile_Classes.Blocks;
-using YetAnotherRoguelike.Tile_Classes;
 
-namespace YetAnotherRoguelike
+namespace YetAnotherRoguelike.Tile_Classes
 {
     class Tile
     {
-        #region Statics
-        public static Dictionary<Type, List<Texture2D>> blockSprites = new Dictionary<Type, List<Texture2D>>();
-        public static Dictionary<Type, Color> tileColors = new Dictionary<Type, Color>();
-        public static int tileSize = 64;
+        public static Dictionary<BlockType, List<Texture2D>> tileSprites;
+        public static Vector2 spriteOrigin;
+        public static float spriteRenderScale = 4f; // coefficient to enlarge 16x16 to 64x64
+        public static float tileSize = 64f; // size in pixels; sprites are 16x16
+        static float _renderScale = 1f;
+        public static float renderScale
+        {
+            get { return _renderScale; }
+            set
+            {
+                _renderScale = value;
+                tileSize = _renderScale * 64f;
+                spriteRenderScale = tileSize / 16f;
+                spriteOrigin = (new Vector2(tileSize) / 2f) / spriteRenderScale;
+            }
+        }
 
         public static void Initialize()
         {
-            foreach (Type t in Enum.GetValues(typeof(Type)).Cast<Type>())
+            spriteOrigin = (new Vector2(tileSize) / 2f) / spriteRenderScale;
+
+            tileSprites = new Dictionary<BlockType, List<Texture2D>>();
+            foreach (BlockType t in Enum.GetValues(typeof(BlockType)).Cast<BlockType>())
             {
-                List<Texture2D> final = new List<Texture2D>();
                 Texture2D sprite = Game.Instance.Content.Load<Texture2D>($"Tiles/{t.ToString().ToLower()}");
-                /*for (int i = 1; i <= 16; i++)
-                {
-                    final.Add(Game.Instance.Content.Load<Texture2D>($"Tiles/{x}/{i}"));
-                }*/
-                final = GeneralDependencies.Split(sprite, 16, 16);
-                blockSprites.Add(t, final);
-
-                // generating particle colors for when tile is broken (messy, i know)
-                Texture2D texture = final[15];
-                Color[] _r = new Color[256];
-                texture.GetData(_r);
-                List<Color> result = _r.ToList();
-                result = result.Where(n => n != Color.Transparent).ToList();
-                result = result.Where(n => n != new Color(112, 112, 112)).ToList();
-                result = result.Where(n => n != new Color(85, 85, 85)).ToList();
-                result = result.Where(n => n != new Color(145, 145, 145)).ToList();
-                result = result.Where(n => n != new Color(168, 168, 168)).ToList();
-                Dictionary<Color, int> amount = new Dictionary<Color, int>();
-                foreach (Color c in result)
-                {
-                    if (amount.ContainsKey(c))
-                    {
-                        amount[c]++;
-                    }
-                    else
-                    {
-                        amount.Add(c, 1);
-                    }
-                }
-                Color finalColor = Color.Black;
-                int highest = 0;
-                foreach(Color item in amount.Keys)
-                {
-                    if (amount[item] > highest)
-                    {
-                        finalColor = item;
-                        highest = amount[item];
-                    }
-                }
-                tileColors.Add(t, finalColor);
+                List<Texture2D> final = GeneralDependencies.Split(sprite, 16, 16);
+                tileSprites.Add(t, final);
             }
-            /*tileColors = new Dictionary<Type, Color>()
-            {
-                { Type.Concrete, Color.White },
-                { Type.Stone, Color.Gray },
-                { Type.Neon, Color.Aquamarine },
-                { Type.Coal_ore, new Color(31, 34, 54) },
-                { Type.Bauxite, rgb(184, 74, 28) },
-                { Type.Hematite, rgb(158, 166, 168) },
-                { Type.Sphalerite, rgb(56, 56, 56) },
-                { Type.Calamine, rgb(214, 175, 133) },
-                { Type.Galena, rgb(214, 175, 133) },
-                { Type.Cinnabar, rgb(196, 75, 59) },
-                { Type.Argentite, rgb(202, 202, 207) },
-                { Type.Bismuth, rgb(135, 214, 182) },
-            };*/
         }
 
-        public static Tile CreateTile(Type type, Vector2 pos, Chunk parent)
+        public static BlockType GenerateTileType(float p, Point pos)
         {
-            return type switch
-            {
-                Type.Blast_Furnace => new BlastFurnace(pos, parent),
-                _ =>
-                LightTile.lightTileSources.ContainsKey(type) ?
-                    new LightTile(type, pos, parent) :
-                new Tile(type, pos, parent)
-            }; // no idea whats the best looking way to format this
-        }
-
-        public static Tile GenerateTile(float p, Vector2 pos, Chunk parent)
-        {
-            Type type = Type.Air;
+            BlockType type = BlockType.Air;
             if (p > 0.5f)
             {
-                type = Type.Stone;
-                float chance = Perlin_Noise.Fetch(-Chunk.CorrectedTileToWorld(pos), 128f);
-                if (chance >= 0.8f)
+                type = BlockType.Stone;
+                float chance = PerlinNoise.OreInstance.GetNoise(pos.X, pos.Y);
+                if (chance >= 0.54f)
                 {
-                    type = new Type[] {
-                        Type.Coal_ore,
-                        Type.Bauxite,
-                        Type.Hematite,
-                        Type.Sphalerite, // Tin
-                        Type.Calamine, // Zinc
-                        Type.Galena,
-                        Type.Cinnabar, // Mercury
-                        Type.Argentite, // Silver
-                        Type.Bismuth,
-                        Type.Neon_Blue,
-                        Type.Neon_Purple
+                    // make the ore selection system better
+                    // implement rarity system
+                    type = new BlockType[] {
+                        BlockType.Coal_ore,
+                        BlockType.Bauxite,
+                        BlockType.Hematite,
+                        BlockType.Sphalerite, // Tin
+                        BlockType.Calamine, // Zinc
+                        BlockType.Galena,
+                        BlockType.Cinnabar, // Mercury
+                        BlockType.Argentite, // Silver
+                        BlockType.Bismuth,
+                        BlockType.Neon_Blue,
+                        BlockType.Neon_Purple
                         /*Type.Neon_Yellow*/
-                    }[new Random(GeneralDependencies.CantorPairing((int)pos.X, (int)pos.Y)).Next(0, 11)];
+                    }[new Random(GeneralDependencies.CantorPairing(pos.X, pos.Y)).Next(0, 11)];
                 }
             }
-
-            return CreateTile(type, pos, parent);
+            return type;
         }
-        #endregion
 
-        public Chunk parent;
-        public Type type;
-        public Vector2 position; // in tile-coordinates
-        public Vector2 tPosition;   // Position in own chunk
-                                    // Top left = (0, 0)
-        public Rectangle rect;
+        /* 2 position types
+         * tile coordinates
+         * in-chunk coordinates
+         */
+
+        public Point tileCoordinates;
+        public Point chunkCoordinates;
+        public BlockType type;
         int spriteIndex = 0;
-        float lightLevel = 0;
-        Color lightColour = Color.White;
-        public GameValue durability, durabilityCooldown = new GameValue(0, 30, 1);
 
         bool isAir;
 
-        public Tile(Type _type, Vector2 pos, Chunk _parent)
+        public Tile(Point tCoords, Point cCoords, BlockType t)
         {
-            parent = _parent;
-            type = _type;
-            position = pos;
-            tPosition = Chunk.FixTilePos(position);
-            rect = new Rectangle((pos * tileSize).ToPoint(), new Point(tileSize, tileSize));
+            type = t;
 
-            durability = new GameValue(0, type switch
-            {
-                Type.Stone => 80,
-                Type.Coal_ore => 180,
-                _ => 100,
-            }, 1, 100);
+            isAir = type == BlockType.Air;
 
-            isAir = type == Type.Air;
+            tileCoordinates = tCoords;
+            chunkCoordinates = cCoords;
         }
 
-        /*public Tile(float t, Vector2 pos, Chunk _parent)
+        public virtual void UpdateSprite()
         {
-            if (t <= 0.5f)
-            {
-                type = Type.Air;
-            }
-            else if (t <= 0.7f)
-            {
-                type = Type.Stone;
-            }
-            else
-            {
-                type = Type.Concrete;
-            }
+            bool u = Chunk.FetchTypeAt(tileCoordinates.X, tileCoordinates.Y - 1) != BlockType.Air;
+            bool r = Chunk.FetchTypeAt(tileCoordinates.X + 1, tileCoordinates.Y) != BlockType.Air;
+            bool d = Chunk.FetchTypeAt(tileCoordinates.X, tileCoordinates.Y + 1) != BlockType.Air;
+            bool l = Chunk.FetchTypeAt(tileCoordinates.X - 1, tileCoordinates.Y) != BlockType.Air;
 
-            position = pos;
-            parent = _parent;
-            tPosition = Chunk.FixTilePos(position);
-            rect = new Rectangle((pos * tileSize).ToPoint(), new Point(tileSize, tileSize));
-        }*/
+            spriteIndex = (u ? 0 : 1) + (r ? 0 : 2) + (d ? 0 : 4) + (l ? 0 : 8);
+        }
 
-        public virtual void UpdateSprite(Chunk parent)
+        public virtual void Update()
         {
-            if (!Game.playArea.Intersects(rect))
-            {
-                return;
-            }
 
-            float highest = 0;
-            List<Color> colors = new List<Color>();
-            float totalIntensity = 0;
-            foreach (LightSource light in LightSource.sources)
-            {
-                float distance = Vector2.Distance(light.position, position);
-                if (distance > light.range)
-                {
-                    continue;
-                }
+        }
 
-                float percent = (1f - (distance / light.range));
-                float intensity = (light.strength * percent);
-                colors.Add(light.color * percent);
-                totalIntensity += percent;
-
-                if (intensity > highest)
-                {
-                    highest = intensity;
-                }
-            }
-            lightLevel = highest;
-            float compensation = 1f / totalIntensity;
-            Color final = Color.Black;
-            foreach (Color color in colors)
-            {
-                final.R += (byte)(color.R * compensation);
-                final.G += (byte)(color.G * compensation);
-                final.B += (byte)(color.B * compensation);
-            }
-            final.A = 255;
-            lightColour = final;
-
+        public virtual void Draw(SpriteBatch spritebatch)
+        {
             if (isAir)
             {
                 return;
             }
 
-            int right, left, up, down;
-            up = Map.TypeAt(tPosition - Vector2.UnitY + (parent.position * Chunk.size)) != Type.Air ? 0 : 1;
-            right = Map.TypeAt(tPosition + Vector2.UnitX + (parent.position * Chunk.size)) != Type.Air ? 0 : 2;
-            down = Map.TypeAt(tPosition + Vector2.UnitY + (parent.position * Chunk.size)) != Type.Air ? 0 : 4;
-            left = Map.TypeAt(tPosition - Vector2.UnitX + (parent.position * Chunk.size)) != Type.Air ? 0 : 8;
-            spriteIndex = right + left + up + down;
+            UpdateSprite();
+
+            Vector2 renderedPosition = tileCoordinates.ToVector2() * tileSize;
+            spritebatch.Draw(tileSprites[type][spriteIndex], renderedPosition, null, Color.White, 0f, spriteOrigin, spriteRenderScale, SpriteEffects.None, 0f);
         }
 
-        public virtual void Update()
-        {
-            durabilityCooldown.Regenerate(Game.compensation);
-            if (durabilityCooldown.Percent() >= 1f)
-            {
-                durability.AffectValue(1f);
-            }
-        }
+        public virtual void OnDestroy() { } // when block is destroyed
+        public virtual void OnReload() { }      // when unloaded chunk is reloaded
+        public virtual void OnSoftUnload() { }  // when loaded chunk is unloaded
+        public virtual void OnChunkDelete() { } // when chunk is deleted
 
-        public virtual void Draw(SpriteBatch spriteBatch)
-        {
-            if (Game.playArea.Intersects(rect))
-            {
-                // Floor
-                //spriteBatch.Draw(UI.blank, rect, lightColour * (lightLevel / 40f));
-                //spriteBatch.Draw(blockSprites[type][spriteIndex], rect, Color.White * (lightLevel / 10f));
-                if (isAir)
-                {
-                    return;
-                }
-                // Tile
-
-                //Vector2 pos = (Chunk.WorldToTile(Chunk.TileToWorld(position)) + Camera.Instance.tRenderOffset);
-                /*Debug.WriteLine(pos);
-                Debug.WriteLine((int)(pos.X + (pos.Y * Lightmap.size.Y)));*/
-                /*Color c = Lightmap.lightmapArray[(int)(pos.X + (pos.Y * Lightmap.size.X))];*/
-                //Color c = Color.White;
-                //Color c = lightColour * (lightLevel / 40f);
-                /*Color c = Color.White * (lightLevel / 40f);*/
-                //c.A = 240;
-                Color c = lightColour * (lightLevel / 20f);
-                c.A = 240;
-                spriteBatch.Draw(blockSprites[type][spriteIndex], rect, c);
-                if (durability.Percent() != 1f)
-                {
-                    spriteBatch.Draw(UI.blank, new Rectangle(new Vector2(rect.Location.X + 4, rect.Location.Y + 20).ToPoint(), new Point(56, 24)), Color.Black * 0.5f);
-                    spriteBatch.Draw(UI.blank, new Rectangle(new Vector2(rect.Location.X + 8, rect.Location.Y + 24).ToPoint(), new Point((int)(48f * (1f - (float)durability.Percent())), 16)), Color.White);
-                }
-            }
-        }
-
-        public virtual void DegenerateDurability(float i)
-        {
-            durability.Regenerate(i);
-            durabilityCooldown.AffectValue(0f);
-        }
-
-
-
-        public static bool Destroy(Tile tile)
-        {
-            if (tile.type == Type.Air)
-            {
-                return false;
-            }
-            else
-            {
-                Color pColor = tileColors[tile.type];
-                Vector2 selfPosition = Chunk.TileToWorld(tile.position);
-                Vector2 selfOrigin = selfPosition + (new Vector2(tileSize) / 2f);
-                for (int i = 0; i <= 20; i++)
-                {
-                    Particle.particles.Add(new Particles.BreakBlock(
-                            selfPosition + new Vector2(
-                                tileSize * (Game.random.Next(0, 1000) / 1000f),
-                                tileSize * (Game.random.Next(0, 1000) / 1000f)
-                                ),
-                            pColor,
-                            selfOrigin
-                            ));
-                }
-                foreach (KeyValuePair<Item.Type, int> item in Item.FetchDropChance(tile.type))
-                {
-                    GroundItem.Spawn(item.Key, selfPosition + new Vector2(
-                                tileSize * (Game.random.Next(0, 1000) / 1000f),
-                                tileSize * (Game.random.Next(0, 1000) / 1000f)
-                                ), item.Value, tile.rect.Center.ToVector2());
-                }
-                tile.type = Type.Air;
-                tile.OnDestroy();
-
-                tile.parent.collection[(int)tile.tPosition.Y][(int)tile.tPosition.X] = new Tile(Type.Air, tile.position, tile.parent);
-                return true;
-            }
-        }
-
-        public virtual void OnDestroy()
-        {
-
-        }
-
-        public virtual void Reload()
-        {
-            // called when an unloaded chunk is reloaded
-        }
-
-        public virtual void SoftUnload()
-        {
-            // called when the chunk is unloaded (but not deleted)
-        }
-
-        public virtual void HardUnload()
-        {
-            // called before the chunk is deleted
-        }
-
-        static Color rgb(int r, int g, int b)
-        {
-            // just here for convenience
-            return new Color(r, g, b);
-        }
-
-        public enum Type
+        public enum BlockType
         {
             Air,
             Stone,

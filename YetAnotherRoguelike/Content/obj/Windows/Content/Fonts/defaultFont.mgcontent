@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>d:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Fonts/defaultFont.spritefont</SourceFile>
+  <SourceFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Fonts/defaultFont.spritefont</SourceFile>
   <SourceTime>2022-07-03T13:48:48.9225875+08:00</SourceTime>
-  <DestFile>d:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/bin/Windows/Content/Fonts/defaultFont.xnb</DestFile>
-  <DestTime>2022-12-20T01:00:57.5094556+08:00</DestTime>
+  <DestFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/bin/Windows/Content/Fonts/defaultFont.xnb</DestFile>
+  <DestTime>2022-12-20T01:10:23.3431766+08:00</DestTime>
   <Importer>FontDescriptionImporter</Importer>
   <ImporterTime>2020-08-10T16:17:54+08:00</ImporterTime>
   <Processor>FontDescriptionProcessor</Processor>

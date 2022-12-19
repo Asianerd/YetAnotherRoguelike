@@ -4,8 +4,8 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
-using YetAnotherRoguelike.Gameplay;
 using YetAnotherRoguelike.Graphics;
+using YetAnotherRoguelike.Tile_Classes;
 
 namespace YetAnotherRoguelike
 {
@@ -18,7 +18,6 @@ namespace YetAnotherRoguelike
         public static Vector2 screenSize = new Vector2(1920, 1080);
         //public static Vector2 screenSize = new Vector2(500, 500);
         //public static Vector2 screenSize = new Vector2(1000, 1000);
-        public static Rectangle playArea = new Rectangle(0, 0, 0, 0);
 
         public static float compensation = 1f;
         public static float updateFrequency = 60; // treat this as a multiplier to time delta
@@ -54,18 +53,10 @@ namespace YetAnotherRoguelike
 
         protected override void Initialize()
         {
+            PerlinNoise.Initialize();
             var _ = new GaussianBlur();
-            Lightmap.Initialize();
-            playArea = new Rectangle(Vector2.Zero.ToPoint(), screenSize.ToPoint());
-
-            Perlin_Noise.Initialize();
 
             GeneralDependencies.Initialize();
-            var x = new Camera();
-
-            Item.Initialize(); // item has to be initialized before cursor lmao
-            UI.Initialize();
-            Scene.Initialize();
 
             Input.Initialize(new List<Keys>() {
                 Keys.Q,
@@ -120,6 +111,10 @@ namespace YetAnotherRoguelike
             });
             MouseInput.Initialize();
 
+            Scene.Initialize();
+
+            Tile.Initialize();
+
             base.Initialize();
         }
 
@@ -132,13 +127,12 @@ namespace YetAnotherRoguelike
         {
             compensation = (float)gameTime.ElapsedGameTime.TotalSeconds * updateFrequency;
 
+            #region Input related
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
             keyboardState = Keyboard.GetState();
             mouseState = Mouse.GetState();
-            Cursor.Update();
-            
 
             MouseInput.UpdateAll();
             Input.UpdateAll(keyboardState);
@@ -152,22 +146,16 @@ namespace YetAnotherRoguelike
             {
                 showDebug = !showDebug;
             }
+            #endregion
 
-            UI_Container.Update();
-
-            Scene.sceneLibrary[Scene.activeScene].Update(gameTime);
-
-            playArea = new Rectangle(((-1f * Camera.Instance.renderOffset) - (Vector2.One * 100)).ToPoint(), (screenSize + (Vector2.One * 200)).ToPoint());
+            Camera.Update();
+            Scene.currentScene.Update();
 
             base.Update(gameTime);
-
-            Lightmap.Update();
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Scene.sceneLibrary[Scene.activeScene].backgroundColor);
-
             fpsOffset++;
             if (fpsOffset >= 60)
             {
@@ -175,33 +163,12 @@ namespace YetAnotherRoguelike
                 fps = (float)Math.Round(1f / gameTime.ElapsedGameTime.TotalSeconds);
             }
 
-            Matrix renderPosition = Matrix.CreateTranslation(new Vector3(Camera.Instance.renderOffset, 0));
-            //spriteBatch.Begin(SpriteSortMode.Immediate, blendState:BlendState.AlphaBlend, samplerState: SamplerState.PointClamp, transformMatrix: renderPosition);
-            //shader.CurrentTechnique.Passes[0].Apply();
-            // TODO : Add Gaussian blur
-            //spriteBatch.Draw(Lightmap.final, new Rectangle((-Camera.Instance.renderOffset).ToPoint(), screenSize.ToPoint()), Color.White);
-            //spriteBatch.End();
+            GraphicsDevice.Clear(Scene.currentScene.backgroundColor);
 
-            Lightmap.Draw(spriteBatch);
-            spriteBatch.Begin(SpriteSortMode.Immediate, blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp, transformMatrix: renderPosition);
-            Scene.sceneLibrary[Scene.activeScene].Draw(gameTime);
-            //spriteBatch.Draw(Lightmap.lightmap, screenSize, Color.White);
-            //spriteBatch.Draw(Lightmap.lightmap, Vector2.Zero, Color.White);
-            spriteBatch.End();
+            Matrix renderMatrix = Matrix.CreateTranslation(new Vector3(Camera.renderOffset, 0f));
 
-            spriteBatch.Begin(SpriteSortMode.Immediate, blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
-            Scene.sceneLibrary[Scene.activeScene].DrawUI(gameTime);
-            Cursor.Draw();
-            if (showDebug)
-            {
-                spriteBatch.Draw(UI.blank, new Rectangle(0, 0, 370, 160), Color.Black * 0.4f);
-                spriteBatch.DrawString(UI.defaultFont,
-                    $"FPS : {fps}\n" +
-                    $"Position : {(Player.Instance != null ? $"X : {(int)Player.Instance.position.X}, Y : {(int)Player.Instance.position.Y}" : "?")}\n" +
-                    $"Lights : {LightSource.sources.Count}\n" +
-                    $"Compensation : {MathF.Round(compensation, 3)}",
-                    Vector2.Zero, Color.White);
-            }
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: renderMatrix);
+            Scene.currentScene.Draw();
             spriteBatch.End();
 
             base.Draw(gameTime);

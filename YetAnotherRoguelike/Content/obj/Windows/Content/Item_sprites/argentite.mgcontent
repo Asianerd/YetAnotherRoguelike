@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>d:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Item_sprites/argentite.png</SourceFile>
+  <SourceFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Item_sprites/argentite.png</SourceFile>
   <SourceTime>2022-07-16T13:44:47.3326425+08:00</SourceTime>
-  <DestFile>d:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/bin/Windows/Content/Item_sprites/argentite.xnb</DestFile>
-  <DestTime>2022-12-20T01:00:57.552457+08:00</DestTime>
+  <DestFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/bin/Windows/Content/Item_sprites/argentite.xnb</DestFile>
+  <DestTime>2022-12-20T01:10:23.3461748+08:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2020-08-10T16:17:54+08:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

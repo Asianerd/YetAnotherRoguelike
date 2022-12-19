@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>d:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Cursors/default.png</SourceFile>
+  <SourceFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Cursors/default.png</SourceFile>
   <SourceTime>2022-07-03T16:53:48.5610164+08:00</SourceTime>
-  <DestFile>d:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/bin/Windows/Content/UI/Cursors/default.xnb</DestFile>
-  <DestTime>2022-12-20T01:01:00.0934573+08:00</DestTime>
+  <DestFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/bin/Windows/Content/UI/Cursors/default.xnb</DestFile>
+  <DestTime>2022-12-20T01:10:26.3766748+08:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2020-08-10T16:17:54+08:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

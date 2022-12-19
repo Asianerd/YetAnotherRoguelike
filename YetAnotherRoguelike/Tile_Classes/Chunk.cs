@@ -1,232 +1,153 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace YetAnotherRoguelike
+namespace YetAnotherRoguelike.Tile_Classes
 {
     class Chunk
     {
-        public static int size = 8;
-        public static int realSize;
+        public static List<Chunk> chunks = new List<Chunk>();
+        public static int chunkSize = 8;
 
-        public static void Initialize()
+        public static Chunk FetchChunkAt(int x, int y) // Fetches the chunk that contains the tile-coordinate
         {
-            realSize = size * Tile.tileSize;
-        }
-
-        public static Vector2 ChunkPosition(Vector2 position)
-        {
-            return ChunkPosition((int)position.X, (int)position.Y);
-        }
-
-        public static Vector2 ChunkPosition(int x, int y) // THE PROBLEM
-        {
-            /// <summary>
-            /// Converts tile-coordinates to chunk-coordinates
-            /// </summary>
-            Vector2 result = new Vector2((x + (x < 0 ? 1 : 0)) / size, (y + (y < 0 ? 1 : 0)) / size);
-            if (y < 0) { result.Y -= 1; }
-            if (x < 0) { result.X -= 1; }
-            return result;
-        }
-
-        public static Vector2 FixTilePos(Vector2 position)
-        {
-            return FixTilePos((int)position.X, (int)position.Y);
-        }
-
-        public static int[] FixTilePos(int x, int y, bool trigger) // trigger does nothing, just so that overloading works
-        {
-            Vector2 result = FixTilePos(x, y);
-            return new int[] { (int)result.X, (int)result.Y };
-        }
-
-        public static Vector2 FixTilePos(int x, int y)
-        {
-            // Takes in tile coordinates and returns tile coordinates
-            /* Fixes tile coordinates
-             *      chunk size : 8
-             *      possible tile positions : 0-7
-             *      
-             *      input : 20
-             *      output : 4
-             *      
-             *      input : 7
-             *      output : 7
-             *      
-             *      input : 8
-             *      output : 1
-             */
-            int X = (x % size) + (x >= 0 ? 0 : size);
-            int Y = (y % size) + (y >= 0 ? 0 : size);
-            return new Vector2(X == size ? 0 : X, Y == size ? 0 : Y);
-        }
-
-        public static Vector2 WorldToTile(Vector2 position)
-        {
-            return new Vector2(position.X / Tile.tileSize, position.Y / Tile.tileSize);
-        }
-        public static Vector2 WorldToTile(Vector2 position, float tileSize)
-        {
-            return new Vector2(position.X / tileSize, position.Y / tileSize);
-        }
-
-        public static Vector2 CorrectedWorldToTile(Vector2 position)
-        {
-            return new Vector2((position.X / Tile.tileSize) - (position.X < 0 ? 1 : 0), (position.Y / Tile.tileSize) - (position.Y < 0 ? 1 : 0));
-        }
-
-        public static Vector2 CorrectedTileToWorld(Vector2 position)
-        {
-            return new Vector2((position.X * Tile.tileSize) - (position.X < 0 ? Tile.tileSize : 0), (position.Y * Tile.tileSize) - (position.Y < 0 ? Tile.tileSize : 0));
-        }
-
-        public static Vector2 CorrectedTileToWorld(Vector2 position, float tileSize)
-        {
-            return new Vector2((position.X * tileSize) - (position.X < 0 ? tileSize : 0), (position.Y * tileSize) - (position.Y < 0 ? tileSize : 0));
-        }
-
-        public static Vector2 TileToWorld(Vector2 position)
-        {
-            // used when the tile position is already corrected
-            return new Vector2(position.X * Tile.tileSize, position.Y * Tile.tileSize);
-        }
-
-
-        public List<List<Tile>> collection = new List<List<Tile>>();
-        public Vector2 position;
-        public Vector2 worldPosition;
-        public Rectangle rect;
-
-        public bool active = true;
-        public bool previousActive = true; // if chunk is active the previous frame
-        public bool custom = false; // Whether the chunk has been customized by the player
-
-        public Chunk(Vector2 pos, List<List<Tile>> tiles)
-        {
-            position = pos;
-            worldPosition = (pos * size * Tile.tileSize);
-            rect = new Rectangle(worldPosition.ToPoint(), new Point(realSize));
-            collection = tiles;
-        }
-
-        public Chunk(Vector2 pos)
-        {
-            position = pos;
-            worldPosition = (pos * size * Tile.tileSize);
-            rect = new Rectangle(worldPosition.ToPoint(), new Point(realSize));
-
-            for (int y = 0; y < size; y++)
+            int tx = (int)Math.Floor(x / (float)chunkSize);
+            int ty = (int)Math.Floor(y / (float)chunkSize);
+            
+            foreach (Chunk c in chunks)
             {
-                collection.Add(new List<Tile>());
-                for (int x = 0; x < size; x++)
+                if (c.position.X == tx)
                 {
-                    Vector2 chunkPos = new Vector2(x + (position.X * size), y + (position.Y * size));
-                    //collection[y].Add(new Tile(Game.random.Next(0, 100) >= 30 ? Tile.Type.Air : Tile.Type.Stone, chunkPos));
-                    //                                                              around 0.4f is good
-                    //collection[y].Add(new Tile(Perlin_Noise.Fetch(CorrectedTileToWorld(chunkPos)), chunkPos, this));
-                    collection[y].Add(Tile.GenerateTile(Perlin_Noise.Fetch(CorrectedTileToWorld(chunkPos), 300f), chunkPos, this));
-                }
-            }
-        }
-
-        public void Update(bool hard = false)
-        {
-            active = Vector2.Distance(Player.Instance.position, worldPosition) <= 2000;
-            bool unloaded = !active && previousActive;
-            bool loaded = active && !previousActive;
-            previousActive = active;
-            if (loaded || unloaded)
-            {
-                Debug.WriteLine($"{position} : {loaded} : {unloaded}");
-            }
-
-            if (!hard)
-            {
-                if (unloaded)
-                {
-                    if (!custom)
+                    if (c.position.Y == ty)
                     {
-                        UnloadPrepare();
-                    }
-                    else
-                    {
-                        SoftUnload();
-                    }
-                    return;
-                }
-                if (loaded)
-                {
-                    Reload();
-                    return;
-                }
-            }
-
-            for (int y = 0; y < size; y++)
-            {
-                for (int x = 0; x < size; x++)
-                {
-                    Tile item = collection[y][x];
-                    item.Update();
-                    item.UpdateSprite(this);
-                    if (item.durability.Percent() <= 0f)
-                    {
-                        Map.Break(TileToWorld(item.position), true);
-                        custom = true;
+                        return c;
                     }
                 }
             }
+
+            return null;
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public static Tile FetchTileAt(int x, int y) // Fetches the tile at the tile-coordinate
         {
-            //spriteBatch.Draw(UI.blank, new Rectangle(rect.X + 10, rect.Y + 10, rect.Width - 20, rect.Height - 20), custom ? Color.Purple : Color.Transparent);
+            Chunk _c = FetchChunkAt(x, y);
 
-            foreach (List<Tile> column in collection)
+            if (_c == null)
             {
-                foreach (Tile item in column)
+                return null;
+            }
+
+            return _c.contents[FixCoords(x), FixCoords(y)];
+        }
+
+        public static Tile.BlockType FetchTypeAt(int x, int y)
+        {
+            Tile result = FetchTileAt(x, y);
+            if (result == null)
+            {
+                return Tile.BlockType.Air;
+            }
+            return result.type;
+        }
+
+        // eg : [10, 1] -> [3, 1]
+        public static int FixCoords(int i) // converts tile-coordinate to in-chunk coordinate
+        {
+            bool negative = Math.Sign(i) == -1;
+
+            if (!negative)
+            {
+                return i % chunkSize;
+            }
+
+             return (chunkSize + ((i + 1) % chunkSize)) - 1;
+        }
+
+        public Tile[,] contents = new Tile[chunkSize, chunkSize]; // 8x8 chunk size
+        public Point position;
+
+        public Chunk(Point p)
+        {
+            position = p;
+            for (int y = 0; y < chunkSize; y++)
+            {
+                for (int x = 0; x < chunkSize; x++)
                 {
-                    item.Draw(spriteBatch);
+                    Point blockPos = new Point(x + (chunkSize * position.X), y + (chunkSize * position.Y));
+                    contents[x, y] = new Tile(blockPos, new Point(x, y), Tile.GenerateTileType(PerlinNoise.Instance.GetNoise(blockPos.X, blockPos.Y), blockPos));
                 }
             }
         }
 
-        public void Reload()
+        public void Update()
         {
-            // called when the chunk is loaded
-            foreach (List<Tile> column in collection)
+            for (int y = 0; y < chunkSize; y++)
             {
-                foreach (Tile item in column)
+                for (int x = 0; x < chunkSize; x++)
                 {
-                    item.Reload();
+                    contents[x, y].Update();
                 }
             }
         }
 
-        public void SoftUnload()
+        public void Draw(SpriteBatch spritebatch)
         {
-            // called when the chunk is unloaded, but custom
-            foreach (List<Tile> column in collection)
+            for (int y = 0; y < chunkSize; y++)
             {
-                foreach (Tile item in column)
+                for (int x = 0; x < chunkSize; x++)
                 {
-                    item.SoftUnload();
+                    contents[x, y].Draw(spritebatch);
                 }
             }
         }
 
-        public void UnloadPrepare()
+        public Tile LocalFetchTile(int x, int y) // parameters in tile-coordinates
         {
-            // called before unloading chunk
-            foreach (List<Tile> column in collection)
+            if (x < 0)
             {
-                foreach (Tile item in column)
-                {
-                    item.HardUnload();
-                }
+                return null;
             }
+            if (x >= chunkSize)
+            {
+                return null;
+            }
+
+            if (y < 0)
+            {
+                return null;
+            }
+            if (x >= chunkSize)
+            {
+                return null;
+            }
+
+            return contents[x, y];
+        }
+
+        public Tile.BlockType LocalFetch(int x, int y)
+        {
+            if (x < 0)
+            {
+                return Tile.BlockType.Air;
+            }
+            if (x >= chunkSize)
+            {
+                return Tile.BlockType.Air;
+            }
+
+            if (y < 0)
+            {
+                return Tile.BlockType.Air;
+            }
+            if (x >= chunkSize)
+            {
+                return Tile.BlockType.Air;
+            }
+
+            return contents[x, y].type;
         }
     }
 }
