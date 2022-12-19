@@ -19,6 +19,9 @@ namespace YetAnotherRoguelike
 
         public static float renderScale = 5f;
 
+        Vector2 previousPosition = Vector2.Zero;
+        public float entitySpeed;
+
         public Entity(Species _species, PhysicsBody _physics, Point _size)
         {
             collection.Add(this);
@@ -58,6 +61,9 @@ namespace YetAnotherRoguelike
         {
             rect = new Rectangle((position - (spriteOrigin * renderScale)).ToPoint(), size);
             ApplyPhysics();
+
+            entitySpeed = Vector2.Distance(position, previousPosition) * Game.compensation;
+            previousPosition = position;
         }
 
         public virtual void Draw(SpriteBatch spriteBatch)

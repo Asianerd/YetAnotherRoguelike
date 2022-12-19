@@ -304,3 +304,8 @@ D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\C
 D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Tiles\neon_blue.xnb
 D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Tiles\neon_pink.xnb
 D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Tiles\neon_yellow.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Shaders\TestShader.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Shaders\Bloom.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Shaders\BloomFilter\Bloom.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Shaders\GaussianBlur.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Tiles\neon_purple.xnb

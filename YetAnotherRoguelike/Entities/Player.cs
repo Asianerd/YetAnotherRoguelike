@@ -96,7 +96,7 @@ namespace YetAnotherRoguelike
                     {
                         if (Hotbar.selectedItem.amount > 0)
                         {
-                            Map.Place(Tile.Type.Neon_Pink, Cursor.WorldPosition());
+                            Map.Place(new Tile.Type[] { Tile.Type.Blast_Furnace, Tile.Type.Neon_Purple, Tile.Type.Neon_Yellow, Tile.Type.Neon_Blue, }[Hotbar.selectedSection], Cursor.WorldPosition());
                             Hotbar.selectedItem.amount--;
                         }
                     }

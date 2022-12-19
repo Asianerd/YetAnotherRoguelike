@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Text;
 using YetAnotherRoguelike.Gameplay;
 using YetAnotherRoguelike.Gameplay.ItemStorage;
+using YetAnotherRoguelike.Tile_Classes;
+using YetAnotherRoguelike.UI_Classes.Block_UI;
 using YetAnotherRoguelike.UI_Classes.Player_UI;
 
 namespace YetAnotherRoguelike
@@ -36,6 +38,10 @@ namespace YetAnotherRoguelike
                 Math.Clamp(Player.Instance.position.Y, -worldBorder, worldBorder)
                 );
             Inventory.Instance.UpdateAll();
+
+            // Interactables UI
+            InteractablesUI_Monolith.UpdateAll();
+
             Hotbar.Instance.UpdateAll();
             General_Container.Instance.UpdateAll();
             GroundItem.UpdateAll();
@@ -56,6 +62,10 @@ namespace YetAnotherRoguelike
         {
             General_Container.Instance.DrawAll(spriteBatch, Point.Zero);
             Inventory.Instance.DrawAll(spriteBatch, Point.Zero);
+
+            // Interactables UI
+            InteractablesUI_Monolith.DrawAll(spriteBatch, Point.Zero);
+
             Hotbar.Instance.DrawAll(spriteBatch, Point.Zero);
             base.DrawUI(gameTime);
         }
@@ -68,6 +78,8 @@ namespace YetAnotherRoguelike
             Player _ = new Player();
             Inventory __ = new Inventory(new List<UI_Element>());
             General_Container ___ = new General_Container(new List<UI_Element>());
+
+            InteractablesUI_Monolith.Initialize();
 
             Camera.Instance.position = Camera.Instance.target;
         }

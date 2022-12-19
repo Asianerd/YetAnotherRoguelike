@@ -18,7 +18,7 @@ namespace YetAnotherRoguelike
         public float strength, range;
         public Color color;
 
-        public LightSource(Vector2 _position, int _strength, int _range, Color _color)
+        public LightSource(Vector2 _position, float _strength, float _range, Color _color)
         {
             position = _position;
             strength = _strength;
@@ -28,7 +28,19 @@ namespace YetAnotherRoguelike
 
         public static void Append(LightSource light)
         {
+            if (sources.Contains(light))
+            {
+                return;
+            }
             sources.Add(light);
+        }
+
+        public static void Remove(LightSource light)
+        {
+            if (sources.Contains(light))
+            {
+                sources.Remove(light);
+            }
         }
     }
 }

@@ -1,0 +1,71 @@
+{
+    "Stone": {
+        "loot": {
+            "Stone": 5
+        },
+        "light": null
+    },
+    "Coal_ore": {
+        "loot": {
+            "Coal": 3,
+            "Stone": 1
+        },
+        "light": null
+    },
+    "Bauxite": {
+        "loot": {
+            "Bauxite": 4,
+            "Stone": 2
+        },
+        "light": null
+    },
+    "Hematite": {
+        "loot": {
+            "Hematite": 3,
+            "Stone": 3
+        },
+        "light": null
+    },
+    "Sphalerite": {
+        "loot": {
+            "Sphalerite": 7,
+            "Stone": 2
+        },
+        "light": null
+    },
+    "Calamine": {
+        "loot": {
+            "Calamine": 2,
+            "Stone": 5
+        },
+        "light": null
+    },
+    "Galena": {
+        "loot": {
+            "Galena": 4,
+            "Stone": 2
+        },
+        "light": null
+    },
+    "Cinnabar": {
+        "loot": {
+            "Cinnabar": 2,
+            "Stone": 7
+        },
+        "light": null
+    },
+    "Argentite": {
+        "loot": {
+            "Argentite": 3,
+            "Stone": 3
+        },
+        "light": null
+    },
+    "Bismuth": {
+        "loot": {
+            "Bismuth": 1,
+            "Stone": 1
+        },
+        "light": null
+    }
+}

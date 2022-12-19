@@ -76,6 +76,23 @@ namespace YetAnotherRoguelike.Gameplay
             pickupCooldown = new GameValue(0, 60, 1, _cooldown ? 0 : 100);
         }
 
+        public static void Spawn(Item item, Vector2 pos, bool _cooldown = false, bool _check = false)
+        {
+            if (_check)
+            {
+                if (item.type == Item.Type.None)
+                {
+                    return;
+                }
+            }
+
+            float d = (Game.random.Next(0, 100) / 100f) * MathF.PI * 2f;
+            collection.Add(new GroundItem(item.type, item.amount, pos + new Vector2(
+                MathF.Cos(d),
+                MathF.Sin(d)
+                ), pos, _cooldown));
+        }
+
         public static void Spawn(Item.Type t, Vector2 pos, int _amount, Vector2 origin, bool _cooldown = false)
         {
             /*foreach(Item i in collection)

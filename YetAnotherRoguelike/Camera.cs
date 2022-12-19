@@ -12,6 +12,7 @@ namespace YetAnotherRoguelike
         public static Camera Instance;
 
         public Vector2 position = Game.screenSize / 2f, target, renderOffset;
+        public Vector2 tRenderOffset; // renderOffset in tile coordinates
 
         public Camera()
         {
@@ -43,6 +44,7 @@ namespace YetAnotherRoguelike
             position = Vector2.Lerp(position, target, 0.1f * Game.compensation);
 
             renderOffset = (Game.screenSize / 2f) - position;
+            tRenderOffset = Chunk.CorrectedWorldToTile(renderOffset);
         }
 
         public static Vector2 ScreenToWorld(Vector2 target)

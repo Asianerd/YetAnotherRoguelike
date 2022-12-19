@@ -68,6 +68,10 @@ namespace YetAnotherRoguelike
         {
             return new Vector2(position.X / Tile.tileSize, position.Y / Tile.tileSize);
         }
+        public static Vector2 WorldToTile(Vector2 position, float tileSize)
+        {
+            return new Vector2(position.X / tileSize, position.Y / tileSize);
+        }
 
         public static Vector2 CorrectedWorldToTile(Vector2 position)
         {
@@ -77,6 +81,11 @@ namespace YetAnotherRoguelike
         public static Vector2 CorrectedTileToWorld(Vector2 position)
         {
             return new Vector2((position.X * Tile.tileSize) - (position.X < 0 ? Tile.tileSize : 0), (position.Y * Tile.tileSize) - (position.Y < 0 ? Tile.tileSize : 0));
+        }
+
+        public static Vector2 CorrectedTileToWorld(Vector2 position, float tileSize)
+        {
+            return new Vector2((position.X * tileSize) - (position.X < 0 ? tileSize : 0), (position.Y * tileSize) - (position.Y < 0 ? tileSize : 0));
         }
 
         public static Vector2 TileToWorld(Vector2 position)
@@ -92,6 +101,7 @@ namespace YetAnotherRoguelike
         public Rectangle rect;
 
         public bool active = true;
+        public bool previousActive = true; // if chunk is active the previous frame
         public bool custom = false; // Whether the chunk has been customized by the player
 
         public Chunk(Vector2 pos, List<List<Tile>> tiles)
@@ -125,16 +135,34 @@ namespace YetAnotherRoguelike
         public void Update(bool hard = false)
         {
             active = Vector2.Distance(Player.Instance.position, worldPosition) <= 2000;
-
-            if ((!active) && (!hard))
+            bool unloaded = !active && previousActive;
+            bool loaded = active && !previousActive;
+            previousActive = active;
+            if (loaded || unloaded)
             {
-                if (!custom)
-                {
-                    UnloadPrepare();
-                }
-                return;
+                Debug.WriteLine($"{position} : {loaded} : {unloaded}");
             }
 
+            if (!hard)
+            {
+                if (unloaded)
+                {
+                    if (!custom)
+                    {
+                        UnloadPrepare();
+                    }
+                    else
+                    {
+                        SoftUnload();
+                    }
+                    return;
+                }
+                if (loaded)
+                {
+                    Reload();
+                    return;
+                }
+            }
 
             for (int y = 0; y < size; y++)
             {
@@ -161,6 +189,30 @@ namespace YetAnotherRoguelike
                 foreach (Tile item in column)
                 {
                     item.Draw(spriteBatch);
+                }
+            }
+        }
+
+        public void Reload()
+        {
+            // called when the chunk is loaded
+            foreach (List<Tile> column in collection)
+            {
+                foreach (Tile item in column)
+                {
+                    item.Reload();
+                }
+            }
+        }
+
+        public void SoftUnload()
+        {
+            // called when the chunk is unloaded, but custom
+            foreach (List<Tile> column in collection)
+            {
+                foreach (Tile item in column)
+                {
+                    item.SoftUnload();
                 }
             }
         }

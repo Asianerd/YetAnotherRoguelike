@@ -5,14 +5,17 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using YetAnotherRoguelike.Gameplay;
+using YetAnotherRoguelike.Graphics;
+using YetAnotherRoguelike.Tile_Classes.Blocks;
+using YetAnotherRoguelike.Tile_Classes;
 
 namespace YetAnotherRoguelike
 {
     class Tile
     {
+        #region Statics
         public static Dictionary<Type, List<Texture2D>> blockSprites = new Dictionary<Type, List<Texture2D>>();
         public static Dictionary<Type, Color> tileColors = new Dictionary<Type, Color>();
-        public static Dictionary<int, Type> oreChances = new Dictionary<int, Type>(); // from 0 - 1000
         public static int tileSize = 64;
 
         public static void Initialize()
@@ -77,23 +80,18 @@ namespace YetAnotherRoguelike
                 { Type.Argentite, rgb(202, 202, 207) },
                 { Type.Bismuth, rgb(135, 214, 182) },
             };*/
-            oreChances = new Dictionary<int, Type>()
-            {
-                { 500, Type.Coal_ore },
-                { 750, Type.Bauxite },
-            };
         }
 
         public static Tile CreateTile(Type type, Vector2 pos, Chunk parent)
         {
             return type switch
             {
-                Type.Neon_Blue => new Tile_Classes.Blocks.NeonBlock(pos, parent, Type.Neon_Blue),
-                Type.Neon_Pink => new Tile_Classes.Blocks.NeonBlock(pos, parent, Type.Neon_Pink),
-                Type.Neon_Yellow => new Tile_Classes.Blocks.NeonBlock(pos, parent, Type.Neon_Yellow),
-                Type.Coal_ore => new Tile_Classes.Blocks.CoalOre(pos, parent),
-                _ => new Tile(type, pos, parent)
-            };
+                Type.Blast_Furnace => new BlastFurnace(pos, parent),
+                _ =>
+                LightTile.lightTileSources.ContainsKey(type) ?
+                    new LightTile(type, pos, parent) :
+                new Tile(type, pos, parent)
+            }; // no idea whats the best looking way to format this
         }
 
         public static Tile GenerateTile(float p, Vector2 pos, Chunk parent)
@@ -103,7 +101,7 @@ namespace YetAnotherRoguelike
             {
                 type = Type.Stone;
                 float chance = Perlin_Noise.Fetch(-Chunk.CorrectedTileToWorld(pos), 128f);
-                if (chance >= 0.80f)
+                if (chance >= 0.8f)
                 {
                     type = new Type[] {
                         Type.Coal_ore,
@@ -116,7 +114,7 @@ namespace YetAnotherRoguelike
                         Type.Argentite, // Silver
                         Type.Bismuth,
                         Type.Neon_Blue,
-                        Type.Neon_Pink
+                        Type.Neon_Purple
                         /*Type.Neon_Yellow*/
                     }[new Random(GeneralDependencies.CantorPairing((int)pos.X, (int)pos.Y)).Next(0, 11)];
                 }
@@ -124,18 +122,7 @@ namespace YetAnotherRoguelike
 
             return CreateTile(type, pos, parent);
         }
-
-        public static Type OreByChance(int p)
-        {
-            foreach(int chance in oreChances.Keys)
-            {
-                if (p >= chance)
-                {
-                    return oreChances[chance];
-                }
-            }
-            return Type.Stone;
-        }
+        #endregion
 
         public Chunk parent;
         public Type type;
@@ -212,7 +199,7 @@ namespace YetAnotherRoguelike
                 colors.Add(light.color * percent);
                 totalIntensity += percent;
 
-                if (intensity >= highest)
+                if (intensity > highest)
                 {
                     highest = intensity;
                 }
@@ -255,13 +242,26 @@ namespace YetAnotherRoguelike
         {
             if (Game.playArea.Intersects(rect))
             {
-                spriteBatch.Draw(UI.blank, rect, lightColour * (lightLevel / 40f));
+                // Floor
+                //spriteBatch.Draw(UI.blank, rect, lightColour * (lightLevel / 40f));
                 //spriteBatch.Draw(blockSprites[type][spriteIndex], rect, Color.White * (lightLevel / 10f));
                 if (isAir)
                 {
                     return;
                 }
-                spriteBatch.Draw(blockSprites[type][spriteIndex], rect, lightColour * (lightLevel / 20f));
+                // Tile
+
+                //Vector2 pos = (Chunk.WorldToTile(Chunk.TileToWorld(position)) + Camera.Instance.tRenderOffset);
+                /*Debug.WriteLine(pos);
+                Debug.WriteLine((int)(pos.X + (pos.Y * Lightmap.size.Y)));*/
+                /*Color c = Lightmap.lightmapArray[(int)(pos.X + (pos.Y * Lightmap.size.X))];*/
+                //Color c = Color.White;
+                //Color c = lightColour * (lightLevel / 40f);
+                /*Color c = Color.White * (lightLevel / 40f);*/
+                //c.A = 240;
+                Color c = lightColour * (lightLevel / 20f);
+                c.A = 240;
+                spriteBatch.Draw(blockSprites[type][spriteIndex], rect, c);
                 if (durability.Percent() != 1f)
                 {
                     spriteBatch.Draw(UI.blank, new Rectangle(new Vector2(rect.Location.X + 4, rect.Location.Y + 20).ToPoint(), new Point(56, 24)), Color.Black * 0.5f);
@@ -320,6 +320,16 @@ namespace YetAnotherRoguelike
 
         }
 
+        public virtual void Reload()
+        {
+            // called when an unloaded chunk is reloaded
+        }
+
+        public virtual void SoftUnload()
+        {
+            // called when the chunk is unloaded (but not deleted)
+        }
+
         public virtual void HardUnload()
         {
             // called before the chunk is deleted
@@ -338,7 +348,7 @@ namespace YetAnotherRoguelike
             Concrete,
 
             Neon_Blue,
-            Neon_Pink,
+            Neon_Purple,
             Neon_Yellow,
 
             Coal_ore,

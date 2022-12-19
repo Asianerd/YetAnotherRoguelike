@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Item_sprites/sphalerite.png</SourceFile>
+  <SourceFile>d:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Item_sprites/sphalerite.png</SourceFile>
   <SourceTime>2022-07-15T21:32:49.9737192+08:00</SourceTime>
-  <DestFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/bin/Windows/Content/Item_sprites/sphalerite.xnb</DestFile>
-  <DestTime>2022-09-06T23:01:51.2416385+08:00</DestTime>
+  <DestFile>d:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/bin/Windows/Content/Item_sprites/sphalerite.xnb</DestFile>
+  <DestTime>2022-12-20T01:00:57.8459581+08:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2020-08-10T16:17:54+08:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

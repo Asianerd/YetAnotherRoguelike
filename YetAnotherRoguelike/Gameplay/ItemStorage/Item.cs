@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Xna.Framework;
+using YetAnotherRoguelike.Tile_Classes;
 
 namespace YetAnotherRoguelike.Gameplay
 {
@@ -45,16 +46,24 @@ namespace YetAnotherRoguelike.Gameplay
             }
 
             //var x = JsonSerializer.Deserialize<List<ItemData>>(File.ReadAllText("Data/tile_data.json"));
-            foreach (KeyValuePair<string, ItemData> item in JsonSerializer.Deserialize<Dictionary<string, ItemData>>(File.ReadAllText("Data/tile_data.json")))
+            foreach (KeyValuePair<string, JSON_BlockData> item in JsonSerializer.Deserialize<Dictionary<string, JSON_BlockData>>(File.ReadAllText("Data/block_data.json")))
             {
                 var x = item.Value;
                 x.blockType = Enum.GetValues(typeof(Tile.Type)).Cast<Tile.Type>().ToList().Where(n => n.ToString() == item.Key).First();
-                ItemData.collection.Add(x);
+                JSON_BlockData.collection.Add(x);
             }
-            foreach (ItemData i in ItemData.collection)
+            foreach (JSON_BlockData i in JSON_BlockData.collection)
             {
                 i.AssignData();
                 lootTable.Add(i.blockType, i.lootTable);
+            }
+
+            LightTile.lightTileSources = new Dictionary<Tile.Type, LightSource>();
+            foreach (KeyValuePair<string, JSON_Light> item in JsonSerializer.Deserialize<Dictionary<string, JSON_Light>>(File.ReadAllText("Data/block_lightsource_data.json")))
+            {
+                var x = item.Value;
+                x.blockType = Enum.GetValues(typeof(Tile.Type)).Cast<Tile.Type>().ToList().Where(n => n.ToString().ToLower() == item.Key).First();
+                LightTile.lightTileSources.Add(x.blockType, new LightSource(Vector2.Zero, x.s, x.r, new Color(x.c[0], x.c[1], x.c[2])));
             }
         }
 
@@ -166,11 +175,23 @@ namespace YetAnotherRoguelike.Gameplay
 
 
 
-        public class ItemData
+        public class JSON_BlockData
         {
-            public static List<ItemData> collection = new List<ItemData>();
+            public static List<JSON_BlockData> collection = new List<JSON_BlockData>();
 
-            public ItemData() { }
+            /*public static JSON_BlockData Find(Tile.Type t)
+            {
+                foreach (JSON_BlockData x in collection)
+                {
+                    if (x.blockType == t)
+                    {
+                        return x;
+                    }
+                }
+                return null;
+            }*/
+
+            public JSON_BlockData() { }
 
             public void AssignData()
             {
@@ -189,6 +210,16 @@ namespace YetAnotherRoguelike.Gameplay
 
             public Tile.Type blockType;
             public Dictionary<Type, int> lootTable = new Dictionary<Type, int>();
+        }
+
+        public class JSON_Light
+        {
+            public float s { get; set; }
+            public float r { get; set; }
+            public int[] c { get; set; }
+
+            public Tile.Type blockType;
+            public LightSource light;
         }
     }
 }

@@ -22,7 +22,7 @@ namespace YetAnotherRoguelike
             containers = new List<UI_Container>();
         }
 
-        public bool active, hovered = false;
+        public bool active = false, hovered = false;
         public List<UI_Element> elements = new List<UI_Element>();
 
         public UI_Container(List<UI_Element> _elements)
