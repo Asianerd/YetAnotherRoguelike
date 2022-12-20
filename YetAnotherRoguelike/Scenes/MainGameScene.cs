@@ -1,23 +1,23 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using YetAnotherRoguelike.Tile_Classes;
+using YetAnotherRoguelike.PhysicsObject;
+using YetAnotherRoguelike.Graphics;
 
 namespace YetAnotherRoguelike.Scenes
 {
     class MainGameScene:Scene
     {
+        public static List<Entity> entities;
+
         public MainGameScene():base(SceneTypes.MainGame, Color.Black)
         {
-            for (int y = -5; y < 5; y++)
-            {
-                for (int x = -5; x < 5; x++)
-                {
-                    Chunk.chunks.Add(new Chunk(new Point(x, y)));
-                }
-            }
+            entities = new List<Entity>();
+            entities.Add(new Player(Vector2.Zero, Game.Instance.Content.Load<Texture2D>("Entities/Player/Body")));
         }
 
         public override void Update()
@@ -28,16 +28,36 @@ namespace YetAnotherRoguelike.Scenes
             {
                 x.Update();
             }
+            Chunk.chunks = Chunk.chunks.Where(n => !n.dead).ToList();
+
+            foreach (Entity e in entities)
+            {
+                e.Update();
+            }
+
+            Lightmap.GenerateMap();
         }
 
         public override void Draw()
         {
+            Game.spriteBatch.Begin(SpriteSortMode.Immediate, blendState: BlendState.AlphaBlend);
+            Lightmap.Draw(Game.spriteBatch);
+            Game.spriteBatch.End();
+
+            Matrix renderMatrix = Matrix.CreateTranslation(new Vector3(Camera.renderOffset, 0f));
+            Game.spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: renderMatrix);
             base.Draw();
 
             foreach (Chunk x in Chunk.chunks)
             {
                 x.Draw(Game.spriteBatch);
             }
+
+            foreach (Entity e in entities)
+            {
+                e.Draw(Game.spriteBatch);
+            }
+            Game.spriteBatch.End();
         }
     }
 }

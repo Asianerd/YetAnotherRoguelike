@@ -4,6 +4,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
+using YetAnotherRoguelike.PhysicsObject;
+using YetAnotherRoguelike.Tile_Classes;
 
 namespace YetAnotherRoguelike.Graphics
 {
@@ -15,21 +17,10 @@ namespace YetAnotherRoguelike.Graphics
 
         public static void Update()
         {
-            Vector2 final = Vector2.Zero;
-            //foreach (Keys x in new Keys[] { Keys.Up, Keys.Left, Keys.Down, Keys.Right })
-            foreach (Keys x in new Keys[] { Keys.W, Keys.A, Keys.S, Keys.D })
+            if (Player.Instance != null)
             {
-                if (Input.collection[x].isPressed)
-                {
-                    final += GeneralDependencies.axialVectors[x];
-                }
+                target = Player.Instance.position * Tile.tileSize;
             }
-            if ((final.X != 0) || (final.Y != 0))
-            {
-                final.Normalize();
-            }
-            final *= Input.collection[Keys.LeftShift].isPressed ? 50f : 20f;
-            target += final;
 
             position = Vector2.Lerp(position, target, 0.1f * Game.compensation);
 

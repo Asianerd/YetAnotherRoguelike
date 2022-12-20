@@ -10,7 +10,37 @@ namespace YetAnotherRoguelike.Tile_Classes
     class Chunk
     {
         public static List<Chunk> chunks = new List<Chunk>();
-        public static int chunkSize = 8;
+        public static int chunkSize = 16;
+        public static int chunkGenerationRange = 2; // generates chunks in a 5x5 box around the player
+        /* . . . . . . .
+         * . X X X X X .
+         * . X X X X X .
+         * . X X P X X .
+         * . X X X X X .
+         * . X X X X X .
+         * . . . . . . .
+         */
+
+        public static void GenerateChunk(int x, int y) // If chunk with that coordinate doesnt exist, generate the chunk
+        {
+            foreach (Chunk c in chunks)
+            {
+                if (c.position.X == x)
+                {
+                    if (c.position.Y == y)
+                    {
+                        return;
+                    }
+                }
+            }
+
+            chunks.Add(new Chunk(new Point(x, y)));
+        }
+
+        public static Point TileToChunkCoordinates(int x, int y)
+        {
+            return new Point((int)Math.Floor(x / (float)chunkSize), (int)Math.Floor(y / (float)chunkSize));
+        }
 
         public static Chunk FetchChunkAt(int x, int y) // Fetches the chunk that contains the tile-coordinate
         {
@@ -53,6 +83,50 @@ namespace YetAnotherRoguelike.Tile_Classes
             return result.type;
         }
 
+        #region Chunk-specific functions
+        // instead of iterating all chunks in memory, only iterate through a few specific ones
+        public static Chunk FetchChunkAt(int x, int y, List<Chunk> collection) // Fetches the chunk that contains the tile-coordinate
+        {
+            int tx = (int)Math.Floor(x / (float)chunkSize);
+            int ty = (int)Math.Floor(y / (float)chunkSize);
+
+            foreach (Chunk c in collection)
+            {
+                if (c.position.X == tx)
+                {
+                    if (c.position.Y == ty)
+                    {
+                        return c;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public static Tile FetchTileAt(int x, int y, List<Chunk> collection) // Fetches the tile at the tile-coordinate
+        {
+            Chunk _c = FetchChunkAt(x, y, collection);
+
+            if (_c == null)
+            {
+                return null;
+            }
+
+            return _c.contents[FixCoords(x), FixCoords(y)];
+        }
+
+        public static Tile.BlockType FetchTypeAt(int x, int y, List<Chunk> collection)
+        {
+            Tile result = FetchTileAt(x, y, collection);
+            if (result == null)
+            {
+                return Tile.BlockType.Air;
+            }
+            return result.type;
+        }
+        #endregion
+
         // eg : [10, 1] -> [3, 1]
         public static int FixCoords(int i) // converts tile-coordinate to in-chunk coordinate
         {
@@ -68,10 +142,15 @@ namespace YetAnotherRoguelike.Tile_Classes
 
         public Tile[,] contents = new Tile[chunkSize, chunkSize]; // 8x8 chunk size
         public Point position;
+        public Rectangle rect;
+
+        public bool modified = false;
+        public bool dead = false; // if dead, remove after updating all chunks
 
         public Chunk(Point p)
         {
             position = p;
+            rect = new Rectangle((position.ToVector2() * chunkSize).ToPoint(), new Point(chunkSize, chunkSize));
             for (int y = 0; y < chunkSize; y++)
             {
                 for (int x = 0; x < chunkSize; x++)
@@ -84,6 +163,27 @@ namespace YetAnotherRoguelike.Tile_Classes
 
         public void Update()
         {
+            if (dead)
+            {
+                return;
+            }
+
+            if (!Game.playArea.Intersects(rect))
+            {
+                if (!modified)
+                {
+                    dead = true;
+
+                    for (int y = 0; y < chunkSize; y++)
+                    {
+                        for (int x = 0; x < chunkSize; x++)
+                        {
+                            contents[x, y].OnChunkDelete();
+                        }
+                    }
+                }
+            }
+
             for (int y = 0; y < chunkSize; y++)
             {
                 for (int x = 0; x < chunkSize; x++)
@@ -95,6 +195,11 @@ namespace YetAnotherRoguelike.Tile_Classes
 
         public void Draw(SpriteBatch spritebatch)
         {
+            if (!Game.playArea.Intersects(rect))
+            {
+                return;
+            }
+
             for (int y = 0; y < chunkSize; y++)
             {
                 for (int x = 0; x < chunkSize; x++)

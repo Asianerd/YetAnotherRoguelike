@@ -93,6 +93,7 @@ namespace YetAnotherRoguelike.Tile_Classes
 
         public virtual void UpdateSprite()
         {
+            // expensive
             bool u = Chunk.FetchTypeAt(tileCoordinates.X, tileCoordinates.Y - 1) != BlockType.Air;
             bool r = Chunk.FetchTypeAt(tileCoordinates.X + 1, tileCoordinates.Y) != BlockType.Air;
             bool d = Chunk.FetchTypeAt(tileCoordinates.X, tileCoordinates.Y + 1) != BlockType.Air;
@@ -109,6 +110,11 @@ namespace YetAnotherRoguelike.Tile_Classes
         public virtual void Draw(SpriteBatch spritebatch)
         {
             if (isAir)
+            {
+                return;
+            }
+
+            if (!Game.playArea.Contains(tileCoordinates))
             {
                 return;
             }

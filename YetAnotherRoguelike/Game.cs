@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using YetAnotherRoguelike.PhysicsObject;
 using YetAnotherRoguelike.Graphics;
 using YetAnotherRoguelike.Tile_Classes;
 
@@ -18,6 +19,9 @@ namespace YetAnotherRoguelike
         public static Vector2 screenSize = new Vector2(1920, 1080);
         //public static Vector2 screenSize = new Vector2(500, 500);
         //public static Vector2 screenSize = new Vector2(1000, 1000);
+        public static Rectangle playArea = new Rectangle(0, 0, 0, 0); // measured in tile-coordinates
+        public static Texture2D emptySprite;
+        public static SpriteFont mainFont;
 
         public static float compensation = 1f;
         public static float updateFrequency = 60; // treat this as a multiplier to time delta
@@ -55,6 +59,7 @@ namespace YetAnotherRoguelike
         {
             PerlinNoise.Initialize();
             var _ = new GaussianBlur();
+            Lightmap.Initialize();
 
             GeneralDependencies.Initialize();
 
@@ -121,6 +126,9 @@ namespace YetAnotherRoguelike
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            mainFont = Instance.Content.Load<SpriteFont>("Fonts/defaultFont");
+            emptySprite = Instance.Content.Load<Texture2D>("blank");
         }
 
         protected override void Update(GameTime gameTime)
@@ -152,6 +160,13 @@ namespace YetAnotherRoguelike
             Scene.currentScene.Update();
 
             base.Update(gameTime);
+
+            playArea = new Rectangle(
+                ((int)((Camera.position.X - (screenSize.X / 2f)) / Tile.tileSize)) - 3,
+                ((int)((Camera.position.Y - (screenSize.Y / 2f)) / Tile.tileSize)) - 3,
+                ((int)(screenSize.X / Tile.tileSize)) + 6,
+                ((int)(screenSize.Y / Tile.tileSize)) + 6
+                );
         }
 
         protected override void Draw(GameTime gameTime)
@@ -165,10 +180,14 @@ namespace YetAnotherRoguelike
 
             GraphicsDevice.Clear(Scene.currentScene.backgroundColor);
 
-            Matrix renderMatrix = Matrix.CreateTranslation(new Vector3(Camera.renderOffset, 0f));
-
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: renderMatrix);
             Scene.currentScene.Draw();
+
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            string debugText = $"FPS : {fps}\n" +
+                $"PlayArea : {playArea}\n" +
+                $"Chunks : {Chunk.chunks.Count}";
+            spriteBatch.Draw(emptySprite, new Rectangle(new Point(0, 0), mainFont.MeasureString(debugText).ToPoint()), Color.Black * 0.2f);
+            spriteBatch.DrawString(mainFont, debugText, Vector2.Zero, Color.White);
             spriteBatch.End();
 
             base.Draw(gameTime);

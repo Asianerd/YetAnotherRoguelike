@@ -309,3 +309,4 @@ D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\C
 D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Shaders\BloomFilter\Bloom.xnb
 D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Shaders\GaussianBlur.xnb
 D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Tiles\neon_purple.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Light\radial.xnb
