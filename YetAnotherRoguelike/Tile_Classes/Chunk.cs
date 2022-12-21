@@ -141,8 +141,11 @@ namespace YetAnotherRoguelike.Tile_Classes
         }
 
         public Tile[,] contents = new Tile[chunkSize, chunkSize]; // 8x8 chunk size
+        public Random tileRandom;
         public Point position;
         public Rectangle rect;
+
+        public bool loaded = false; // if chunk is loaded
 
         public bool modified = false;
         public bool dead = false; // if dead, remove after updating all chunks
@@ -151,14 +154,20 @@ namespace YetAnotherRoguelike.Tile_Classes
         {
             position = p;
             rect = new Rectangle((position.ToVector2() * chunkSize).ToPoint(), new Point(chunkSize, chunkSize));
+            tileRandom = new Random(GeneralDependencies.CantorPairing(position.X, position.Y));
             for (int y = 0; y < chunkSize; y++)
             {
                 for (int x = 0; x < chunkSize; x++)
                 {
                     Point blockPos = new Point(x + (chunkSize * position.X), y + (chunkSize * position.Y));
-                    contents[x, y] = new Tile(blockPos, new Point(x, y), Tile.GenerateTileType(PerlinNoise.Instance.GetNoise(blockPos.X, blockPos.Y), blockPos));
+                    contents[x, y] = Tile.CreateTile(blockPos, new Point(x, y), Tile.GenerateTileType(PerlinNoise.Instance.GetNoise(blockPos.X, blockPos.Y), blockPos, this));
                 }
             }
+/*
+            if (position == new Point(0))
+            {
+                contents[0, 0] = Tile.CreateTile(new Point(0), new Point(0), Tile.BlockType.Neon_Blue);
+            }*/
         }
 
         public void Update()
@@ -168,19 +177,39 @@ namespace YetAnotherRoguelike.Tile_Classes
                 return;
             }
 
-            if (!Game.playArea.Intersects(rect))
+            bool previous = loaded;
+            loaded = Game.playArea.Intersects(rect);
+            // theres definitely a faster way of doing this
+            /* if loaded
+             *      - load chunk
+             * if not loaded
+             *      - if modified
+             *          - unload chunk
+             *      - if not modified
+             *          - delete chunk
+             */
+            if (previous)
+            {
+                if (!loaded)
+                {
+                    UnloadChunk();
+                }
+            }
+            else
+            {
+                if (loaded)
+                {
+                    LoadChunk();
+                }
+            }
+
+            if (!loaded)
             {
                 if (!modified)
                 {
                     dead = true;
 
-                    for (int y = 0; y < chunkSize; y++)
-                    {
-                        for (int x = 0; x < chunkSize; x++)
-                        {
-                            contents[x, y].OnChunkDelete();
-                        }
-                    }
+                    DeleteChunk();
                 }
             }
 
@@ -195,7 +224,7 @@ namespace YetAnotherRoguelike.Tile_Classes
 
         public void Draw(SpriteBatch spritebatch)
         {
-            if (!Game.playArea.Intersects(rect))
+            if (!loaded)
             {
                 return;
             }
@@ -253,6 +282,39 @@ namespace YetAnotherRoguelike.Tile_Classes
             }
 
             return contents[x, y].type;
+        }
+
+        public void LoadChunk()
+        {
+            for (int y = 0; y < chunkSize; y++)
+            {
+                for (int x = 0; x < chunkSize; x++)
+                {
+                    contents[x, y].OnReload();
+                }
+            }
+        }
+
+        public void UnloadChunk()
+        {
+            for (int y = 0; y < chunkSize; y++)
+            {
+                for (int x = 0; x < chunkSize; x++)
+                {
+                    contents[x, y].OnUnload();
+                }
+            }
+        }
+
+        public void DeleteChunk()
+        {
+            for (int y = 0; y < chunkSize; y++)
+            {
+                for (int x = 0; x < chunkSize; x++)
+                {
+                    contents[x, y].OnChunkDelete();
+                }
+            }
         }
     }
 }

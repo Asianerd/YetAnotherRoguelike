@@ -184,7 +184,7 @@ namespace YetAnotherRoguelike
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             string debugText = $"FPS : {fps}\n" +
-                $"PlayArea : {playArea}\n" +
+                $"Lights : {LightSource.sources.Count}\n" +
                 $"Chunks : {Chunk.chunks.Count}";
             spriteBatch.Draw(emptySprite, new Rectangle(new Point(0, 0), mainFont.MeasureString(debugText).ToPoint()), Color.Black * 0.2f);
             spriteBatch.DrawString(mainFont, debugText, Vector2.Zero, Color.White);

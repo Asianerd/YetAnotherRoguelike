@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using YetAnotherRoguelike.Graphics;
 
 namespace YetAnotherRoguelike.Tile_Classes
 {
@@ -39,17 +40,19 @@ namespace YetAnotherRoguelike.Tile_Classes
             }
         }
 
-        public static BlockType GenerateTileType(float p, Point pos)
+        public static BlockType GenerateTileType(float p, Point pos, Chunk parentChunk)
         {
+            //return BlockType.Air;
             BlockType type = BlockType.Air;
             if (p > 0.5f)
             {
                 type = BlockType.Stone;
                 float chance = PerlinNoise.OreInstance.GetNoise(pos.X, pos.Y);
-                if (chance >= 0.54f)
+                if (chance >= 0.55f)
                 {
                     // make the ore selection system better
                     // implement rarity system
+                    //return BlockType.Stone;
                     type = new BlockType[] {
                         BlockType.Coal_ore,
                         BlockType.Bauxite,
@@ -63,11 +66,26 @@ namespace YetAnotherRoguelike.Tile_Classes
                         BlockType.Neon_Blue,
                         BlockType.Neon_Purple
                         /*Type.Neon_Yellow*/
-                    }[new Random(GeneralDependencies.CantorPairing(pos.X, pos.Y)).Next(0, 11)];
+                    }[parentChunk.tileRandom.Next(0, 11)];
+                    //}[new Random(GeneralDependencies.CantorPairing(pos.X, pos.Y)).Next(0, 11)]; <- creating new random is damn expensive
                 }
             }
             return type;
         }
+
+        public static Tile CreateTile(Point tCoords, Point cCoords, BlockType t)
+        {
+            // certain tiles have different ctors
+            // find a better way in the future?
+            return t switch
+            {
+                BlockType.Neon_Blue => new Tile(tCoords, cCoords, t, new LightSource(tCoords.ToVector2(), new Color(82, 241, 242), 50, 10)),
+                BlockType.Neon_Purple => new Tile(tCoords, cCoords, t, new LightSource(tCoords.ToVector2(), new Color(255, 0, 244), 50, 10)),
+                _ => new Tile(tCoords, cCoords, t)
+            };
+        }
+
+
 
         /* 2 position types
          * tile coordinates
@@ -81,6 +99,9 @@ namespace YetAnotherRoguelike.Tile_Classes
 
         bool isAir;
 
+        bool isEmmisive = false;
+        public LightSource lightsource;
+
         public Tile(Point tCoords, Point cCoords, BlockType t)
         {
             type = t;
@@ -89,6 +110,21 @@ namespace YetAnotherRoguelike.Tile_Classes
 
             tileCoordinates = tCoords;
             chunkCoordinates = cCoords;
+        }
+
+        public Tile(Point tCoords, Point cCoords, BlockType t, LightSource l)
+        {
+            type = t;
+
+            isAir = type == BlockType.Air;
+
+            tileCoordinates = tCoords;
+            chunkCoordinates = cCoords;
+
+            isEmmisive = true;
+            lightsource = l;
+
+            LightSource.Append(lightsource);
         }
 
         public virtual void UpdateSprite()
@@ -125,10 +161,38 @@ namespace YetAnotherRoguelike.Tile_Classes
             spritebatch.Draw(tileSprites[type][spriteIndex], renderedPosition, null, Color.White, 0f, spriteOrigin, spriteRenderScale, SpriteEffects.None, 0f);
         }
 
-        public virtual void OnDestroy() { } // when block is destroyed
-        public virtual void OnReload() { }      // when unloaded chunk is reloaded
-        public virtual void OnSoftUnload() { }  // when loaded chunk is unloaded
-        public virtual void OnChunkDelete() { } // when chunk is deleted
+        public virtual void OnDestroy() // when block is destroyed
+        {
+            if (isEmmisive)
+            {
+                LightSource.Remove(lightsource);
+            }
+        }
+
+
+        public virtual void OnReload() // when unloaded chunk is reloaded
+        {
+            if (isEmmisive)
+            {
+                LightSource.Append(lightsource);
+            }
+        }
+
+        public virtual void OnUnload() // when loaded chunk is unloaded
+        {
+            if (isEmmisive)
+            {
+                LightSource.Remove(lightsource);
+            }
+        }
+
+        public virtual void OnChunkDelete() // when chunk is deleted
+        {
+            if (isEmmisive)
+            {
+                LightSource.Remove(lightsource);
+            }
+        }
 
         public enum BlockType
         {

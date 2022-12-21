@@ -19,6 +19,7 @@
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Item_sprites/sphalerite.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Item_sprites/stone.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Light/radial.png</File>
+    <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Light/radial2.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Particles/blank.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Shaders/Bloom.fx</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Shaders/GaussianBlur.fx</File>
@@ -65,6 +66,7 @@
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Storage_Items/selection_sprite.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
