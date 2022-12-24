@@ -115,6 +115,7 @@ namespace YetAnotherRoguelike
                 Keys.D9,
             });
             MouseInput.Initialize();
+            Cursor.Initialize();
 
             Scene.Initialize();
 
@@ -156,6 +157,8 @@ namespace YetAnotherRoguelike
             }
             #endregion
 
+            Cursor.Update();
+
             Camera.Update();
             Scene.currentScene.Update();
 
@@ -184,10 +187,14 @@ namespace YetAnotherRoguelike
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             string debugText = $"FPS : {fps}\n" +
+                $"Pos : {(int)Player.Instance.position.X}:{(int)Player.Instance.position.Y}\n" +
                 $"Lights : {LightSource.sources.Count}\n" +
-                $"Chunks : {Chunk.chunks.Count}";
+                $"Chunks : {Chunk.chunks.Count}\n" +
+                $"{Chunk.FetchTypeAt(Cursor.tPosition.X, Cursor.tPosition.Y)}";
             spriteBatch.Draw(emptySprite, new Rectangle(new Point(0, 0), mainFont.MeasureString(debugText).ToPoint()), Color.Black * 0.2f);
             spriteBatch.DrawString(mainFont, debugText, Vector2.Zero, Color.White);
+
+            Cursor.Draw();
             spriteBatch.End();
 
             base.Draw(gameTime);

@@ -58,7 +58,6 @@ namespace YetAnotherRoguelike.Graphics
 
         public static void GenerateMap()
         {
-            int lightSourceCount = LightSource.sources.Count;
             for (int y = 0; y < size.Y; y++)
             {
                 for (int x = 0; x < size.X; x++)
@@ -71,7 +70,7 @@ namespace YetAnotherRoguelike.Graphics
                     int amount = 0;
                     //Vector4 final = Vector4.Zero;
                     //List<Color> colors = new List<Color>();
-                    Color[] colors = new Color[lightSourceCount];
+                    Color[] colors = new Color[LightSource.lightSourcesCount];
                     foreach (LightSource light in LightSource.sources)
                     {
                         float distance = Vector2.Distance(light.position, position);

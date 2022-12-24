@@ -8,7 +8,9 @@ namespace YetAnotherRoguelike.Graphics
 {
     class LightSource
     {
+        public static int lightSourcesCount = 0;
         public static List<LightSource> sources = new List<LightSource>();
+        // only use Append and Remove when adding sources
 
         public Vector2 position;
         public Color color;
@@ -29,6 +31,7 @@ namespace YetAnotherRoguelike.Graphics
                 return;
             }
             sources.Add(light);
+            lightSourcesCount = sources.Count;
         }
 
         public static void Remove(LightSource light)
@@ -36,6 +39,7 @@ namespace YetAnotherRoguelike.Graphics
             if (sources.Contains(light))
             {
                 sources.Remove(light);
+                lightSourcesCount = sources.Count;
             }
         }
     }

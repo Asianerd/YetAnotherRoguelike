@@ -218,6 +218,13 @@ namespace YetAnotherRoguelike.Tile_Classes
                 for (int x = 0; x < chunkSize; x++)
                 {
                     contents[x, y].Update();
+                    if (contents[x, y].durability.Percent() <= 0f)
+                    {
+                        contents[x, y].OnDestroy();
+                        contents[x, y] = new Tile(new Point(x, y), position, Tile.BlockType.Air);
+
+                        modified = true;
+                    }
                 }
             }
         }

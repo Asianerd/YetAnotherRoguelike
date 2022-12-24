@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
@@ -79,8 +79,8 @@ namespace YetAnotherRoguelike.Tile_Classes
             // find a better way in the future?
             return t switch
             {
-                BlockType.Neon_Blue => new Tile(tCoords, cCoords, t, new LightSource(tCoords.ToVector2(), new Color(82, 241, 242), 50, 10)),
-                BlockType.Neon_Purple => new Tile(tCoords, cCoords, t, new LightSource(tCoords.ToVector2(), new Color(255, 0, 244), 50, 10)),
+                BlockType.Neon_Blue => new Tile(tCoords, cCoords, t, new LightSource(tCoords.ToVector2(), new Color(82, 241, 242), 25, 10)),
+                BlockType.Neon_Purple => new Tile(tCoords, cCoords, t, new LightSource(tCoords.ToVector2(), new Color(255, 0, 244), 25, 10)),
                 _ => new Tile(tCoords, cCoords, t)
             };
         }
@@ -91,41 +91,71 @@ namespace YetAnotherRoguelike.Tile_Classes
          * tile coordinates
          * in-chunk coordinates
          */
-
         public Point tileCoordinates;
+        public Vector2 tileCoordinatesV; // vector2 version of tile coordinate for performance
+        Vector2 renderedPosition;
         public Point chunkCoordinates;
         public BlockType type;
-        int spriteIndex = 0;
-
         bool isAir;
 
+        public GameValue durability, durabilityCooldown = new GameValue(0, 30, 1);
+
+        int spriteIndex = 0;
         bool isEmmisive = false;
         public LightSource lightsource;
+        Color color;
 
-        public Tile(Point tCoords, Point cCoords, BlockType t)
+        public Tile(Point tCoords, Point cCoords, BlockType t, GameValue d = null)
         {
             type = t;
 
             isAir = type == BlockType.Air;
 
             tileCoordinates = tCoords;
+            tileCoordinatesV = tileCoordinates.ToVector2();
             chunkCoordinates = cCoords;
+
+            renderedPosition = tileCoordinates.ToVector2() * tileSize;
+
+            durability = d != null ? d : new GameValue(0, 100, 1, 100);
         }
 
-        public Tile(Point tCoords, Point cCoords, BlockType t, LightSource l)
+        public Tile(Point tCoords, Point cCoords, BlockType t, LightSource l, GameValue d = null)
         {
             type = t;
 
             isAir = type == BlockType.Air;
 
             tileCoordinates = tCoords;
+            tileCoordinatesV = tileCoordinates.ToVector2();
             chunkCoordinates = cCoords;
+
+            renderedPosition = tileCoordinates.ToVector2() * tileSize;
+
+            durability = d != null ? d : new GameValue(0, 100, 1, 100);
 
             isEmmisive = true;
             lightsource = l;
 
             LightSource.Append(lightsource);
         }
+
+        #region Game logic
+        public void DecreaseDurability(float i)
+        {
+            durability.Regenerate(i);
+            durabilityCooldown.AffectValue(0f);
+        }
+
+        public virtual void Update()
+        {
+            durabilityCooldown.Regenerate(Game.compensation);
+            if (durabilityCooldown.Percent() >= 1f)
+            {
+                durability.AffectValue(1f);
+            }
+        }
+        #endregion
 
         public virtual void UpdateSprite()
         {
@@ -136,11 +166,49 @@ namespace YetAnotherRoguelike.Tile_Classes
             bool l = Chunk.FetchTypeAt(tileCoordinates.X - 1, tileCoordinates.Y) != BlockType.Air;
 
             spriteIndex = (u ? 0 : 1) + (r ? 0 : 2) + (d ? 0 : 4) + (l ? 0 : 8);
-        }
 
-        public virtual void Update()
-        {
+            if (isEmmisive)
+            {
+                color = Color.White;
+                return;
+            }
 
+            // more expensive lmao
+            float highest = 0;
+            float totalIntensity = 0;
+            int amount = 0;
+            Color[] colors = new Color[LightSource.lightSourcesCount];
+            foreach (LightSource light in LightSource.sources)
+            {
+                float distance = Vector2.Distance(light.position, tileCoordinatesV);
+                if (distance > light.range)
+                {
+                    continue;
+                }
+
+                float percent = (1f - (distance / light.range));
+                float intensity = (light.strength * percent);
+                totalIntensity += percent;
+                colors[amount] = light.color * percent;
+
+                if (intensity > highest)
+                {
+                    highest = intensity;
+                }
+
+                amount++;
+            }
+            //final /= amount;
+            float compensation = 1f / totalIntensity;
+            color = Color.Black;
+            for (int i = 0; i < amount; i++)
+            {
+                color.R += (byte)(colors[i].R * compensation);
+                color.G += (byte)(colors[i].G * compensation);
+                color.B += (byte)(colors[i].B * compensation);
+            }
+            color *= (highest * 0.05f);
+            color.A = (byte)240f;
         }
 
         public virtual void Draw(SpriteBatch spritebatch)
@@ -157,8 +225,13 @@ namespace YetAnotherRoguelike.Tile_Classes
 
             UpdateSprite();
 
-            Vector2 renderedPosition = tileCoordinates.ToVector2() * tileSize;
-            spritebatch.Draw(tileSprites[type][spriteIndex], renderedPosition, null, Color.White, 0f, spriteOrigin, spriteRenderScale, SpriteEffects.None, 0f);
+            spritebatch.Draw(tileSprites[type][spriteIndex], renderedPosition, null, color, 0f, spriteOrigin, spriteRenderScale, SpriteEffects.None, 0f);
+
+            if (durability.Percent() != 1f)
+            {
+                spritebatch.Draw(Game.emptySprite, new Rectangle(new Vector2(renderedPosition.X + 4 - (tileSize / 2f), renderedPosition.Y + 20 - (tileSize / 2f)).ToPoint(), new Point(56, 24)), Color.Black * 0.5f);
+                spritebatch.Draw(Game.emptySprite, new Rectangle(new Vector2(renderedPosition.X + 8 - (tileSize / 2f), renderedPosition.Y + 24 - (tileSize / 2f)).ToPoint(), new Point((int)(48f * (1f - (float)durability.Percent())), 16)), Color.White);
+            }
         }
 
         public virtual void OnDestroy() // when block is destroyed

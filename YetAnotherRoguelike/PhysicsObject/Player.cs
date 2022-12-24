@@ -17,6 +17,8 @@ namespace YetAnotherRoguelike.PhysicsObject
         public Point currentChunkPos;
         public Chunk[,] surroundingChunks = new Chunk[3, 3];
 
+        public Tile cursorTile;
+
         public Player(Vector2 pos, Texture2D _sprite):base(pos)
         {
             if (Instance == null)
@@ -63,6 +65,16 @@ namespace YetAnotherRoguelike.PhysicsObject
                 for (int y = -1; y < 2; y++)
                 {
                     surroundingChunks[x + 1, y + 1] = (Chunk.FetchChunkAt(currentChunkPos.X + x, currentChunkPos.Y + y));
+                }
+            }
+
+            cursorTile = Chunk.FetchTileAt(Cursor.tPosition.X, Cursor.tPosition.Y);
+
+            if (MouseInput.left.isPressed)
+            {
+                if (cursorTile.type != Tile.BlockType.Air)
+                {
+                    cursorTile.DecreaseDurability(-100f * Game.compensation);
                 }
             }
         }

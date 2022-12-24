@@ -58,6 +58,10 @@ namespace YetAnotherRoguelike.Scenes
                 e.Draw(Game.spriteBatch);
             }
             Game.spriteBatch.End();
+
+            /*Game.spriteBatch.Begin();
+            // draw UI here
+            Game.spriteBatch.End();*/
         }
     }
 }
