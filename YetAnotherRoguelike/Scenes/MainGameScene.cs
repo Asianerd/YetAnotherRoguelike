@@ -35,6 +35,8 @@ namespace YetAnotherRoguelike.Scenes
                 e.Update();
             }
 
+            Particle.UpdateAll();
+
             Lightmap.GenerateMap();
         }
 
@@ -57,6 +59,8 @@ namespace YetAnotherRoguelike.Scenes
             {
                 e.Draw(Game.spriteBatch);
             }
+
+            Particle.DrawAll();
             Game.spriteBatch.End();
 
             /*Game.spriteBatch.Begin();

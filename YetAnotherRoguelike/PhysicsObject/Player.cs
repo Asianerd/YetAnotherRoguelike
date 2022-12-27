@@ -77,6 +77,15 @@ namespace YetAnotherRoguelike.PhysicsObject
                     cursorTile.DecreaseDurability(-100f * Game.compensation);
                 }
             }
+
+            if (Input.collection[Keys.Q].isPressed)
+            {
+                Tile.renderScale -= 0.001f;
+            }
+            if (Input.collection[Keys.E].isPressed)
+            {
+                Tile.renderScale += 0.001f;
+            }
         }
 
         public override void Draw(SpriteBatch spritebatch)

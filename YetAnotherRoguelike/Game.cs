@@ -60,6 +60,7 @@ namespace YetAnotherRoguelike
             PerlinNoise.Initialize();
             var _ = new GaussianBlur();
             Lightmap.Initialize();
+            Particle.Initialize();
 
             GeneralDependencies.Initialize();
 
@@ -189,7 +190,7 @@ namespace YetAnotherRoguelike
             string debugText = $"FPS : {fps}\n" +
                 $"Pos : {(int)Player.Instance.position.X}:{(int)Player.Instance.position.Y}\n" +
                 $"Lights : {LightSource.sources.Count}\n" +
-                $"Chunks : {Chunk.chunks.Count}\n" +
+                $"Particles : {Particle.collection.Count}\n" +
                 $"{Chunk.FetchTypeAt(Cursor.tPosition.X, Cursor.tPosition.Y)}";
             spriteBatch.Draw(emptySprite, new Rectangle(new Point(0, 0), mainFont.MeasureString(debugText).ToPoint()), Color.Black * 0.2f);
             spriteBatch.DrawString(mainFont, debugText, Vector2.Zero, Color.White);

@@ -93,7 +93,7 @@ namespace YetAnotherRoguelike.Tile_Classes
          */
         public Point tileCoordinates;
         public Vector2 tileCoordinatesV; // vector2 version of tile coordinate for performance
-        Vector2 renderedPosition;
+        Vector2 renderedPosition; // "world position" basically tile position * tilesize
         public Point chunkCoordinates;
         public BlockType type;
         bool isAir;
@@ -101,7 +101,7 @@ namespace YetAnotherRoguelike.Tile_Classes
         public GameValue durability, durabilityCooldown = new GameValue(0, 30, 1);
 
         int spriteIndex = 0;
-        bool isEmmisive = false;
+        bool isEmissive = false;
         public LightSource lightsource;
         Color color;
 
@@ -134,7 +134,7 @@ namespace YetAnotherRoguelike.Tile_Classes
 
             durability = d != null ? d : new GameValue(0, 100, 1, 100);
 
-            isEmmisive = true;
+            isEmissive = true;
             lightsource = l;
 
             LightSource.Append(lightsource);
@@ -166,13 +166,10 @@ namespace YetAnotherRoguelike.Tile_Classes
             bool l = Chunk.FetchTypeAt(tileCoordinates.X - 1, tileCoordinates.Y) != BlockType.Air;
 
             spriteIndex = (u ? 0 : 1) + (r ? 0 : 2) + (d ? 0 : 4) + (l ? 0 : 8);
+        }
 
-            if (isEmmisive)
-            {
-                color = Color.White;
-                return;
-            }
-
+        public virtual void UpdateColor()
+        {
             // more expensive lmao
             float highest = 0;
             float totalIntensity = 0;
@@ -207,8 +204,8 @@ namespace YetAnotherRoguelike.Tile_Classes
                 color.G += (byte)(colors[i].G * compensation);
                 color.B += (byte)(colors[i].B * compensation);
             }
-            color *= (highest * 0.05f);
-            color.A = (byte)240f;
+            color *= (highest * 0.08f);
+            color.A = (byte)255f;
         }
 
         public virtual void Draw(SpriteBatch spritebatch)
@@ -224,6 +221,7 @@ namespace YetAnotherRoguelike.Tile_Classes
             }
 
             UpdateSprite();
+            UpdateColor();
 
             spritebatch.Draw(tileSprites[type][spriteIndex], renderedPosition, null, color, 0f, spriteOrigin, spriteRenderScale, SpriteEffects.None, 0f);
 
@@ -236,7 +234,20 @@ namespace YetAnotherRoguelike.Tile_Classes
 
         public virtual void OnDestroy() // when block is destroyed
         {
-            if (isEmmisive)
+            for (int i = 0; i <= 5; i++)
+            {
+                Particle.collection.Add(new Particles.BreakBlock(
+                        renderedPosition + new Vector2(
+                            tileSize * (Game.random.Next(-1000, 1000) / 2000f),
+                            tileSize * (Game.random.Next(-1000, 1000) / 2000f)
+                            ),
+                        Color.White,
+                        renderedPosition,
+                        l: isEmissive ? lightsource : null
+                        ));
+            }
+
+            if (isEmissive)
             {
                 LightSource.Remove(lightsource);
             }
@@ -245,7 +256,7 @@ namespace YetAnotherRoguelike.Tile_Classes
 
         public virtual void OnReload() // when unloaded chunk is reloaded
         {
-            if (isEmmisive)
+            if (isEmissive)
             {
                 LightSource.Append(lightsource);
             }
@@ -253,7 +264,7 @@ namespace YetAnotherRoguelike.Tile_Classes
 
         public virtual void OnUnload() // when loaded chunk is unloaded
         {
-            if (isEmmisive)
+            if (isEmissive)
             {
                 LightSource.Remove(lightsource);
             }
@@ -261,7 +272,7 @@ namespace YetAnotherRoguelike.Tile_Classes
 
         public virtual void OnChunkDelete() // when chunk is deleted
         {
-            if (isEmmisive)
+            if (isEmissive)
             {
                 LightSource.Remove(lightsource);
             }

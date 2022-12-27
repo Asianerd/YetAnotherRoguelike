@@ -11,7 +11,7 @@ namespace YetAnotherRoguelike.Tile_Classes
     {
         public static List<Chunk> chunks = new List<Chunk>();
         public static int chunkSize = 16;
-        public static int chunkGenerationRange = 2; // generates chunks in a 5x5 box around the player
+        public static int chunkGenerationRange = 1; // generates chunks in a 5x5 box around the player
         /* . . . . . . .
          * . X X X X X .
          * . X X X X X .
@@ -235,6 +235,8 @@ namespace YetAnotherRoguelike.Tile_Classes
             {
                 return;
             }
+
+            //spritebatch.Draw(Game.emptySprite, new Rectangle((int)(rect.X * Tile.tileSize) + 10, (int)(rect.Y * Tile.tileSize) + 10, (int)(rect.Width * Tile.tileSize) - 20, (int)(rect.Height * Tile.tileSize) - 20), Color.Green);
 
             for (int y = 0; y < chunkSize; y++)
             {
