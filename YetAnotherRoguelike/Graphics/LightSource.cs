@@ -15,6 +15,7 @@ namespace YetAnotherRoguelike.Graphics
         public Vector2 position;
         public Color color;
         public float strength, range;
+        public float oneOverRange; // performance reasons
 
         public LightSource(Vector2 p, Color c, float s, float r)
         {
@@ -22,6 +23,8 @@ namespace YetAnotherRoguelike.Graphics
             color = c;
             range = r;
             strength = s;
+
+            oneOverRange = 1f / range;
         }
 
         public static void Append(LightSource light)

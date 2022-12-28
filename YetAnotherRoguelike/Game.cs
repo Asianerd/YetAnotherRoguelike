@@ -57,6 +57,8 @@ namespace YetAnotherRoguelike
 
         protected override void Initialize()
         {
+            Data.JSON_BlockData.Initialize();
+
             PerlinNoise.Initialize();
             var _ = new GaussianBlur();
             Lightmap.Initialize();
@@ -120,6 +122,8 @@ namespace YetAnotherRoguelike
 
             Scene.Initialize();
 
+            Item.Initialize();
+            GroundItem.Initialize();
             Tile.Initialize();
 
             base.Initialize();
@@ -190,8 +194,7 @@ namespace YetAnotherRoguelike
             string debugText = $"FPS : {fps}\n" +
                 $"Pos : {(int)Player.Instance.position.X}:{(int)Player.Instance.position.Y}\n" +
                 $"Lights : {LightSource.sources.Count}\n" +
-                $"Particles : {Particle.collection.Count}\n" +
-                $"{Chunk.FetchTypeAt(Cursor.tPosition.X, Cursor.tPosition.Y)}";
+                $"Ground items : {GroundItem.collection.Count}";
             spriteBatch.Draw(emptySprite, new Rectangle(new Point(0, 0), mainFont.MeasureString(debugText).ToPoint()), Color.Black * 0.2f);
             spriteBatch.DrawString(mainFont, debugText, Vector2.Zero, Color.White);
 

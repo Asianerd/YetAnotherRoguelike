@@ -72,19 +72,18 @@ namespace YetAnotherRoguelike.PhysicsObject
 
             if (MouseInput.left.isPressed)
             {
-                if (cursorTile.type != Tile.BlockType.Air)
+                if ((cursorTile != null) && (cursorTile.type != Tile.BlockType.Air))
                 {
-                    cursorTile.DecreaseDurability(-100f * Game.compensation);
+                    cursorTile.DecreaseDurability(-400f * Game.compensation);
                 }
             }
 
-            if (Input.collection[Keys.Q].isPressed)
+            if (Input.collection[Keys.F].active)
             {
-                Tile.renderScale -= 0.001f;
-            }
-            if (Input.collection[Keys.E].isPressed)
-            {
-                Tile.renderScale += 0.001f;
+                foreach (GroundItem x in GroundItem.collection)
+                {
+                    x.follow = true;
+                }
             }
         }
 

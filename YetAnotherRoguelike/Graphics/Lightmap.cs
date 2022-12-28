@@ -15,7 +15,7 @@ namespace YetAnotherRoguelike.Graphics
         public static Color[] lightmapArray;
 
         public static Point size; // size of array
-        public static float resolution = 0.5f;
+        public static float resolution = 0.5f; // the lower, the better the quality
 
         public static Rectangle drawnRect;
 
@@ -58,13 +58,18 @@ namespace YetAnotherRoguelike.Graphics
 
         public static void GenerateMap()
         {
+            float halfTileSize = 0.5f * resolution;
+            float cameraOffset = 1f / Tile.tileSize;
             for (int y = 0; y < size.Y; y++)
             {
                 for (int x = 0; x < size.X; x++)
                 {
                     //Vector2 position = Chunk.WorldToTile(Chunk.CorrectedTileToWorld(new Vector2(x, y) * resolution) - Camera.Instance.renderOffset);
-                    Vector2 position = (new Vector2(x, y) * resolution) - (Camera.renderOffset / Tile.tileSize);
-                    
+                    Vector2 position = (new Vector2(x, y) * resolution) - (Camera.renderOffset * cameraOffset);
+                    position.X += halfTileSize;
+                    position.Y += halfTileSize;
+                    // idk why too but gotta offset it a bit
+
                     float highest = 0;
                     float totalIntensity = 0;
                     int amount = 0;
@@ -79,7 +84,7 @@ namespace YetAnotherRoguelike.Graphics
                             continue;
                         }
 
-                        float percent = (1f - (distance / light.range));
+                        float percent = (1f - (distance * light.oneOverRange));
                         float intensity = (light.strength * percent);
                         totalIntensity += percent;
                         colors[amount] = light.color * percent;
@@ -100,7 +105,7 @@ namespace YetAnotherRoguelike.Graphics
                         final.G += (byte)(colors[i].G * compensation);
                         final.B += (byte)(colors[i].B * compensation);
                     }
-                    final *= (highest / 60f);
+                    final *= (highest * 0.016667f); // 1/60
                     lightmapArray[x + (y * size.X)] = final;
                 }
             }

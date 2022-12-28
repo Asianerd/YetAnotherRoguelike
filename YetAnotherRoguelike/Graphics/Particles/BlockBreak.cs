@@ -26,8 +26,9 @@ namespace YetAnotherRoguelike.Particles
         LightSource lightSource;
         float lightStrength, lightRange;
 
-        public BreakBlock(Vector2 pos, Color _color, Vector2 _origin, LightSource l = null) : base(pos, new GameValue(0, 50, 1, 0))
+        public BreakBlock(Vector2 pos, Color _color, Vector2 _origin, LightSource l = null, bool defaultColor = true) : base(pos, new GameValue(0, 50, 1, 0))
         {
+            // defaultColor is whether the color given is not in block_data.json
             origin = _origin;
 
             age.I += Game.random.Next(5, 15);
@@ -47,8 +48,13 @@ namespace YetAnotherRoguelike.Particles
             }
 
             float highest = 0;
-            List<Color> colors = new List<Color>() { _color };
-            List<float> intensities = new List<float>() { 1f };
+            List<Color> colors = new List<Color>();
+            List<float> intensities = new List<float>();
+            if (defaultColor) // color is not in block_data.json
+            {
+                colors.Add(_color);
+                intensities.Add(1f);
+            }
             foreach (LightSource light in LightSource.sources)
             {
                 float distance = Vector2.Distance(light.position, position / Tile.tileSize);
@@ -76,6 +82,12 @@ namespace YetAnotherRoguelike.Particles
                 final.G += (byte)(c.G * compensation);
                 final.B += (byte)(c.B * compensation);
             }
+            if (!defaultColor) // color is in block_data.json
+            {
+                final.R = (byte)((final.R * 0.3f) + (_color.R * 0.7f));
+                final.G = (byte)((final.G * 0.3f) + (_color.G * 0.7f));
+                final.B = (byte)((final.B * 0.3f) + (_color.B * 0.7f));
+            }
             color = final * (highest / 20f);
             color.A = 255;
 
@@ -84,7 +96,7 @@ namespace YetAnotherRoguelike.Particles
                 isEmissive = true;
 
                 lightStrength = l.strength;
-                lightRange = l.range / 2f;
+                lightRange = l.range * 0.1f;
 
                 lightSource = new LightSource(pos / Tile.tileSize, l.color, lightStrength, lightRange);
                 LightSource.Append(lightSource);

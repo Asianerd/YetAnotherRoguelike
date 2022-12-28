@@ -1,61 +1,88 @@
 {
-    "Stone": {
-        "loot": {
-            "Stone": 5
-        }
-    },
-    "Coal_ore": {
-        "loot": {
-            "Coal": 3,
-            "Stone": 1
-        }
-    },
-    "Bauxite": {
-        "loot": {
-            "Bauxite": 4,
-            "Stone": 2
-        }
-    },
-    "Hematite": {
-        "loot": {
-            "Hematite": 3,
-            "Stone": 3
-        }
-    },
-    "Sphalerite": {
-        "loot": {
-            "Sphalerite": 7,
-            "Stone": 2
-        }
-    },
-    "Calamine": {
-        "loot": {
-            "Calamine": 2,
-            "Stone": 5
-        }
-    },
-    "Galena": {
-        "loot": {
-            "Galena": 4,
-            "Stone": 2
-        }
-    },
-    "Cinnabar": {
-        "loot": {
-            "Cinnabar": 2,
-            "Stone": 7
-        }
-    },
-    "Argentite": {
-        "loot": {
-            "Argentite": 3,
-            "Stone": 3
-        }
-    },
-    "Bismuth": {
-        "loot": {
-            "Bismuth": 1,
-            "Stone": 1
-        }
+  "Stone": {
+    "loot": {
+      "Stone": 5
     }
+  },
+  "Coal_ore": {
+    "loot": {
+      "Coal": 3,
+      "Stone": 1
+    },
+    "break_color": [
+      0,
+      0,
+      0,
+      255
+    ]
+  },
+  "Bauxite": {
+    "loot": {
+      "Bauxite": 4,
+      "Stone": 2
+    }
+  },
+  "Hematite": {
+    "loot": {
+      "Hematite": 3,
+      "Stone": 3
+    }
+  },
+  "Sphalerite": {
+    "loot": {
+      "Sphalerite": 7,
+      "Stone": 2
+    }
+  },
+  "Calamine": {
+    "loot": {
+      "Calamine": 2,
+      "Stone": 5
+    }
+  },
+  "Galena": {
+    "loot": {
+      "Galena": 4,
+      "Stone": 2
+    }
+  },
+  "Cinnabar": {
+    "loot": {
+      "Cinnabar": 2,
+      "Stone": 7
+    }
+  },
+  "Argentite": {
+    "loot": {
+      "Argentite": 3,
+      "Stone": 3
+    }
+  },
+  "Bismuth": {
+    "light": [
+      255,
+      255,
+      255,
+      5,
+      2
+    ]
+  },
+  "Neon_Blue": {
+    "light": [
+      82,
+      241,
+      242,
+      25,
+      10
+    ]
+  },
+  "Neon_Purple": {
+    "light": [
+      255,
+      0,
+      244,
+      25,
+      10
+    ]
+  }
 }

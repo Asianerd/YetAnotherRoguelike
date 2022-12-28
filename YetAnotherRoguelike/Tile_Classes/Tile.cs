@@ -1,7 +1,6 @@
-﻿    using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using YetAnotherRoguelike.Graphics;
@@ -11,6 +10,8 @@ namespace YetAnotherRoguelike.Tile_Classes
     class Tile
     {
         public static Dictionary<BlockType, List<Texture2D>> tileSprites;
+        public static Dictionary<BlockType, Color> blockParticleBreakColors;
+        public static List<BlockType> blockLightData; // list of types with light data, refer to JSON_BlockData.collection for the data
         public static Vector2 spriteOrigin;
         public static float spriteRenderScale = 4f; // coefficient to enlarge 16x16 to 64x64
         public static float tileSize = 64f; // size in pixels; sprites are 16x16
@@ -38,6 +39,19 @@ namespace YetAnotherRoguelike.Tile_Classes
                 List<Texture2D> final = GeneralDependencies.Split(sprite, 16, 16);
                 tileSprites.Add(t, final);
             }
+
+            blockParticleBreakColors = new Dictionary<BlockType, Color>();
+            foreach (BlockType t in Enum.GetValues(typeof(BlockType)).Cast<BlockType>())
+            {
+                if (!Data.JSON_BlockData.blockData.ContainsKey(t))
+                {
+                    blockParticleBreakColors.Add(t, Color.White);
+                    continue;
+                }
+                blockParticleBreakColors.Add(t, Data.JSON_BlockData.blockData[t].break_color == null ? Color.Transparent : Data.JSON_BlockData.blockData[t].breakParticleColor);
+            }
+
+            blockLightData = Data.JSON_BlockData.blockData.Where(n => n.Value.light != null).Select(n => n.Key).ToList();
         }
 
         public static BlockType GenerateTileType(float p, Point pos, Chunk parentChunk)
@@ -79,9 +93,14 @@ namespace YetAnotherRoguelike.Tile_Classes
             // find a better way in the future?
             return t switch
             {
-                BlockType.Neon_Blue => new Tile(tCoords, cCoords, t, new LightSource(tCoords.ToVector2(), new Color(82, 241, 242), 25, 10)),
-                BlockType.Neon_Purple => new Tile(tCoords, cCoords, t, new LightSource(tCoords.ToVector2(), new Color(255, 0, 244), 25, 10)),
-                _ => new Tile(tCoords, cCoords, t)
+                /*BlockType.Neon_Blue => new Tile(tCoords, cCoords, t, new LightSource(tCoords.ToVector2(), new Color(82, 241, 242), 25, 10)),
+                BlockType.Neon_Purple => new Tile(tCoords, cCoords, t, new LightSource(tCoords.ToVector2(), new Color(255, 0, 244), 25, 10)),*/
+                _ => new Tile(tCoords, cCoords, t,
+                l : blockLightData.Contains(t) ? new LightSource(tCoords.ToVector2(),
+                Data.JSON_BlockData.blockData[t].lightColor,
+                Data.JSON_BlockData.blockData[t].lightStrength,
+                Data.JSON_BlockData.blockData[t].lightRange
+                ) : null)
             };
         }
 
@@ -105,22 +124,7 @@ namespace YetAnotherRoguelike.Tile_Classes
         public LightSource lightsource;
         Color color;
 
-        public Tile(Point tCoords, Point cCoords, BlockType t, GameValue d = null)
-        {
-            type = t;
-
-            isAir = type == BlockType.Air;
-
-            tileCoordinates = tCoords;
-            tileCoordinatesV = tileCoordinates.ToVector2();
-            chunkCoordinates = cCoords;
-
-            renderedPosition = tileCoordinates.ToVector2() * tileSize;
-
-            durability = d != null ? d : new GameValue(0, 100, 1, 100);
-        }
-
-        public Tile(Point tCoords, Point cCoords, BlockType t, LightSource l, GameValue d = null)
+        public Tile(Point tCoords, Point cCoords, BlockType t, GameValue d = null, LightSource l = null)
         {
             type = t;
 
@@ -134,6 +138,10 @@ namespace YetAnotherRoguelike.Tile_Classes
 
             durability = d != null ? d : new GameValue(0, 100, 1, 100);
 
+            if (l == null)
+            {
+                return;
+            }
             isEmissive = true;
             lightsource = l;
 
@@ -183,7 +191,7 @@ namespace YetAnotherRoguelike.Tile_Classes
                     continue;
                 }
 
-                float percent = (1f - (distance / light.range));
+                float percent = (1f - (distance * light.oneOverRange));
                 float intensity = (light.strength * percent);
                 totalIntensity += percent;
                 colors[amount] = light.color * percent;
@@ -234,17 +242,29 @@ namespace YetAnotherRoguelike.Tile_Classes
 
         public virtual void OnDestroy() // when block is destroyed
         {
-            for (int i = 0; i <= 5; i++)
+            for (int i = 0; i <= 20; i++)
             {
                 Particle.collection.Add(new Particles.BreakBlock(
                         renderedPosition + new Vector2(
                             tileSize * (Game.random.Next(-1000, 1000) / 2000f),
                             tileSize * (Game.random.Next(-1000, 1000) / 2000f)
                             ),
-                        Color.White,
+                        blockParticleBreakColors[type],
                         renderedPosition,
                         l: isEmissive ? lightsource : null
                         ));
+            }
+
+            foreach (KeyValuePair<Item.Type, int> x in Item.blockDrops[type])
+            {
+                GroundItem.collection.Add(new GroundItem(
+                    new Item(x.Key, x.Value),
+                    tileCoordinatesV + new Vector2(
+                        Game.random.Next(-100, 100) / 200f,
+                        Game.random.Next(-100, 100) / 200f
+                        ),
+                    tileCoordinatesV
+                    ));
             }
 
             if (isEmissive)
