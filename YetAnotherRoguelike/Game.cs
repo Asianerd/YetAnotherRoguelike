@@ -14,6 +14,9 @@ namespace YetAnotherRoguelike
     {
         public static Game Instance;
 
+        public delegate void ScreenEvents();
+        public static ScreenEvents OnScreenResize;
+
         public static GraphicsDeviceManager graphics;
         public static SpriteBatch spriteBatch;
         public static Vector2 screenSize = new Vector2(1920, 1080);
@@ -47,6 +50,13 @@ namespace YetAnotherRoguelike
             graphics.PreferredBackBufferHeight = (int)screenSize.Y;
             graphics.IsFullScreen = screenSize == new Vector2(1920, 1080);
 
+            Window.AllowUserResizing = true;
+            Window.ClientSizeChanged += (s, e) =>
+            {
+                screenSize = new Vector2(graphics.GraphicsDevice.Viewport.Width, graphics.GraphicsDevice.Viewport.Height);
+                OnScreenResize(); // might be null
+            };
+
             IsFixedTimeStep = false;
 
             graphics.ApplyChanges();
@@ -66,6 +76,7 @@ namespace YetAnotherRoguelike
 
             GeneralDependencies.Initialize();
 
+            UI.UI_Container.Initialize();
             Input.Initialize(new List<Keys>() {
                 Keys.Q,
                 Keys.W,
@@ -122,6 +133,7 @@ namespace YetAnotherRoguelike
 
             Scene.Initialize();
 
+            // move to main game scene init?
             Item.Initialize();
             GroundItem.Initialize();
             Tile.Initialize();
@@ -192,6 +204,7 @@ namespace YetAnotherRoguelike
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             string debugText = $"FPS : {fps}\n" +
+                $"{screenSize}\n" +
                 $"Pos : {(int)Player.Instance.position.X}:{(int)Player.Instance.position.Y}\n" +
                 $"Lights : {LightSource.sources.Count}\n" +
                 $"Ground items : {GroundItem.collection.Count}";

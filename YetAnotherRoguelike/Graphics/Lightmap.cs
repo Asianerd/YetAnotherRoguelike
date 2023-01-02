@@ -27,6 +27,8 @@ namespace YetAnotherRoguelike.Graphics
         public static void Initialize()
         {
             OnScreenSizeChange();
+
+            Game.OnScreenResize += OnScreenSizeChange;
         }
 
         public static void OnScreenSizeChange()

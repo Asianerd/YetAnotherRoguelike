@@ -14,10 +14,14 @@ namespace YetAnotherRoguelike.PhysicsObject
         public static Texture2D sprite = null;
         public static Vector2 spriteOrigin;
 
+        public static int inventorySize = 32; // 32 slots
+
         public Point currentChunkPos;
         public Chunk[,] surroundingChunks = new Chunk[3, 3];
 
         public Tile cursorTile;
+
+        public List<Item> inventory;
 
         public Player(Vector2 pos, Texture2D _sprite):base(pos)
         {
@@ -30,10 +34,14 @@ namespace YetAnotherRoguelike.PhysicsObject
                 sprite = _sprite;
                 spriteOrigin = sprite.Bounds.Size.ToVector2() / 2f;
             }
+
+            inventory = new List<Item>();
         }
 
         public override void Update()
         {
+            bool hasMoved = false;
+
             Vector2 final = Vector2.Zero;
             foreach (Keys x in new Keys[] { Keys.W, Keys.A, Keys.S, Keys.D })
             {
@@ -45,6 +53,7 @@ namespace YetAnotherRoguelike.PhysicsObject
             if ((final.X != 0) || (final.Y != 0))
             {
                 final.Normalize();
+                hasMoved = true;
             }
             final *= Input.collection[Keys.LeftShift].isPressed ? 0.25f : 0.12f;
             velocity = final;
@@ -85,7 +94,65 @@ namespace YetAnotherRoguelike.PhysicsObject
                     x.follow = true;
                 }
             }
+
+            if (hasMoved)
+            {
+                UI.UI_Inventory_Container.Instance.active = false;
+            }
+            else
+            {
+                if (Input.collection[Keys.E].active)
+                {
+                    UI.UI_Inventory_Container.Instance.Toggle();
+                }
+            }
         }
+
+        #region Item handling
+        public bool InventoryCanFit(Item item)
+        {
+            if (inventory.Count <= inventorySize)
+            {
+                return true;
+            }
+            foreach (Item x in inventory)
+            {
+                if (x.type != item.type)
+                {
+                    continue;
+                }
+                if (x.Full())
+                {
+                    continue;
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public void InventoryAppend(Item item)
+        {
+            foreach (Item x in inventory)
+            {
+                if (x.type != item.type)
+                {
+                    continue;
+                }
+                if (x.Full())
+                {
+                    continue;
+                }
+                int leftover;
+                x.amount += item.amount;
+                if (x.amount > x.stackSize)
+                {
+                    leftover = x.stackSize - x.amount;
+                    x.amount -= leftover;
+                    GroundItem.collection.Add(new GroundItem(new Item(item.type, leftover), position, position, false));
+                }
+            }
+        }
+        #endregion
 
         public override void Draw(SpriteBatch spritebatch)
         {
