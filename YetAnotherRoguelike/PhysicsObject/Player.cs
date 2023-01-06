@@ -87,6 +87,40 @@ namespace YetAnotherRoguelike.PhysicsObject
                 }
             }
 
+            if (MouseInput.right.isPressed)
+            {
+                if (cursorTile != null)
+                {
+                    Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkCoordinates.X, cursorTile.chunkCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkCoordinates.X, cursorTile.chunkCoordinates.Y), Tile.BlockType.Neon_Purple));
+                }
+            }
+
+            // lights
+            if (Input.collection[Keys.D1].active)
+            {
+                if (cursorTile != null)
+                {
+                    Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkCoordinates.X, cursorTile.chunkCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkCoordinates.X, cursorTile.chunkCoordinates.Y), Tile.BlockType.Neon_R));
+                }
+            }
+
+            if (Input.collection[Keys.D2].active)
+            {
+                if (cursorTile != null)
+                {
+                    Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkCoordinates.X, cursorTile.chunkCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkCoordinates.X, cursorTile.chunkCoordinates.Y), Tile.BlockType.Neon_G));
+                }
+            }
+
+            if (Input.collection[Keys.D3].active)
+            {
+                if (cursorTile != null)
+                {
+                    Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkCoordinates.X, cursorTile.chunkCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkCoordinates.X, cursorTile.chunkCoordinates.Y), Tile.BlockType.Neon_B));
+                }
+            }
+            //
+
             if (Input.collection[Keys.F].active)
             {
                 foreach (GroundItem x in GroundItem.collection)

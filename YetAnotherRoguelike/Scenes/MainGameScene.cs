@@ -45,12 +45,13 @@ namespace YetAnotherRoguelike.Scenes
 
         public override void Draw()
         {
-            Game.spriteBatch.Begin(SpriteSortMode.Immediate, blendState: BlendState.AlphaBlend);
+            /*Game.spriteBatch.Begin(SpriteSortMode.Immediate, blendState: BlendState.AlphaBlend);
             Lightmap.Draw(Game.spriteBatch);
-            Game.spriteBatch.End();
+            Game.spriteBatch.End();*/
 
             Matrix renderMatrix = Matrix.CreateTranslation(new Vector3(Camera.renderOffset, 0f));
-            Game.spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: renderMatrix);
+            Game.spriteBatch.Begin(sortMode: SpriteSortMode.Immediate, samplerState: SamplerState.PointClamp, transformMatrix: renderMatrix);
+            Game.graphics.GraphicsDevice.Clear(Color.White * 0.2f);
             base.Draw();
 
             foreach (Chunk x in Chunk.chunks)
@@ -66,6 +67,10 @@ namespace YetAnotherRoguelike.Scenes
             GroundItem.DrawAll(Game.spriteBatch);
 
             Particle.DrawAll();
+            Game.spriteBatch.End();
+
+            Game.spriteBatch.Begin(sortMode:SpriteSortMode.Immediate, blendState:Lightmap.MultiplyBlendState);
+            Lightmap.Draw(Game.spriteBatch);
             Game.spriteBatch.End();
 
             // draw UI here

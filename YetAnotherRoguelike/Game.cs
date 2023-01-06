@@ -204,7 +204,7 @@ namespace YetAnotherRoguelike
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             string debugText = $"FPS : {fps}\n" +
-                $"{screenSize}\n" +
+                $"{Player.Instance.cursorTile.tileCoordinates}\n" +
                 $"Pos : {(int)Player.Instance.position.X}:{(int)Player.Instance.position.Y}\n" +
                 $"Lights : {LightSource.sources.Count}\n" +
                 $"Ground items : {GroundItem.collection.Count}";

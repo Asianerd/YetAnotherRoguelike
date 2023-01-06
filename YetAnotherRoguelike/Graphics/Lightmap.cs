@@ -9,6 +9,9 @@ namespace YetAnotherRoguelike.Graphics
 {
     class Lightmap
     {
+        public static RenderType renderType = RenderType.Sprite;
+        public static Effect HDR2LDRShader;
+
         public static RenderTarget2D renderTarget;
         public static Texture2D lightmap;
         public static Texture2D lightTexture; // the finished texture, same size as the screen
@@ -24,8 +27,39 @@ namespace YetAnotherRoguelike.Graphics
 
         public static Rectangle drawnRect;*/
 
+        public static Texture2D radialSprite;
+        public static Vector2 spriteOrigin;
+
+        public static float scaleCoefficient;
+
+        public static BlendState MultiplyBlendState = new BlendState()
+        {
+            AlphaSourceBlend = Blend.DestinationAlpha,
+            AlphaDestinationBlend = Blend.Zero,
+            AlphaBlendFunction = BlendFunction.Add,
+            ColorSourceBlend = Blend.DestinationColor,
+            ColorDestinationBlend = Blend.Zero,
+            ColorBlendFunction = BlendFunction.Add
+        };
+
+        public static BlendState lightmapBlendState = new BlendState()
+        {
+            AlphaBlendFunction = BlendFunction.Max,
+            AlphaDestinationBlend = Blend.One,
+            AlphaSourceBlend = Blend.One,
+            ColorBlendFunction = BlendFunction.Max,
+            ColorDestinationBlend = Blend.One,
+            ColorSourceBlend = Blend.One,
+        };
+
         public static void Initialize()
         {
+            HDR2LDRShader = Game.Instance.Content.Load<Effect>("Shaders/HDRLDRConvert");
+
+            radialSprite = Game.Instance.Content.Load<Texture2D>("Light/radial2");
+            spriteOrigin = radialSprite.Bounds.Size.ToVector2() / 2f;
+            scaleCoefficient = Tile.tileSize / radialSprite.Bounds.Width;
+
             OnScreenSizeChange();
 
             Game.OnScreenResize += OnScreenSizeChange;
@@ -36,7 +70,8 @@ namespace YetAnotherRoguelike.Graphics
             renderTarget = new RenderTarget2D(
                 Game.graphics.GraphicsDevice,
                 (int)Game.screenSize.X,
-                (int)Game.screenSize.Y
+                (int)Game.screenSize.Y,
+                false, SurfaceFormat.Vector4, DepthFormat.None
                 );
 
             size = new Point(
@@ -50,6 +85,8 @@ namespace YetAnotherRoguelike.Graphics
 
             drawnRect = new Rectangle(new Point(0), Game.screenSize.ToPoint());
 
+            scaleCoefficient = Tile.tileSize / radialSprite.Bounds.Width;
+
             /*renderTarget = new RenderTarget2D(
                 Game.graphics.GraphicsDevice,
                 (int)Game.screenSize.X,
@@ -59,6 +96,19 @@ namespace YetAnotherRoguelike.Graphics
         }
 
         public static void GenerateMap()
+        {
+            switch (renderType)
+            {
+                case RenderType.PerTile:
+                    PerTile();
+                    break;
+                default:
+                    SpriteBased();
+                    break;
+            }
+        }
+
+        public static void PerTile()
         {
             float halfTileSize = 0.5f * resolution;
             float cameraOffset = 1f / Tile.tileSize;
@@ -115,25 +165,27 @@ namespace YetAnotherRoguelike.Graphics
             lightmap.SetData(lightmapArray); // 30x17 array of colors
         }
 
-        public static void __GenerateMap() // radial method is depreciated
+        public static void SpriteBased()
         {
-            // radial method didnt add colors properly
-            /*Game.graphics.GraphicsDevice.SetRenderTarget(renderTarget);
+            // with the correct blendstate, proper color addition works
+            Game.graphics.GraphicsDevice.SetRenderTarget(renderTarget);
 
-            Game.spriteBatch.Begin();
+            Game.spriteBatch.Begin(sortMode: SpriteSortMode.Immediate, blendState:lightmapBlendState);
+            Game.graphics.GraphicsDevice.Clear(Color.White * 0.1f);
             foreach (LightSource s in LightSource.sources)
             {
-                Game.spriteBatch.Draw(radialSprite, (s.position * Tile.tileSize) + Camera.renderOffset, null, s.color, 0f, spriteOrigin, s.range * scaleCoefficient, SpriteEffects.None, 0f);
+                Game.spriteBatch.Draw(radialSprite, (s.position * Tile.tileSize) + Camera.renderOffset, null, new Color(s.colorV * s.strength), 0f, spriteOrigin, s.range * scaleCoefficient, SpriteEffects.None, 0f);
             }
             Game.spriteBatch.End();
 
             Game.graphics.GraphicsDevice.SetRenderTarget(null);
 
-            lightTexture = (Texture2D)renderTarget;*/
+            lightTexture = (Texture2D)renderTarget;
         }
 
-        public static void _GenerateMap()
+        public static void ___GenerateMap()
         {
+            // apparently this algorithm i made is a maximum color blend function
             int lightSourceCount = LightSource.sources.Count;
             for (int y = 0; y < size.Y; y++)
             {
@@ -245,8 +297,22 @@ namespace YetAnotherRoguelike.Graphics
         public static void Draw(SpriteBatch spritebatch)
         {
             //spritebatch.Begin(SpriteSortMode.Immediate, blendState: BlendState.AlphaBlend);
-            spritebatch.Draw(lightmap, drawnRect, Color.White);
+            switch (renderType)
+            {
+                case RenderType.PerTile:
+                    spritebatch.Draw(lightmap, drawnRect, Color.White);
+                    break;
+                default:
+                    spritebatch.Draw(lightTexture, drawnRect, Color.White);
+                    break;
+            }
             //spritebatch.End();
+        }
+
+        public enum RenderType
+        {
+            PerTile,
+            Sprite
         }
     }
 }

@@ -113,7 +113,7 @@ namespace YetAnotherRoguelike.Tile_Classes
         public Point tileCoordinates;
         public Vector2 tileCoordinatesV; // vector2 version of tile coordinate for performance
         Vector2 renderedPosition; // "world position" basically tile position * tilesize
-        public Point chunkCoordinates;
+        public Point chunkCoordinates; // position in the chunk; (0, 0) to (chunkSize, chunkSize)
         public BlockType type;
         bool isAir;
 
@@ -122,7 +122,7 @@ namespace YetAnotherRoguelike.Tile_Classes
         int spriteIndex = 0;
         bool isEmissive = false;
         public LightSource lightsource;
-        Color color;
+        Color color = Color.White;
 
         public Tile(Point tCoords, Point cCoords, BlockType t, GameValue d = null, LightSource l = null)
         {
@@ -229,7 +229,7 @@ namespace YetAnotherRoguelike.Tile_Classes
             }
 
             UpdateSprite();
-            UpdateColor();
+            //UpdateColor();
 
             spritebatch.Draw(tileSprites[type][spriteIndex], renderedPosition, null, color, 0f, spriteOrigin, spriteRenderScale, SpriteEffects.None, 0f);
 
@@ -307,6 +307,10 @@ namespace YetAnotherRoguelike.Tile_Classes
             Neon_Blue,
             Neon_Purple,
             Neon_Yellow,
+
+            Neon_R,
+            Neon_G,
+            Neon_B,
 
             Coal_ore,
             Bauxite,

@@ -14,6 +14,7 @@ namespace YetAnotherRoguelike.Graphics
 
         public Vector2 position;
         public Color color;
+        public Vector4 colorV;
         public float strength, range;
         public float oneOverRange; // performance reasons
 
@@ -21,6 +22,7 @@ namespace YetAnotherRoguelike.Graphics
         {
             position = p;
             color = c;
+            colorV = color.ToVector4();
             range = r;
             strength = s;
 

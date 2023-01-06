@@ -42,6 +42,22 @@ namespace YetAnotherRoguelike.Tile_Classes
             return new Point((int)Math.Floor(x / (float)chunkSize), (int)Math.Floor(y / (float)chunkSize));
         }
 
+        public static Chunk FetchChunkWithCoords(int x, int y)
+        {
+            foreach (Chunk c in chunks)
+            {
+                if (c.position.X == x)
+                {
+                    if (c.position.Y == y)
+                    {
+                        return c;
+                    }
+                }
+            }
+
+            return null;
+        }
+
         public static Chunk FetchChunkAt(int x, int y) // Fetches the chunk that contains the tile-coordinate
         {
             int tx = (int)Math.Floor(x / (float)chunkSize);
@@ -221,7 +237,7 @@ namespace YetAnotherRoguelike.Tile_Classes
                     if (contents[x, y].durability.Percent() <= 0f)
                     {
                         contents[x, y].OnDestroy();
-                        contents[x, y] = new Tile(new Point(x, y), position, Tile.BlockType.Air);
+                        contents[x, y] = new Tile(new Point(contents[x, y].tileCoordinates.X, contents[x, y].tileCoordinates.Y), new Point(x, y), Tile.BlockType.Air); // error at char 61
 
                         modified = true;
                     }
@@ -245,6 +261,13 @@ namespace YetAnotherRoguelike.Tile_Classes
                     contents[x, y].Draw(spritebatch);
                 }
             }
+        }
+
+        public void ReplaceTile(Point target, Tile newTile)
+        {
+            Debug.WriteLine(target);
+            contents[target.X, target.Y].OnDestroy();
+            contents[target.X, target.Y] = newTile;
         }
 
         public Tile LocalFetchTile(int x, int y) // parameters in tile-coordinates

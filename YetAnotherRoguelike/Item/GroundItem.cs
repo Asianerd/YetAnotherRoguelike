@@ -62,7 +62,7 @@ namespace YetAnotherRoguelike
         public GameValue pickupCooldown;
         public bool follow = false;
 
-        public Color color;
+        public Color color = Color.White;
         public GameValue animationAge;
         float increment, start, fall;
         Vector2 finalPositionOffset; // used for shadow sprite
@@ -173,7 +173,7 @@ namespace YetAnotherRoguelike
                 animationAge.I = 0;
             }
 
-            UpdateColor();
+            //UpdateColor();
         }
 
         public void UpdateColor()

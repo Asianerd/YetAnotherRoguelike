@@ -18,12 +18,17 @@ namespace YetAnotherRoguelike
         public static Point position;
         public static Point tPosition;
 
+        public static LightSource light;
+
         public static void Initialize()
         {
             foreach (CursorStates x in Enum.GetValues(typeof(CursorStates)).Cast<CursorStates>())
             {
                 cursorSprites.Add(x, Game.Instance.Content.Load<Texture2D>($"UI/Cursors/{x.ToString().ToLower()}"));
             }
+
+            light = new LightSource(Vector2.Zero, Color.LightGoldenrodYellow, 15, 5);
+            LightSource.Append(light);
         }
 
         public static void Update()
@@ -32,6 +37,7 @@ namespace YetAnotherRoguelike
 
             position = Game.mouseState.Position;
             Vector2 tPos = ((position.ToVector2() - Camera.renderOffset) / Tile.tileSize);
+            light.position = tPos;
             tPos = new Vector2(MathF.Round(tPos.X), MathF.Round(tPos.Y));
             tPosition = tPos.ToPoint();
         }

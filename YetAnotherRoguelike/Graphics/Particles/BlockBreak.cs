@@ -95,7 +95,7 @@ namespace YetAnotherRoguelike.Particles
             {
                 isEmissive = true;
 
-                lightStrength = l.strength;
+                lightStrength = l.strength * 5f;
                 lightRange = l.range * 0.1f;
 
                 lightSource = new LightSource(pos / Tile.tileSize, l.color, lightStrength, lightRange);

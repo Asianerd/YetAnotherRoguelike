@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SourceFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Shaders/HDRLDRConvert.fx</SourceFile>
+  <SourceTime>2023-01-07T04:13:36.3654525+08:00</SourceTime>
+  <DestFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/bin/Windows/Shaders/HDRLDRConvert.xnb</DestFile>
+  <DestTime>2023-01-07T04:13:45.099415+08:00</DestTime>
+  <Importer>EffectImporter</Importer>
+  <ImporterTime>2020-08-10T16:17:54+08:00</ImporterTime>
+  <Processor>EffectProcessor</Processor>
+  <ProcessorTime>2020-08-10T16:17:54+08:00</ProcessorTime>
+  <Parameters>
+    <Key>DebugMode</Key>
+    <Value>Auto</Value>
+  </Parameters>
+  <Dependencies />
+  <BuildAsset />
+  <BuildOutput />
+</PipelineBuildEvent>

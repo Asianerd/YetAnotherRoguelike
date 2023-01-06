@@ -7,13 +7,7 @@
 	#define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
-Texture2D SpriteTexture;
-sampler s0;
-
-sampler2D SpriteTextureSampler = sampler_state
-{
-	Texture = <SpriteTexture>;
-};
+sampler _sampler;
 
 struct VertexShaderOutput
 {
@@ -24,12 +18,16 @@ struct VertexShaderOutput
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-	float4 color = tex2D(s0, input.TextureCoordinates);
-	color.gb = color.r;
-	return color;
+	float4 color = tex2D(_sampler, input.TextureCoordinates);
+	//float3 ldrColor = float3(color.r, color.g, color.b);
+	if (color.r > 1) {
+		return float4(color.r, 0, 0, 0);
+	}
+
+	return float4(color.r, color.g, color.b, 0);
 }
 
-technique SpriteDrawing
+technique HDR_TO_LDR
 {
 	pass P0
 	{
