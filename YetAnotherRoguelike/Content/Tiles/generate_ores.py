@@ -3,7 +3,20 @@ import os
 
 current_directory = os.path.dirname(os.path.realpath(__file__))
 
+"""
+Coal_ore,
+Bauxite,
+Hematite,
+Sphalerite, // Tin
+Calamine, // Zinc
+Galena,
+Cinnabar, // Mercury
+Argentite, // Silver
+Bismuth,
+"""
+
 ore_types = [
+    "Coal_ore",
     "Bauxite",
     "Hematite",
     "Sphalerite",
@@ -26,8 +39,8 @@ for ore in ore_types:
     stone_image = Image.open(f"stone.png")
 
     index = 0
-    for y in range(0, 4):
-        for x in range(0, 4):
+    for y in range(0, 5):
+        for x in range(0, 5):
             index += 1
             crop = (x * pixel_size, y * pixel_size, (1 + x) * pixel_size, (1 + y) * pixel_size)
             stone_image.paste(ore_image, crop, ore_image)

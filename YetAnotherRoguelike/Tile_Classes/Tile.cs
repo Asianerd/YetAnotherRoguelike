@@ -14,6 +14,7 @@ namespace YetAnotherRoguelike.Tile_Classes
         public static List<BlockType> blockLightData; // list of types with light data, refer to JSON_BlockData.collection for the data
         public static Vector2 spriteOrigin;
         public static float spriteRenderScale = 4f; // coefficient to enlarge 16x16 to 64x64
+        public static Vector2 lowerSpriteRenderScale = Vector2.One; // used to scale the lower part of the blocks
         public static float tileSize = 64f; // size in pixels; sprites are 16x16
         static float _renderScale = 1f;
         public static float renderScale
@@ -25,6 +26,8 @@ namespace YetAnotherRoguelike.Tile_Classes
                 tileSize = _renderScale * 64f;
                 spriteRenderScale = tileSize / 16f;
                 spriteOrigin = (new Vector2(tileSize) / 2f) / spriteRenderScale;
+
+                lowerSpriteRenderScale = new Vector2(spriteRenderScale, spriteRenderScale / 2f);
             }
         }
 
@@ -52,6 +55,8 @@ namespace YetAnotherRoguelike.Tile_Classes
             }
 
             blockLightData = Data.JSON_BlockData.blockData.Where(n => n.Value.light != null).Select(n => n.Key).ToList();
+
+            renderScale = 1f; // just to call the setter function
         }
 
         public static BlockType GenerateTileType(float p, Point pos, Chunk parentChunk)
@@ -124,6 +129,8 @@ namespace YetAnotherRoguelike.Tile_Classes
         public LightSource lightsource;
         Color color = Color.White;
 
+        public BlockType[,] neighbours = new BlockType[3, 3];
+
         public Tile(Point tCoords, Point cCoords, BlockType t, GameValue d = null, LightSource l = null)
         {
             type = t;
@@ -168,12 +175,17 @@ namespace YetAnotherRoguelike.Tile_Classes
         public virtual void UpdateSprite()
         {
             // expensive
-            bool u = Chunk.FetchTypeAt(tileCoordinates.X, tileCoordinates.Y - 1) != BlockType.Air;
-            bool r = Chunk.FetchTypeAt(tileCoordinates.X + 1, tileCoordinates.Y) != BlockType.Air;
-            bool d = Chunk.FetchTypeAt(tileCoordinates.X, tileCoordinates.Y + 1) != BlockType.Air;
-            bool l = Chunk.FetchTypeAt(tileCoordinates.X - 1, tileCoordinates.Y) != BlockType.Air;
+            neighbours[1, 0] = Chunk.FetchTypeAt(tileCoordinates.X, tileCoordinates.Y - 1); // up
+            neighbours[2, 1] = Chunk.FetchTypeAt(tileCoordinates.X + 1, tileCoordinates.Y); // right
+            neighbours[1, 2] = Chunk.FetchTypeAt(tileCoordinates.X, tileCoordinates.Y + 1); // down
+            neighbours[0, 1] = Chunk.FetchTypeAt(tileCoordinates.X - 1, tileCoordinates.Y); // left
 
-            spriteIndex = (u ? 0 : 1) + (r ? 0 : 2) + (d ? 0 : 4) + (l ? 0 : 8);
+            neighbours[0, 2] = Chunk.FetchTypeAt(tileCoordinates.X - 1, tileCoordinates.Y + 1);
+            neighbours[2, 2] = Chunk.FetchTypeAt(tileCoordinates.X + 1, tileCoordinates.Y + 1);
+
+            // fix spriteindexing
+
+            spriteIndex = (neighbours[1, 0] != BlockType.Air ? 0 : 1) + (neighbours[2, 1] != BlockType.Air ? 0 : 2) + (neighbours[1, 2] != BlockType.Air ? 0 : 4) + (neighbours[0, 1] != BlockType.Air ? 0 : 8);
         }
 
         public virtual void UpdateColor()
@@ -218,6 +230,7 @@ namespace YetAnotherRoguelike.Tile_Classes
 
         public virtual void Draw(SpriteBatch spritebatch)
         {
+            UpdateSprite();
             if (isAir)
             {
                 return;
@@ -228,9 +241,14 @@ namespace YetAnotherRoguelike.Tile_Classes
                 return;
             }
 
-            UpdateSprite();
             //UpdateColor();
 
+            if (neighbours[1, 2] == BlockType.Air)
+            {
+                spritebatch.Draw(tileSprites[type][
+                    16 + (neighbours[0, 1] != BlockType.Air ? 2 : 0) + (neighbours[2, 1] != BlockType.Air ? 1 : 0)
+                    ], renderedPosition + new Vector2(0, tileSize * 0.75f), null, color * 0.6f, 0f, spriteOrigin, lowerSpriteRenderScale, SpriteEffects.None, 0f);
+            }
             spritebatch.Draw(tileSprites[type][spriteIndex], renderedPosition, null, color, 0f, spriteOrigin, spriteRenderScale, SpriteEffects.None, 0f);
 
             if (durability.Percent() != 1f)
@@ -242,29 +260,32 @@ namespace YetAnotherRoguelike.Tile_Classes
 
         public virtual void OnDestroy() // when block is destroyed
         {
-            for (int i = 0; i <= 20; i++)
+            if (type != BlockType.Air)
             {
-                Particle.collection.Add(new Particles.BreakBlock(
-                        renderedPosition + new Vector2(
-                            tileSize * (Game.random.Next(-1000, 1000) / 2000f),
-                            tileSize * (Game.random.Next(-1000, 1000) / 2000f)
-                            ),
-                        blockParticleBreakColors[type],
-                        renderedPosition,
-                        l: isEmissive ? lightsource : null
-                        ));
-            }
+                for (int i = 0; i <= 20; i++)
+                {
+                    Particle.collection.Add(new Particles.BreakBlock(
+                            renderedPosition + new Vector2(
+                                tileSize * (Game.random.Next(-1000, 1000) / 2000f),
+                                tileSize * (Game.random.Next(-1000, 1000) / 2000f)
+                                ),
+                            blockParticleBreakColors[type],
+                            renderedPosition,
+                            l: isEmissive ? lightsource : null
+                            ));
+                }
 
-            foreach (KeyValuePair<Item.Type, int> x in Item.blockDrops[type])
-            {
-                GroundItem.collection.Add(new GroundItem(
-                    new Item(x.Key, x.Value),
-                    tileCoordinatesV + new Vector2(
-                        Game.random.Next(-100, 100) / 200f,
-                        Game.random.Next(-100, 100) / 200f
-                        ),
-                    tileCoordinatesV
-                    ));
+                foreach (KeyValuePair<Item.Type, int> x in Item.blockDrops[type])
+                {
+                    GroundItem.collection.Add(new GroundItem(
+                        new Item(x.Key, x.Value),
+                        tileCoordinatesV + new Vector2(
+                            Game.random.Next(-100, 100) / 200f,
+                            Game.random.Next(-100, 100) / 200f
+                            ),
+                        tileCoordinatesV
+                        ));
+                }
             }
 
             if (isEmissive)

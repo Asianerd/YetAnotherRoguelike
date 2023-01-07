@@ -78,6 +78,13 @@ namespace YetAnotherRoguelike.PhysicsObject
             }
 
             cursorTile = Chunk.FetchTileAt(Cursor.tPosition.X, Cursor.tPosition.Y);
+            if ((cursorTile != null) && (cursorTile.type == Tile.BlockType.Air) && (cursorTile.neighbours[1, 0] != Tile.BlockType.Air))
+            {
+                if (Cursor.tSubPosition.Y < 0.4f) // <-- not reliable, not too sure why
+                {
+                    cursorTile = Chunk.FetchTileAt(Cursor.tPosition.X, Cursor.tPosition.Y - 1);
+                }
+            }
 
             if (MouseInput.left.isPressed)
             {
@@ -87,7 +94,7 @@ namespace YetAnotherRoguelike.PhysicsObject
                 }
             }
 
-            if (MouseInput.right.isPressed)
+            if (MouseInput.right.active)
             {
                 if (cursorTile != null)
                 {

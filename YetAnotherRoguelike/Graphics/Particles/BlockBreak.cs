@@ -88,7 +88,7 @@ namespace YetAnotherRoguelike.Particles
                 final.G = (byte)((final.G * 0.3f) + (_color.G * 0.7f));
                 final.B = (byte)((final.B * 0.3f) + (_color.B * 0.7f));
             }
-            color = final * (highest / 20f);
+            color = final * highest * 2f;
             color.A = 255;
 
             if (l != null)
