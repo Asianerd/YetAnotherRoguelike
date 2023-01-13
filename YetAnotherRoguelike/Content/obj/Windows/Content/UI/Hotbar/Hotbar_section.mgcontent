@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Hotbar/Hotbar_section.png</SourceFile>
+  <SourceFile>d:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Hotbar/Hotbar_section.png</SourceFile>
   <SourceTime>2022-09-04T13:10:42.0362836+08:00</SourceTime>
-  <DestFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/bin/Windows/Content/UI/Hotbar/Hotbar_section.xnb</DestFile>
-  <DestTime>2023-01-13T19:20:58.810672+08:00</DestTime>
+  <DestFile>d:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/bin/Windows/Content/UI/Hotbar/Hotbar_section.xnb</DestFile>
+  <DestTime>2023-01-13T22:16:50.0615973+08:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2020-08-10T16:17:54+08:00</ImporterTime>
   <Processor>TextureProcessor</Processor>
