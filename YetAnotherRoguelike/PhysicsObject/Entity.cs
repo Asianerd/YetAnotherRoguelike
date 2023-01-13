@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using YetAnotherRoguelike.Graphics;
 
 namespace YetAnotherRoguelike.PhysicsObject
 {
@@ -49,6 +50,8 @@ namespace YetAnotherRoguelike.PhysicsObject
             }
         }
 
+        public float drawnLayer;
+
         public Entity(Vector2 p)
         {
             position = p;
@@ -58,6 +61,8 @@ namespace YetAnotherRoguelike.PhysicsObject
         {
             position += velocity * Game.compensation;
             _velocity *= friction;
+
+            drawnLayer = Camera.GetDrawnLayer(position.Y * Tile_Classes.Tile.tileSize);
         }
 
         public virtual void Draw(SpriteBatch spritebatch)

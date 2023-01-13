@@ -134,7 +134,7 @@ namespace YetAnotherRoguelike.Particles
             base.Draw(spriteBatch);
 
             //spriteBatch.Draw(blank, position, null, color * Math.Clamp((1f - i) * 5f, 0f, 1f), 0f, Vector2.Zero, 8f, SpriteEffects.None, 0f);
-            spriteBatch.Draw(blank, position, null, color * Math.Clamp((1f - i) * 5f, 0f, 1f), rotation, blankOrigin, scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(blank, position, null, color * Math.Clamp((1f - i) * 5f, 0f, 1f), rotation, blankOrigin, scale, SpriteEffects.None, Camera.GetDrawnLayer(position.Y, -0.1f));
         }
 
         public override void OnDeath()

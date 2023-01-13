@@ -9,6 +9,8 @@ namespace YetAnotherRoguelike.Tile_Classes
 {
     class Chunk
     {
+        public static Texture2D chunkBorderSprite;
+
         public static List<Chunk> chunks = new List<Chunk>();
         public static int chunkSize = 16;
         public static int chunkGenerationRange = 1; // generates chunks in a 5x5 box around the player
@@ -20,6 +22,11 @@ namespace YetAnotherRoguelike.Tile_Classes
          * . X X X X X .
          * . . . . . . .
          */
+
+        public static void Initialize()
+        {
+            chunkBorderSprite = Game.Instance.Content.Load<Texture2D>("Debug/chunk_border");
+        }
 
         public static void GenerateChunk(int x, int y) // If chunk with that coordinate doesnt exist, generate the chunk
         {
@@ -37,11 +44,7 @@ namespace YetAnotherRoguelike.Tile_Classes
             chunks.Add(new Chunk(new Point(x, y)));
         }
 
-        public static Point TileToChunkCoordinates(int x, int y)
-        {
-            return new Point((int)Math.Floor(x / (float)chunkSize), (int)Math.Floor(y / (float)chunkSize));
-        }
-
+        #region Fetching functions
         public static Chunk FetchChunkWithCoords(int x, int y)
         {
             foreach (Chunk c in chunks)
@@ -98,6 +101,27 @@ namespace YetAnotherRoguelike.Tile_Classes
             }
             return result.type;
         }
+        #endregion
+
+        #region Unit conversions
+        public static Point TileToChunkCoordinates(int x, int y)
+        {
+            return new Point((int)Math.Floor(x / (float)chunkSize), (int)Math.Floor(y / (float)chunkSize));
+        }
+
+        // eg : [10, 1] -> [3, 1]
+        public static int FixCoords(int i) // converts tile-coordinate to in-chunk coordinate
+        {
+            bool negative = Math.Sign(i) == -1;
+
+            if (!negative)
+            {
+                return i % chunkSize;
+            }
+
+            return (chunkSize + ((i + 1) % chunkSize)) - 1;
+        }
+        #endregion
 
         #region Chunk-specific functions
         // instead of iterating all chunks in memory, only iterate through a few specific ones
@@ -143,23 +167,11 @@ namespace YetAnotherRoguelike.Tile_Classes
         }
         #endregion
 
-        // eg : [10, 1] -> [3, 1]
-        public static int FixCoords(int i) // converts tile-coordinate to in-chunk coordinate
-        {
-            bool negative = Math.Sign(i) == -1;
-
-            if (!negative)
-            {
-                return i % chunkSize;
-            }
-
-             return (chunkSize + ((i + 1) % chunkSize)) - 1;
-        }
-
         public Tile[,] contents = new Tile[chunkSize, chunkSize]; // 8x8 chunk size
         public Random tileRandom;
         public Point position;
         public Rectangle rect;
+        public Rectangle drawnRect; // normal rect * tile size
 
         public bool loaded = false; // if chunk is loaded
 
@@ -170,6 +182,7 @@ namespace YetAnotherRoguelike.Tile_Classes
         {
             position = p;
             rect = new Rectangle((position.ToVector2() * chunkSize).ToPoint(), new Point(chunkSize, chunkSize));
+            drawnRect = new Rectangle((position.ToVector2() * chunkSize * Tile.tileSize).ToPoint(), (new Vector2(chunkSize * Tile.tileSize)).ToPoint());
             tileRandom = new Random(GeneralDependencies.CantorPairing(position.X, position.Y));
             for (int y = 0; y < chunkSize; y++)
             {
@@ -179,6 +192,8 @@ namespace YetAnotherRoguelike.Tile_Classes
                     contents[x, y] = Tile.CreateTile(blockPos, new Point(x, y), Tile.GenerateTileType(PerlinNoise.Instance.GetNoise(blockPos.X, blockPos.Y), blockPos, this));
                 }
             }
+
+            OnBlockModify(true);
 /*
             if (position == new Point(0))
             {
@@ -261,11 +276,43 @@ namespace YetAnotherRoguelike.Tile_Classes
                     contents[x, y].Draw(spritebatch);
                 }
             }
+
+            if (Game.showDebug)
+            {
+                spritebatch.Draw(chunkBorderSprite, drawnRect, Color.White);
+            }
+        }
+
+        public void OnBlockModify(bool updateNeighbours) // if any of the blocks in the chunk are broken/replaced
+        {
+            if (updateNeighbours)
+            {
+                for (int cx = -1; cx <= 1; cx++)
+                {
+                    for (int cy = -1; cy <= 1; cy++)
+                    {
+                        Chunk result = FetchChunkWithCoords(position.X + cx, position.Y + cy);
+                        if (result != null)
+                        {
+                            result.OnBlockModify(false);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int y = 0; y < chunkSize; y++)
+                {
+                    for (int x = 0; x < chunkSize; x++)
+                    {
+                        contents[x, y].updateSpriteNextFrame = true;
+                    }
+                }
+            }
         }
 
         public void ReplaceTile(Point target, Tile newTile)
         {
-            Debug.WriteLine(target);
             contents[target.X, target.Y].OnDestroy();
             contents[target.X, target.Y] = newTile;
         }

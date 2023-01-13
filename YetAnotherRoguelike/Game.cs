@@ -127,6 +127,9 @@ namespace YetAnotherRoguelike
                 Keys.D7,
                 Keys.D8,
                 Keys.D9,
+
+                Keys.OemMinus,
+                Keys.OemPlus,
             });
             MouseInput.Initialize();
             Cursor.Initialize();
@@ -134,6 +137,7 @@ namespace YetAnotherRoguelike
             Scene.Initialize();
 
             // move to main game scene init?
+            Chunk.Initialize();
             Item.Initialize();
             GroundItem.Initialize();
             Tile.Initialize();
@@ -203,15 +207,18 @@ namespace YetAnotherRoguelike
             Scene.currentScene.Draw();
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            string debugText = $"FPS : {fps}\n" +
-                $"{Player.Instance.cursorTile.tileCoordinates}\n" +
-                $"{Cursor.tPositionV}\n" +
-                $"{Cursor.tSubPosition.Y}\n" +
-                $"Pos : {(int)Player.Instance.position.X}:{(int)Player.Instance.position.Y}\n" +
-                $"Lights : {LightSource.sources.Count}\n" +
-                $"Ground items : {GroundItem.collection.Count}";
-            spriteBatch.Draw(emptySprite, new Rectangle(new Point(0, 0), mainFont.MeasureString(debugText).ToPoint()), Color.Black * 0.2f);
-            spriteBatch.DrawString(mainFont, debugText, Vector2.Zero, Color.White);
+            if (showDebug)
+            {
+                string debugText = $"FPS : {fps}\n" +
+                    $"{Player.Instance.cursorTile.tileCoordinates}\n" +
+                    $"{Cursor.tPositionV}\n" +
+                    $"{Cursor.tSubPosition.Y}\n" +
+                    $"Pos : {(int)Player.Instance.position.X}:{(int)Player.Instance.position.Y}\n" +
+                    $"Lights : {LightSource.sources.Count}\n" +
+                    $"Ground items : {GroundItem.collection.Count}";
+                spriteBatch.Draw(emptySprite, new Rectangle(new Point(0, 0), mainFont.MeasureString(debugText).ToPoint()), Color.Black * 0.2f);
+                spriteBatch.DrawString(mainFont, debugText, Vector2.Zero, Color.White);
+            }
 
             Cursor.Draw();
             spriteBatch.End();

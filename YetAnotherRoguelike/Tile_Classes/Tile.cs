@@ -14,8 +14,12 @@ namespace YetAnotherRoguelike.Tile_Classes
         public static List<BlockType> blockLightData; // list of types with light data, refer to JSON_BlockData.collection for the data
         public static Vector2 spriteOrigin;
         public static float spriteRenderScale = 4f; // coefficient to enlarge 16x16 to 64x64
-        public static Vector2 lowerSpriteRenderScale = Vector2.One; // used to scale the lower part of the blocks
         public static float tileSize = 64f; // size in pixels; sprites are 16x16
+
+        public static Vector2 lowerSpriteRenderScale = Vector2.One; // used to scale the lower part of the blocks
+        public static Vector2 lowerSpriteOffset;
+        public static Color lowerSpriteTint;
+
         static float _renderScale = 1f;
         public static float renderScale
         {
@@ -28,12 +32,14 @@ namespace YetAnotherRoguelike.Tile_Classes
                 spriteOrigin = (new Vector2(tileSize) / 2f) / spriteRenderScale;
 
                 lowerSpriteRenderScale = new Vector2(spriteRenderScale, spriteRenderScale / 2f);
+                lowerSpriteOffset = new Vector2(0, tileSize * 0.75f);
             }
         }
 
         public static void Initialize()
         {
             spriteOrigin = (new Vector2(tileSize) / 2f) / spriteRenderScale;
+            lowerSpriteTint = new Color(Color.White * 0.6f, 1f);
 
             tileSprites = new Dictionary<BlockType, List<Texture2D>>();
             foreach (BlockType t in Enum.GetValues(typeof(BlockType)).Cast<BlockType>())
@@ -118,16 +124,19 @@ namespace YetAnotherRoguelike.Tile_Classes
         public Point tileCoordinates;
         public Vector2 tileCoordinatesV; // vector2 version of tile coordinate for performance
         Vector2 renderedPosition; // "world position" basically tile position * tilesize
-        public Point chunkCoordinates; // position in the chunk; (0, 0) to (chunkSize, chunkSize)
+        public Point chunkTileCoordinates; // position in the chunk; (0, 0) to (chunkSize, chunkSize)
+        public Point chunkCoordinates; // position of parent chunk
         public BlockType type;
         bool isAir;
+        public bool updateSpriteNextFrame = true;
 
         public GameValue durability, durabilityCooldown = new GameValue(0, 30, 1);
 
         int spriteIndex = 0;
         bool isEmissive = false;
         public LightSource lightsource;
-        Color color = Color.White;
+
+        float drawnLayer; // order in drawing
 
         public BlockType[,] neighbours = new BlockType[3, 3];
 
@@ -139,7 +148,8 @@ namespace YetAnotherRoguelike.Tile_Classes
 
             tileCoordinates = tCoords;
             tileCoordinatesV = tileCoordinates.ToVector2();
-            chunkCoordinates = cCoords;
+            chunkTileCoordinates = cCoords;
+            chunkCoordinates = Chunk.TileToChunkCoordinates(tileCoordinates.X, tileCoordinates.Y);
 
             renderedPosition = tileCoordinates.ToVector2() * tileSize;
 
@@ -164,11 +174,19 @@ namespace YetAnotherRoguelike.Tile_Classes
 
         public virtual void Update()
         {
+            if (updateSpriteNextFrame)
+            {
+                updateSpriteNextFrame = false;
+                UpdateSprite();
+            }
+
             durabilityCooldown.Regenerate(Game.compensation);
             if (durabilityCooldown.Percent() >= 1f)
             {
                 durability.AffectValue(1f);
             }
+
+            drawnLayer = Camera.GetDrawnLayer(renderedPosition.Y);
         }
         #endregion
 
@@ -191,7 +209,7 @@ namespace YetAnotherRoguelike.Tile_Classes
         public virtual void UpdateColor()
         {
             // more expensive lmao
-            float highest = 0;
+            /*float highest = 0;
             float totalIntensity = 0;
             int amount = 0;
             Color[] colors = new Color[LightSource.lightSourcesCount];
@@ -225,12 +243,11 @@ namespace YetAnotherRoguelike.Tile_Classes
                 color.B += (byte)(colors[i].B * compensation);
             }
             color *= (highest * 0.08f);
-            color.A = (byte)255f;
+            color.A = (byte)255f;*/
         }
 
         public virtual void Draw(SpriteBatch spritebatch)
         {
-            UpdateSprite();
             if (isAir)
             {
                 return;
@@ -247,15 +264,20 @@ namespace YetAnotherRoguelike.Tile_Classes
             {
                 spritebatch.Draw(tileSprites[type][
                     16 + (neighbours[0, 1] != BlockType.Air ? 2 : 0) + (neighbours[2, 1] != BlockType.Air ? 1 : 0)
-                    ], renderedPosition + new Vector2(0, tileSize * 0.75f), null, color * 0.6f, 0f, spriteOrigin, lowerSpriteRenderScale, SpriteEffects.None, 0f);
+                    ], renderedPosition + lowerSpriteOffset, null, lowerSpriteTint, 0f, spriteOrigin, lowerSpriteRenderScale, SpriteEffects.None, Camera.GetDrawnLayer(renderedPosition.Y + lowerSpriteOffset.Y, -0.1f));
             }
-            spritebatch.Draw(tileSprites[type][spriteIndex], renderedPosition, null, color, 0f, spriteOrigin, spriteRenderScale, SpriteEffects.None, 0f);
+            spritebatch.Draw(tileSprites[type][spriteIndex], renderedPosition, null, Color.White, 0f, spriteOrigin, spriteRenderScale, SpriteEffects.None, drawnLayer);
 
             if (durability.Percent() != 1f)
             {
-                spritebatch.Draw(Game.emptySprite, new Rectangle(new Vector2(renderedPosition.X + 4 - (tileSize / 2f), renderedPosition.Y + 20 - (tileSize / 2f)).ToPoint(), new Point(56, 24)), Color.Black * 0.5f);
-                spritebatch.Draw(Game.emptySprite, new Rectangle(new Vector2(renderedPosition.X + 8 - (tileSize / 2f), renderedPosition.Y + 24 - (tileSize / 2f)).ToPoint(), new Point((int)(48f * (1f - (float)durability.Percent())), 16)), Color.White);
+                float _drawnLayer = Math.Clamp(drawnLayer + 0.05f, 0f, 1f);
+                //spritebatch.Draw(Game.emptySprite, new Rectangle(new Vector2(renderedPosition.X + 4 - (tileSize / 2f), renderedPosition.Y + 20 - (tileSize / 2f)).ToPoint(), new Point(56, 24)), Color.Black * 0.5f);
+                spritebatch.Draw(Game.emptySprite, new Rectangle(new Vector2(renderedPosition.X + 4 - (tileSize / 2f), renderedPosition.Y + 20 - (tileSize / 2f)).ToPoint(), new Point(56, 24)), null, Color.Black * 0.5f, 0f, Vector2.Zero, SpriteEffects.None, _drawnLayer - 0.01f);
+                //spritebatch.Draw(Game.emptySprite, new Rectangle(new Vector2(renderedPosition.X + 8 - (tileSize / 2f), renderedPosition.Y + 24 - (tileSize / 2f)).ToPoint(), new Point((int)(48f * (1f - (float)durability.Percent())), 16)), Color.White);
+                spritebatch.Draw(Game.emptySprite, new Rectangle(new Vector2(renderedPosition.X + 8 - (tileSize / 2f), renderedPosition.Y + 24 - (tileSize / 2f)).ToPoint(), new Point((int)(48f * (1f - (float)durability.Percent())), 16)), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, _drawnLayer);
             }
+
+            //spritebatch.DrawString(Game.mainFont, drawnLayer.ToString(), renderedPosition, Color.White);
         }
 
         public virtual void OnDestroy() // when block is destroyed
@@ -292,6 +314,8 @@ namespace YetAnotherRoguelike.Tile_Classes
             {
                 LightSource.Remove(lightsource);
             }
+
+            Chunk.FetchChunkWithCoords(chunkCoordinates.X, chunkCoordinates.Y).OnBlockModify(true);
         }
 
 
@@ -328,6 +352,7 @@ namespace YetAnotherRoguelike.Tile_Classes
             Neon_Blue,
             Neon_Purple,
             Neon_Yellow,
+            Neon_White,
 
             Neon_R,
             Neon_G,

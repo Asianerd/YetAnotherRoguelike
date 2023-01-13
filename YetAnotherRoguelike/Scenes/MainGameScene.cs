@@ -39,8 +39,6 @@ namespace YetAnotherRoguelike.Scenes
 
             GroundItem.UpdateAll();
             Particle.UpdateAll();
-
-            Lightmap.GenerateMap();
         }
 
         public override void Draw()
@@ -49,8 +47,10 @@ namespace YetAnotherRoguelike.Scenes
             Lightmap.Draw(Game.spriteBatch);
             Game.spriteBatch.End();*/
 
+            Lightmap.GenerateMap();
+
             Matrix renderMatrix = Matrix.CreateTranslation(new Vector3(Camera.renderOffset, 0f));
-            Game.spriteBatch.Begin(sortMode: SpriteSortMode.Immediate, samplerState: SamplerState.PointClamp, transformMatrix: renderMatrix);
+            Game.spriteBatch.Begin(sortMode: SpriteSortMode.FrontToBack, samplerState: SamplerState.PointClamp, transformMatrix: renderMatrix);
             Game.graphics.GraphicsDevice.Clear(Color.White * 0.2f);
             base.Draw();
 

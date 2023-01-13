@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using YetAnotherRoguelike.Graphics;
 using YetAnotherRoguelike.Tile_Classes;
 
 namespace YetAnotherRoguelike.PhysicsObject
@@ -90,7 +91,7 @@ namespace YetAnotherRoguelike.PhysicsObject
             {
                 if ((cursorTile != null) && (cursorTile.type != Tile.BlockType.Air))
                 {
-                    cursorTile.DecreaseDurability(-400f * Game.compensation);
+                    cursorTile.DecreaseDurability(-5f * Game.compensation);
                 }
             }
 
@@ -98,7 +99,7 @@ namespace YetAnotherRoguelike.PhysicsObject
             {
                 if (cursorTile != null)
                 {
-                    Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkCoordinates.X, cursorTile.chunkCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkCoordinates.X, cursorTile.chunkCoordinates.Y), Tile.BlockType.Neon_Purple));
+                    Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.BlockType.Neon_White));
                 }
             }
 
@@ -107,7 +108,7 @@ namespace YetAnotherRoguelike.PhysicsObject
             {
                 if (cursorTile != null)
                 {
-                    Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkCoordinates.X, cursorTile.chunkCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkCoordinates.X, cursorTile.chunkCoordinates.Y), Tile.BlockType.Neon_R));
+                    Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.BlockType.Neon_R));
                 }
             }
 
@@ -115,7 +116,7 @@ namespace YetAnotherRoguelike.PhysicsObject
             {
                 if (cursorTile != null)
                 {
-                    Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkCoordinates.X, cursorTile.chunkCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkCoordinates.X, cursorTile.chunkCoordinates.Y), Tile.BlockType.Neon_G));
+                    Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.BlockType.Neon_G));
                 }
             }
 
@@ -123,7 +124,7 @@ namespace YetAnotherRoguelike.PhysicsObject
             {
                 if (cursorTile != null)
                 {
-                    Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkCoordinates.X, cursorTile.chunkCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkCoordinates.X, cursorTile.chunkCoordinates.Y), Tile.BlockType.Neon_B));
+                    Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.BlockType.Neon_B));
                 }
             }
             //
@@ -134,6 +135,16 @@ namespace YetAnotherRoguelike.PhysicsObject
                 {
                     x.follow = true;
                 }
+            }
+
+            if (Input.collection[Keys.OemPlus].active)
+            {
+                Lightmap.brightness += 0.05f;
+            }
+
+            if (Input.collection[Keys.OemMinus].active)
+            {
+                Lightmap.brightness -= 0.05f;
             }
 
             if (hasMoved)
@@ -197,7 +208,7 @@ namespace YetAnotherRoguelike.PhysicsObject
 
         public override void Draw(SpriteBatch spritebatch)
         {
-            spritebatch.Draw(sprite, position * Tile.tileSize, null, Color.White, 0f, spriteOrigin, Tile.spriteRenderScale, SpriteEffects.None, 0f);
+            spritebatch.Draw(sprite, position * Tile.tileSize, null, Color.White, 0f, spriteOrigin, Tile.spriteRenderScale, SpriteEffects.None, drawnLayer);
 
             base.Draw(spritebatch);
         }

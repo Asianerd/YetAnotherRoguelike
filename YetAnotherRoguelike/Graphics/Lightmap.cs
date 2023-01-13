@@ -9,6 +9,8 @@ namespace YetAnotherRoguelike.Graphics
 {
     class Lightmap
     {
+        public static float brightness = 0.1f;
+
         public static RenderType renderType = RenderType.Sprite;
         public static Effect HDR2LDRShader;
 
@@ -170,8 +172,8 @@ namespace YetAnotherRoguelike.Graphics
             // with the correct blendstate, proper color addition works
             Game.graphics.GraphicsDevice.SetRenderTarget(renderTarget);
 
-            Game.spriteBatch.Begin(sortMode: SpriteSortMode.Immediate, blendState:lightmapBlendState);
-            Game.graphics.GraphicsDevice.Clear(Color.White * 0.1f);
+            Game.spriteBatch.Begin(sortMode: SpriteSortMode.Immediate, blendState:lightmapBlendState, samplerState:SamplerState.AnisotropicClamp);
+            Game.graphics.GraphicsDevice.Clear(Color.White * brightness);
             foreach (LightSource s in LightSource.sources)
             {
                 Game.spriteBatch.Draw(radialSprite, (s.position * Tile.tileSize) + Camera.renderOffset, null, new Color(s.colorV * s.strength), 0f, spriteOrigin, s.range * scaleCoefficient, SpriteEffects.None, 0f);

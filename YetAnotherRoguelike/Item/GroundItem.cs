@@ -206,9 +206,9 @@ namespace YetAnotherRoguelike
                 return;
             }
 
-            Vector2 renderPosition = position * Tile_Classes.Tile.tileSize;
-            renderPosition.Y += MathF.Sin(animationAge.Percent() * MathF.PI * 2f) * Tile_Classes.Tile.tileSize * 0.1f;
-            spritebatch.Draw(Item.itemSprites[item.type], renderPosition, null, color, 0f, Item.spriteOrigin, Tile_Classes.Tile.renderScale * 3f, SpriteEffects.None, 0f);
+            Vector2 renderedPosition = position * Tile_Classes.Tile.tileSize;
+            renderedPosition.Y += MathF.Sin(animationAge.Percent() * MathF.PI * 2f) * Tile_Classes.Tile.tileSize * 0.1f;
+            spritebatch.Draw(Item.itemSprites[item.type], renderedPosition, null, color, 0f, Item.spriteOrigin, Tile_Classes.Tile.renderScale * 3f, SpriteEffects.None, Camera.GetDrawnLayer(renderedPosition.Y));
         }
 
         public void DrawShadow(SpriteBatch spritebatch)
