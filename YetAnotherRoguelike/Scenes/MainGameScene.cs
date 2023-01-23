@@ -35,7 +35,7 @@ namespace YetAnotherRoguelike.Scenes
                 e.Update();
             }
 
-            UI.UI_Inventory_Container.Instance.Update();
+            UI.UI_Container.UpdateAll();
 
             GroundItem.UpdateAll();
             Particle.UpdateAll();
@@ -75,6 +75,7 @@ namespace YetAnotherRoguelike.Scenes
 
             // draw UI here
             Game.spriteBatch.Begin(samplerState:SamplerState.PointClamp);
+            UI.UI_Gameplay_Container.Instance.Draw();
             UI.UI_Inventory_Container.Instance.Draw();
             Game.spriteBatch.End();
         }

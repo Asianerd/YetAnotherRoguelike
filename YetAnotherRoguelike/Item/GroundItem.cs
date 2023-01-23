@@ -26,9 +26,17 @@ namespace YetAnotherRoguelike
 
         public static void UpdateAll()
         {
-            foreach (GroundItem x in collection)
+            /*List<GroundItem> collectionCopy = new List<GroundItem>(collection);
+            foreach (GroundItem x in collectionCopy)
             {
                 x.Update();
+            }*/
+
+            int index = 0;
+            while (index < collection.Count())
+            {
+                collection[index].Update();
+                index++;
             }
 
             collection = collection.Where(n => !n.dead).ToList();
@@ -67,8 +75,10 @@ namespace YetAnotherRoguelike
         float increment, start, fall;
         Vector2 finalPositionOffset; // used for shadow sprite
         float finalY;
+
+        float drawnLayer;
         
-        public GroundItem(Item i, Vector2 p, Vector2 origin, bool _cooldown = true)
+        public GroundItem(Item i, Vector2 p, Vector2 origin, bool c = false)
         {
             item = i;
             position = p;
@@ -82,7 +92,8 @@ namespace YetAnotherRoguelike
             finalPositionOffset = Vector2.Zero;
             finalY = ((-16 * MathF.Pow((fallDistance) - 0.25f, 2)) + 1) * 0.5f;
 
-            pickupCooldown = new GameValue(0, 60, 1, _cooldown ? 100 : 0);
+            pickupCooldown = new GameValue(0, 60, 1);
+            pickupCooldown.AffectValue(c ? 0f : 1f);
         }
 
         public void Update()
@@ -100,7 +111,7 @@ namespace YetAnotherRoguelike
 
                 if (d <= followDistance)
                 {
-                    follow = true;
+                    follow = Player.Instance.InventoryCanFit(item);
                     // follow = (whether player has space for this item)
                 }
 
@@ -114,7 +125,10 @@ namespace YetAnotherRoguelike
                 {
                     if (follow)
                     {
-                        // add to inventory
+                        if (Player.Instance.InventoryCanFit(item))
+                        {
+                            Player.Instance.InventoryAppend(item);
+                        }
                         dead = true;
                         return;
                     }
@@ -134,6 +148,7 @@ namespace YetAnotherRoguelike
                     finalPositionOffset.Y = finalY - ((-16 * MathF.Pow((p < fallDistance ? p : fallDistance) - 0.25f, 2)) + 1) * 0.5f;
                 }
 
+                // grounditems merging with other ground items
                 foreach (GroundItem i in collection)
                 {
                     if (i.dead)
@@ -144,7 +159,7 @@ namespace YetAnotherRoguelike
                     {
                         continue;
                     }
-                    if (i.item.amount >= i.item.stackSize)
+                    if (i.item.Full())
                     {
                         continue;
                     }
@@ -156,7 +171,7 @@ namespace YetAnotherRoguelike
                     if (Vector2.Distance(i.position, position) < mergeDistance)
                     {
                         i.item.amount += item.amount;
-                        item.amount = 0; // just in case
+                        //item.amount = 0; // just in case
                         dead = true;
                         break;
                     }
@@ -164,7 +179,10 @@ namespace YetAnotherRoguelike
             }
             else
             {
-                position = Vector2.Lerp(position, Player.Instance.position, 0.3f * Game.compensation);
+                if (pickupCooldown.Percent() == 1f)
+                {
+                    position = Vector2.Lerp(position, Player.Instance.position, 0.3f * Game.compensation);
+                }
             }
 
             animationAge.Regenerate(Game.compensation);
@@ -206,9 +224,15 @@ namespace YetAnotherRoguelike
                 return;
             }
 
+            if (dead)
+            {
+                return;
+            }
+
             Vector2 renderedPosition = position * Tile_Classes.Tile.tileSize;
             renderedPosition.Y += MathF.Sin(animationAge.Percent() * MathF.PI * 2f) * Tile_Classes.Tile.tileSize * 0.1f;
-            spritebatch.Draw(Item.itemSprites[item.type], renderedPosition, null, color, 0f, Item.spriteOrigin, Tile_Classes.Tile.renderScale * 3f, SpriteEffects.None, Camera.GetDrawnLayer(renderedPosition.Y));
+            drawnLayer = Camera.GetDrawnLayer(renderedPosition.Y);
+            spritebatch.Draw(Item.itemSprites[item.type], renderedPosition, null, color, 0f, Item.spriteOrigin, Tile_Classes.Tile.renderScale * 3f, SpriteEffects.None, drawnLayer);
         }
 
         public void DrawShadow(SpriteBatch spritebatch)
@@ -219,7 +243,7 @@ namespace YetAnotherRoguelike
             }
 
             float _scale = ((1f + MathF.Sin(animationAge.Percent() * MathF.PI * 2f)) * 0.2f) + 0.5f;
-            spritebatch.Draw(shadowSprite, (position - finalPositionOffset + shadowSpriteOffset) * Tile_Classes.Tile.tileSize, null, Color.White, 0f, shadowSpriteOrigin, Tile_Classes.Tile.renderScale * _scale, SpriteEffects.None, 0f);
+            spritebatch.Draw(shadowSprite, (position - finalPositionOffset + shadowSpriteOffset) * Tile_Classes.Tile.tileSize, null, Color.White, 0f, shadowSpriteOrigin, Tile_Classes.Tile.renderScale * _scale, SpriteEffects.None, drawnLayer);
         }
     }
 }

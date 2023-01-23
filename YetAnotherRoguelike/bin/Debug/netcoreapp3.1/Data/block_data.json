@@ -1,8 +1,9 @@
 {
     "Stone": {
         "loot": {
-            "Stone": 5
-        }
+            "Stone": 3
+        },
+        "tile_placed": "Stone"
     },
     "Coal_ore": {
         "loot": {
@@ -59,6 +60,10 @@
         }
     },
     "Bismuth": {
+        "loot" : {
+            "Bismuth": 3,
+            "Stone" : 3
+        },
         "light": [
             255,
             255,

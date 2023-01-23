@@ -41,6 +41,8 @@ namespace YetAnotherRoguelike
         public static int fpsOffset = 0; // a little timer just for ease of reading fps
         public static bool showDebug = false;
 
+        public static int physicsQuality = 128;
+
         public Game()
         {
             Instance = this;
@@ -68,6 +70,7 @@ namespace YetAnotherRoguelike
         protected override void Initialize()
         {
             Data.JSON_BlockData.Initialize();
+            Data.JSON_ItemData.Initialize();
 
             PerlinNoise.Initialize();
             var _ = new GaussianBlur();
@@ -76,7 +79,12 @@ namespace YetAnotherRoguelike
 
             GeneralDependencies.Initialize();
 
-            UI.UI_Container.Initialize();
+            // move to main game scene init?
+            Chunk.Initialize();
+            Item.Initialize();
+            GroundItem.Initialize();
+            Tile.Initialize();
+
             Input.Initialize(new List<Keys>() {
                 Keys.Q,
                 Keys.W,
@@ -132,15 +140,11 @@ namespace YetAnotherRoguelike
                 Keys.OemPlus,
             });
             MouseInput.Initialize();
-            Cursor.Initialize();
 
             Scene.Initialize();
 
-            // move to main game scene init?
-            Chunk.Initialize();
-            Item.Initialize();
-            GroundItem.Initialize();
-            Tile.Initialize();
+            Cursor.Initialize();
+            UI.UI_Container.Initialize();
 
             base.Initialize();
         }
@@ -210,10 +214,8 @@ namespace YetAnotherRoguelike
             if (showDebug)
             {
                 string debugText = $"FPS : {fps}\n" +
-                    $"{Player.Instance.cursorTile.tileCoordinates}\n" +
-                    $"{Cursor.tPositionV}\n" +
-                    $"{Cursor.tSubPosition.Y}\n" +
                     $"Pos : {(int)Player.Instance.position.X}:{(int)Player.Instance.position.Y}\n" +
+                    $"Loaded Chunks : {Chunk.chunks.Count}\n" +
                     $"Lights : {LightSource.sources.Count}\n" +
                     $"Ground items : {GroundItem.collection.Count}";
                 spriteBatch.Draw(emptySprite, new Rectangle(new Point(0, 0), mainFont.MeasureString(debugText).ToPoint()), Color.Black * 0.2f);

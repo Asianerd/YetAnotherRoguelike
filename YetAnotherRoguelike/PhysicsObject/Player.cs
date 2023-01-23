@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using YetAnotherRoguelike.Data;
 using YetAnotherRoguelike.Graphics;
 using YetAnotherRoguelike.Tile_Classes;
 
@@ -15,7 +16,9 @@ namespace YetAnotherRoguelike.PhysicsObject
         public static Texture2D sprite = null;
         public static Vector2 spriteOrigin;
 
-        public static int inventorySize = 32; // 32 slots
+        public static int inventorySize = 35; // 32 slots
+        public static int hotbarSize = 4;
+        public static float dropDistance = 0.5f; // how far to drop items
 
         public Point currentChunkPos;
         public Chunk[,] surroundingChunks = new Chunk[3, 3];
@@ -23,8 +26,16 @@ namespace YetAnotherRoguelike.PhysicsObject
         public Tile cursorTile;
 
         public List<Item> inventory;
+        public List<Item> hotbar;
+        public int selectionIndex = 0;
+        public Item selectedItem
+        {
+            get { return hotbar[selectionIndex];  }
+        }
 
-        public Player(Vector2 pos, Texture2D _sprite):base(pos)
+        public Tile.BlockType tilePlaced; // null if selected item doesnt have a tilePlaced
+
+        public Player(Vector2 pos, Texture2D _sprite):base(pos, new Vector2(0.5f, 0.5f))
         {
             if (Instance == null)
             {
@@ -37,6 +48,16 @@ namespace YetAnotherRoguelike.PhysicsObject
             }
 
             inventory = new List<Item>();
+            for (int i = 0; i < inventorySize; i++)
+            {
+                inventory.Add(Item.Empty());
+            }
+
+            hotbar = new List<Item>();
+            for (int i = 0; i < hotbarSize; i++)
+            {
+                hotbar.Add(Item.Empty());
+            }
         }
 
         public override void Update()
@@ -78,33 +99,26 @@ namespace YetAnotherRoguelike.PhysicsObject
                 }
             }
 
+            JSON_ItemData _result = JSON_ItemData.FetchData(selectedItem.type);
+            tilePlaced = _result == null ? Tile.BlockType.Air : _result.tilePlaced;
+
+            #region Input section
             cursorTile = Chunk.FetchTileAt(Cursor.tPosition.X, Cursor.tPosition.Y);
-            if ((cursorTile != null) && (cursorTile.type == Tile.BlockType.Air) && (cursorTile.neighbours[1, 0] != Tile.BlockType.Air))
+            Tile result = Chunk.FetchTileAt(Cursor.tPosition.X, Cursor.tPosition.Y + 1);
+            if ((result != null) && (result.type != Tile.BlockType.Air) && ((Cursor.tSubPosition.Y >= 0.5f)))
             {
-                if (Cursor.tSubPosition.Y < 0.4f) // <-- not reliable, not too sure why
-                {
-                    cursorTile = Chunk.FetchTileAt(Cursor.tPosition.X, Cursor.tPosition.Y - 1);
-                }
+                cursorTile = result;
             }
 
-            if (MouseInput.left.isPressed)
+            if (UI.UI_Container.hoveredContainer == null)
             {
-                if ((cursorTile != null) && (cursorTile.type != Tile.BlockType.Air))
-                {
-                    cursorTile.DecreaseDurability(-5f * Game.compensation);
-                }
+                // checks of the respective inputs are handled in their functions
+                LeftMouseEvent();
+                RightMouseEvent();
             }
 
-            if (MouseInput.right.active)
-            {
-                if (cursorTile != null)
-                {
-                    Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.BlockType.Neon_White));
-                }
-            }
-
-            // lights
-            if (Input.collection[Keys.D1].active)
+            #region Light blocks
+            /*if (Input.collection[Keys.D1].active)
             {
                 if (cursorTile != null)
                 {
@@ -118,17 +132,18 @@ namespace YetAnotherRoguelike.PhysicsObject
                 {
                     Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.BlockType.Neon_G));
                 }
-            }
+            }*/
 
-            if (Input.collection[Keys.D3].active)
+            if (Input.collection[Keys.R].active)
             {
                 if (cursorTile != null)
                 {
-                    Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.BlockType.Neon_B));
+                    Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.BlockType.Neon_White));
                 }
             }
-            //
+            #endregion
 
+            #region Debug controls
             if (Input.collection[Keys.F].active)
             {
                 foreach (GroundItem x in GroundItem.collection)
@@ -146,29 +161,84 @@ namespace YetAnotherRoguelike.PhysicsObject
             {
                 Lightmap.brightness -= 0.05f;
             }
+            #endregion
 
-            if (hasMoved)
+            if (Input.collection[Keys.Tab].active)
             {
-                UI.UI_Inventory_Container.Instance.active = false;
+                UI.UI_Inventory_Container.Instance.Toggle();
             }
-            else
+            #endregion
+        }
+
+        #region Mouse inputs
+        public void LeftMouseEvent()
+        {
+            if (MouseInput.left.isPressed)
             {
-                if (Input.collection[Keys.E].active)
+                if ((cursorTile != null) && (cursorTile.type != Tile.BlockType.Air))
                 {
-                    UI.UI_Inventory_Container.Instance.Toggle();
+                    cursorTile.DecreaseDurability(-500f * Game.compensation);
                 }
             }
         }
 
+        public void RightMouseEvent()
+        {
+            if (MouseInput.right.active)
+            {
+                if (cursorTile != null)
+                {
+                    JSON_ItemData result = JSON_ItemData.FetchData(selectedItem.type);
+                    if (result == null)
+                    {
+                        return;
+                    }
+                    if (result.tilePlaced == Tile.BlockType.Air)
+                    {
+                        return;
+                    }
+                    Tile _targeted = Chunk.FetchTileAt(Cursor.tPosition.X, Cursor.tPosition.Y);
+                    if ((cursorTile.type != Tile.BlockType.Air) && (Cursor.tSubPosition.Y >= 0.5f) && (_targeted.neighbours[1, 2] == Tile.BlockType.Air))
+                    {
+                        Tile temp = Chunk.FetchTileAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y + 1);
+                        Chunk.FetchChunkAt(temp.tileCoordinates.X, temp.tileCoordinates.Y)
+                            .ReplaceTile(
+                            new Point(temp.chunkTileCoordinates.X, temp.chunkTileCoordinates.Y),
+                            Tile.CreateTile(
+                                new Point(temp.tileCoordinates.X, temp.tileCoordinates.Y),
+                                new Point(temp.chunkTileCoordinates.X, temp.chunkTileCoordinates.Y),
+                                result.tilePlaced
+                                ));
+                    }
+                    else
+                    {
+                        if (cursorTile.type != Tile.BlockType.Air)
+                        {
+                            return; // place the block only if its an empty space
+                        }
+                        Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y)
+                            .ReplaceTile(
+                            new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y),
+                            Tile.CreateTile(
+                                new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y),
+                                new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y),
+                                result.tilePlaced
+                                ));
+                    }
+                }
+            }
+        }
+        #endregion
+
         #region Item handling
         public bool InventoryCanFit(Item item)
         {
-            if (inventory.Count <= inventorySize)
-            {
-                return true;
-            }
             foreach (Item x in inventory)
             {
+                if (x.type == Item.Type.None)
+                {
+                    return true; // theres an empty slot
+                }
                 if (x.type != item.type)
                 {
                     continue;
@@ -186,21 +256,40 @@ namespace YetAnotherRoguelike.PhysicsObject
         {
             foreach (Item x in inventory)
             {
-                if (x.type != item.type)
+                if (x.type == Item.Type.None)
                 {
-                    continue;
+                    // if its an empty slot
+                    x.type = item.type;
+                    x.amount = item.amount;
+                    if (x.Full(over:true))
+                    {
+                        int balance = x.amount - x.stackSize;
+                        x.amount = x.stackSize;
+                        GroundItem.collection.Add(new GroundItem(new Item(item.type, balance), position, position, false));
+                    }
+                    return;
                 }
-                if (x.Full())
+                else
                 {
-                    continue;
-                }
-                int leftover;
-                x.amount += item.amount;
-                if (x.amount > x.stackSize)
-                {
-                    leftover = x.stackSize - x.amount;
-                    x.amount -= leftover;
-                    GroundItem.collection.Add(new GroundItem(new Item(item.type, leftover), position, position, false));
+                    if (x.type != item.type)
+                    {
+                        continue;
+                    }
+                    // if the item type is the same
+                    if (x.Full())
+                    {
+                        continue;
+                    }
+                    // if the item isnt fully stacked
+                    int leftover;
+                    x.amount += item.amount;
+                    if (x.amount > x.stackSize)
+                    {
+                        leftover = x.amount - x.stackSize;
+                        x.amount -= leftover;
+                        GroundItem.collection.Add(new GroundItem(new Item(item.type, leftover), position, position, false));
+                    }
+                    return;
                 }
             }
         }

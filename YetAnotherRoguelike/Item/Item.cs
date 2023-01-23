@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using YetAnotherRoguelike.Data;
 
 namespace YetAnotherRoguelike
 {
@@ -32,6 +33,10 @@ namespace YetAnotherRoguelike
             }
 
             itemStackTypes = new Dictionary<Type, StackType>();
+            foreach (Type x in Enum.GetValues(typeof(Type)).Cast<Type>())
+            {
+                itemStackTypes.Add(x, StackType.Regular);
+            }
 
             stackSizes = new Dictionary<StackType, int>()
             {
@@ -49,8 +54,6 @@ namespace YetAnotherRoguelike
                     ) : new Dictionary<Type, int>()
                     );
             }
-
-            
         }
 
         public static Item Empty()
@@ -72,6 +75,7 @@ namespace YetAnotherRoguelike
             }
         }
         public int stackSize;
+        public Species selectionType = Species.Unset;
 
         public Item(Type t, int a)
         {
@@ -86,6 +90,23 @@ namespace YetAnotherRoguelike
             stackSize = itemStackTypes.ContainsKey(type) ? stackSizes[itemStackTypes[type]] : maxStackSize;
         }
 
+        public void UpdateSelectionType()
+        {
+            selectionType = Species.Unset;
+            JSON_ItemData result = JSON_ItemData.FetchData(type);
+            if (result != null)
+            {
+                if (result.selectionType != Species.Unset)
+                {
+                    selectionType = result.selectionType;
+                }
+                else if (result.tilePlaced != Tile_Classes.Tile.BlockType.Air)
+                {
+                    selectionType = Species.Placeable;
+                }
+            }
+        }
+
         public void UpdateSelf()
         {
             UpdateStackSize();
@@ -94,13 +115,30 @@ namespace YetAnotherRoguelike
                 type = Type.None;
                 _amount = 0;
             }
+            UpdateSelectionType();
         }
 
-        public bool Full()
+        public bool Full(bool over = false)
         {
-            return amount >= stackSize;
+            UpdateStackSize(); // just in case
+            if (over)
+            {
+                return amount > stackSize;
+            }
+            else
+            {
+                return amount >= stackSize;
+            }
         }
 
+
+        public enum Species
+        {
+            Unset,
+            Placeable,
+            Tool, // used to mine blocks
+            Weapon, // attacking
+        }
 
         public enum Type
         {

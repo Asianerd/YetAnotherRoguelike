@@ -126,6 +126,7 @@ namespace YetAnotherRoguelike.Tile_Classes
         Vector2 renderedPosition; // "world position" basically tile position * tilesize
         public Point chunkTileCoordinates; // position in the chunk; (0, 0) to (chunkSize, chunkSize)
         public Point chunkCoordinates; // position of parent chunk
+        //public Rectangle rect; // rectangle in tile coordinates
         public BlockType type;
         bool isAir;
         public bool updateSpriteNextFrame = true;
@@ -133,6 +134,7 @@ namespace YetAnotherRoguelike.Tile_Classes
         public GameValue durability, durabilityCooldown = new GameValue(0, 30, 1);
 
         int spriteIndex = 0;
+        int spriteIndexOffset = 0; // different selection of sprites in the same tilesheet
         bool isEmissive = false;
         public LightSource lightsource;
 

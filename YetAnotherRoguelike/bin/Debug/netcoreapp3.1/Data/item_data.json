@@ -1,0 +1,8 @@
+{
+    "Stone": {
+        "tile_placed": "Stone"
+    },
+    "Coal": {
+        "selection_type": "Tool"
+    }
+}

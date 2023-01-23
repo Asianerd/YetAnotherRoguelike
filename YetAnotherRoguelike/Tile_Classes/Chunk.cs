@@ -10,6 +10,7 @@ namespace YetAnotherRoguelike.Tile_Classes
     class Chunk
     {
         public static Texture2D chunkBorderSprite;
+        public static Rectangle collisionRect; // rect used to check collision, just move the rect to the tile's location to check collision
 
         public static List<Chunk> chunks = new List<Chunk>();
         public static int chunkSize = 16;
@@ -26,6 +27,7 @@ namespace YetAnotherRoguelike.Tile_Classes
         public static void Initialize()
         {
             chunkBorderSprite = Game.Instance.Content.Load<Texture2D>("Debug/chunk_border");
+            collisionRect = new Rectangle(0, 0, 1, 1);
         }
 
         public static void GenerateChunk(int x, int y) // If chunk with that coordinate doesnt exist, generate the chunk
@@ -43,6 +45,42 @@ namespace YetAnotherRoguelike.Tile_Classes
 
             chunks.Add(new Chunk(new Point(x, y)));
         }
+
+        #region Collision
+        public static bool CollideRect(Vector2 position, Vector2 size)
+        {
+            /*foreach (Chunk x in chunks)
+            {
+                if (x.CollideTiles(position, size))
+                {
+                    return true;
+                }
+            }
+            return false;*/
+
+            foreach (Chunk x in chunks)
+            {
+                if (x.CollideTiles(position, size))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool CollideRect(Rectangle rect)
+        {
+            // implement distance checking for optimization
+            foreach (Chunk x in chunks)
+            {
+                if (x.CollideTiles(rect))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        #endregion
 
         #region Fetching functions
         public static Chunk FetchChunkWithCoords(int x, int y)
@@ -283,38 +321,95 @@ namespace YetAnotherRoguelike.Tile_Classes
             }
         }
 
-        public void OnBlockModify(bool updateNeighbours) // if any of the blocks in the chunk are broken/replaced
-        {
-            if (updateNeighbours)
-            {
-                for (int cx = -1; cx <= 1; cx++)
-                {
-                    for (int cy = -1; cy <= 1; cy++)
-                    {
-                        Chunk result = FetchChunkWithCoords(position.X + cx, position.Y + cy);
-                        if (result != null)
-                        {
-                            result.OnBlockModify(false);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                for (int y = 0; y < chunkSize; y++)
-                {
-                    for (int x = 0; x < chunkSize; x++)
-                    {
-                        contents[x, y].updateSpriteNextFrame = true;
-                    }
-                }
-            }
-        }
-
+        #region Tile manipulation
         public void ReplaceTile(Point target, Tile newTile)
         {
             contents[target.X, target.Y].OnDestroy();
             contents[target.X, target.Y] = newTile;
+        }
+
+        /*public bool CollideTiles(Vector2 position, Vector2 size)
+        {
+            Rectangle targetRect = new Rectangle(
+                (int)(position.X * Game.physicsQuality),
+                (int)(position.Y * Game.physicsQuality),
+                (int)(size.X * Game.physicsQuality),
+                (int)(size.Y * Game.physicsQuality)
+                );
+
+            for (int y = 0; y < chunkSize; y++)
+            {
+                for (int x = 0; x < chunkSize; x++)
+                {
+                    if (contents[x, y].type == Tile.BlockType.Air)
+                    {
+                        continue;
+                    }
+
+                    collisionRect.X = (int)((x + position.X) * Game.physicsQuality);
+                    collisionRect.Y = (int)((y + position.Y) * Game.physicsQuality);
+                    collisionRect.Width = Game.physicsQuality;
+                    collisionRect.Height = Game.physicsQuality;
+
+                    if (targetRect.Intersects(collisionRect))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }*/
+
+        public bool CollideTiles(Vector2 p, Vector2 s)
+        {
+            // position and size are in tile-coordinates
+            Rectangle targetRect = new Rectangle((p * Game.physicsQuality).ToPoint(), (s * Game.physicsQuality).ToPoint());
+            for (int x = 0; x < chunkSize; x++)
+            {
+                for (int y = 0; y < chunkSize; y++)
+                {
+                    if (contents[x, y].type == Tile.BlockType.Air)
+                    {
+                        continue;
+                    }
+
+                    collisionRect.X = (int)((x + (position.X * chunkSize)) * Game.physicsQuality);
+                    collisionRect.Y = (int)((y + (position.Y * chunkSize)) * Game.physicsQuality);
+                    collisionRect.Height = Game.physicsQuality;
+                    collisionRect.Width = Game.physicsQuality;
+
+                    if (collisionRect.Intersects(targetRect))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool CollideTiles(Rectangle rect)
+        {
+            for (int y = 0; y < chunkSize; y++)
+            {
+                for (int x = 0; x < chunkSize; x++)
+                {
+                    if (contents[x, y].type == Tile.BlockType.Air)
+                    {
+                        continue;
+                    }
+
+                    collisionRect.X = x * Game.physicsQuality;
+                    collisionRect.Y = y * Game.physicsQuality;
+                    collisionRect.Width = Game.physicsQuality;
+                    collisionRect.Height = Game.physicsQuality;
+
+                    if (rect.Intersects(collisionRect))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         public Tile LocalFetchTile(int x, int y) // parameters in tile-coordinates
@@ -362,6 +457,36 @@ namespace YetAnotherRoguelike.Tile_Classes
 
             return contents[x, y].type;
         }
+        #endregion
+
+        #region Events
+        public void OnBlockModify(bool updateNeighbours) // if any of the blocks in the chunk are broken/replaced
+        {
+            if (updateNeighbours)
+            {
+                for (int cx = -1; cx <= 1; cx++)
+                {
+                    for (int cy = -1; cy <= 1; cy++)
+                    {
+                        Chunk result = FetchChunkWithCoords(position.X + cx, position.Y + cy);
+                        if (result != null)
+                        {
+                            result.OnBlockModify(false);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int y = 0; y < chunkSize; y++)
+                {
+                    for (int x = 0; x < chunkSize; x++)
+                    {
+                        contents[x, y].updateSpriteNextFrame = true;
+                    }
+                }
+            }
+        }
 
         public void LoadChunk()
         {
@@ -395,5 +520,6 @@ namespace YetAnotherRoguelike.Tile_Classes
                 }
             }
         }
+        #endregion
     }
 }

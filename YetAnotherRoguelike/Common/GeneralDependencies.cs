@@ -27,6 +27,19 @@ namespace YetAnotherRoguelike
             };
         }
 
+        public static float Lerp(float start, float end, float progress, float snapWeight = 0)
+        {
+            if (snapWeight == 0)
+            {
+                return start + progress * (end - start);
+            }
+            if (MathF.Abs(start - end) <= snapWeight)
+            {
+                return end;
+            }
+            return start + progress * (end - start);
+        }
+
         public static Color Blend(Color a, Color b)
         {
             return new Color(

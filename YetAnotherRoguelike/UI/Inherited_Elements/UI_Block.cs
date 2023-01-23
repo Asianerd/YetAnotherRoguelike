@@ -8,12 +8,12 @@ namespace YetAnotherRoguelike.UI
 {
     class UI_Block : UI_Element
     {
-        public UI_Block(Rectangle r) : base(r)
+        public UI_Block(UI_Container p, Rectangle r) : base(p, r)
         {
 
         }
 
-        public override void Draw(SpriteBatch spritebatch)
+        public override void Draw(SpriteBatch spritebatch, int offsetX = 0, int offsetY = 0)
         {
             base.Draw(spritebatch);
 

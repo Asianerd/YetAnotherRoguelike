@@ -224,6 +224,18 @@
 /processorParam:TextureFormat=Color
 /build:Particles/blank.png
 
+#begin Player/tileSelectionSprite.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Player/tileSelectionSprite.png
+
 #begin Shaders/Bloom.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -638,6 +650,30 @@
 /processorParam:TextureFormat=Color
 /build:UI/Cursors/default.png
 
+#begin UI/Cursors/grab.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/Cursors/grab.png
+
+#begin UI/Cursors/grabbing.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/Cursors/grabbing.png
+
 #begin UI/Cursors/hidden.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -650,6 +686,18 @@
 /processorParam:TextureFormat=Color
 /build:UI/Cursors/hidden.png
 
+#begin UI/Cursors/mining.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/Cursors/mining.png
+
 #begin UI/Cursors/orb.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -661,6 +709,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:UI/Cursors/orb.png
+
+#begin UI/Cursors/placing.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/Cursors/placing.png
 
 #begin UI/Cursors/select.png
 /importer:TextureImporter
@@ -745,6 +805,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:UI/Hotbar/selection_indicator.png
+
+#begin UI/Storage_Items/hotbar_selection_sprite.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/Storage_Items/hotbar_selection_sprite.png
 
 #begin UI/Storage_Items/item_slot.png
 /importer:TextureImporter
