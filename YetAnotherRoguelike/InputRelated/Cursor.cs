@@ -113,6 +113,13 @@ namespace YetAnotherRoguelike
 
         public static void Draw()
         {
+            if (state == CursorStates.Select)
+            {
+                if (MouseInput.left.isPressed || MouseInput.right.isPressed)
+                {
+                    state = CursorStates.Select_pressed;
+                }
+            }
             if (item.type != Item.Type.None)
             {
                 state = CursorStates.Grabbing;

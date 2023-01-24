@@ -6,7 +6,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using YetAnotherRoguelike.PhysicsObject;
-using YetAnotherRoguelike.UI.Inherited_Elements;
 
 namespace YetAnotherRoguelike.UI
 {
@@ -41,28 +40,38 @@ namespace YetAnotherRoguelike.UI
         public float hotbarSelectProgress = 0;
         #endregion
 
+        #region Crafting
+        public UI_Inventory_CraftingParent craftingParent;
+        #endregion
+
         public UI_Inventory_Container() : base(new List<UI_Element>() { })
         {
             if (Instance == null)
             {
                 Instance = this;
+                UI_Inventory_TabButton.Initialize();
+                UI_Inventory_CraftingParent.Initialize();
             }
 
             openedValue = new GameValue(0, 10, 1);
             active = true;
 
-            background = new UI_Background(this, new Rectangle(0, 0, (int)((rowLength + 2.5f) * UI_ItemSlot.size), (int)((MathF.Ceiling((float)Player.inventorySize / (float)rowLength) + 1) * UI_ItemSlot.size)));
+            background = new UI_Background(this, new Rectangle(0, 0, (int)((rowLength + 1f) * UI_ItemSlot.size), (int)((MathF.Ceiling((float)Player.inventorySize / (float)rowLength) + 2.5f) * UI_ItemSlot.size)));
 
             inventoryElements = new Dictionary<InventoryPage, List<UI_Element>>();
             tabButtons = new List<UI_Inventory_TabButton>();
             foreach (var x in Enum.GetValues(typeof(InventoryPage)).Cast<InventoryPage>().Select((value, index) => new { value, index }))
             {
                 inventoryElements.Add(x.value, new List<UI_Element>());
+                if (x.value == InventoryPage.None)
+                {
+                    continue;
+                }
                 tabButtons.Add(new UI_Inventory_TabButton(this, new Rectangle(
-                    x.index * (background.rect.Width / Enum.GetValues(typeof(InventoryPage)).Length),
+                    x.index * (background.rect.Width / 3),
                     background.rect.Top - UI_ItemSlot.size,
-                    background.rect.Width / Enum.GetValues(typeof(InventoryPage)).Length,
-                    UI_ItemSlot.size
+                    background.rect.Width / 3,
+                    UI_ItemSlot.size + (int)(UI_Element.pixel * 0.75f)
                     ), x.value));
             }
 
@@ -96,6 +105,14 @@ namespace YetAnotherRoguelike.UI
                     ));
             }
 
+            hotbarSelectRect = new Rectangle(0, 0, (int)(UI_ItemSlot.size + (hotbarSelectionOffset * 2f)), (int)(UI_ItemSlot.size + (hotbarSelectionOffset * 2f)));
+            hotbarSelectionSprite = Game.Instance.Content.Load<Texture2D>("UI/Storage_Items/hotbar_selection_sprite");
+
+            slotSelectionRect = new Rectangle(0, 0, (int)(UI_ItemSlot.size + (slotSelectionOffset * 2f)), (int)(UI_ItemSlot.size + (slotSelectionOffset * 2f)));
+            slotSelectionSprite = Game.Instance.Content.Load<Texture2D>("UI/Storage_Items/selection_sprite");
+            slotSelectionTarget = new Vector2(0);
+            slotSelectionVisibility = new GameValue(0, 20, 1, 0);
+
             inventoryElements[InventoryPage.Storage].Add(background);
             foreach (UI_ItemSlot x in itemSlots)
             {
@@ -107,19 +124,33 @@ namespace YetAnotherRoguelike.UI
                 inventoryElements[InventoryPage.Storage].Add(x);
             }
 
-            hotbarSelectRect = new Rectangle(0, 0, (int)(UI_ItemSlot.size + (hotbarSelectionOffset * 2f)), (int)(UI_ItemSlot.size + (hotbarSelectionOffset * 2f)));
-            hotbarSelectionSprite = Game.Instance.Content.Load<Texture2D>("UI/Storage_Items/hotbar_selection_sprite");
-
-            slotSelectionRect = new Rectangle(0, 0, (int)(UI_ItemSlot.size + (slotSelectionOffset * 2f)), (int)(UI_ItemSlot.size + (slotSelectionOffset * 2f)));
-            slotSelectionSprite = Game.Instance.Content.Load<Texture2D>("UI/Storage_Items/selection_sprite");
-            slotSelectionTarget = new Vector2(0);
-            slotSelectionVisibility = new GameValue(0, 20, 1, 0);
+            foreach (UI_Inventory_TabButton x in tabButtons)
+            {
+                inventoryElements[InventoryPage.Storage].Add(x);
+            }
             #endregion
 
             #region Crafting section
+            craftingParent = new UI_Inventory_CraftingParent(this, new Rectangle(0, 0, 0, 0));
+            inventoryElements[InventoryPage.Crafting].Add(background);
+
+            inventoryElements[InventoryPage.Crafting].Add(craftingParent);
+
+            foreach (UI_Inventory_TabButton x in tabButtons)
+            {
+                inventoryElements[InventoryPage.Crafting].Add(x);
+            }
             #endregion
 
             #region Equipment section
+
+
+            inventoryElements[InventoryPage.Equipment].Add(background);
+
+            foreach (UI_Inventory_TabButton x in tabButtons)
+            {
+                inventoryElements[InventoryPage.Equipment].Add(x);
+            }
             #endregion
 
             OnPageChange();
@@ -139,29 +170,23 @@ namespace YetAnotherRoguelike.UI
             #endregion
 
             openedValue.Regenerate(Game.compensation * (opened ? -1f : 1f));
+            if (openedValue.Percent() == 1f)
+            {
+                if (page != InventoryPage.None)
+                {
+                    page = InventoryPage.None;
+                    OnPageChange();
+                }
+            }
 
             containerOffset = (int)(MathF.Sin((1f - openedValue.Percent()) * MathF.PI * 0.5f) * background.rect.Width) - background.rect.Width;
 
             switch (page)
             {
-                case InventoryPage.Storage:
-                    hotbarSelectProgress = GeneralDependencies.Lerp(hotbarSelectProgress, Player.Instance.selectionIndex, Game.compensation * 0.5f, snapWeight: 0.01f);
-                    hotbarSelectRect.Location = new Point(
-                            (int)((rowLength + 1f) * UI_ItemSlot.size)
-                                - hotbarSelectionOffset,
-                            (int)((((float)hotbarSelectProgress / (float)Player.hotbarSize) * (int)((MathF.Ceiling((float)Player.inventorySize / (float)rowLength)) * UI_ItemSlot.size))
-                                + (Game.screenSize.Y * 0.5f)
-                                - ((MathF.Ceiling((float)Player.inventorySize / (float)rowLength) - 1f) * UI_ItemSlot.size * 0.5f))
-                                - hotbarSelectionOffset
-                            );
-
-                    if ((Cursor.item.type != Item.Type.None) && (hoveredContainer != null) && (hoveredContainer == this) && (UI_Element.hoveredElement.type == UI_Element.ElementType.ItemSlot))
-                    {
-                        slotSelectionTarget = UI_Element.hoveredElement.rect.Location.ToVector2();
-                    }
-                    break;
-                default:
-                    break;
+                case InventoryPage.Storage: StorageUpdate(); break;
+                case InventoryPage.Equipment: EquipmentUpdate(); break;
+                case InventoryPage.Crafting: CraftingUpdate(); break;
+                default: break;
             }
 
             foreach (UI_Element x in inventoryElements[page])
@@ -169,7 +194,7 @@ namespace YetAnotherRoguelike.UI
                 x.Update();
             }
 
-            slotSelectionVisibility.Regenerate(Game.compensation * (Cursor.item.type != Item.Type.None ? 1 : -1));
+            slotSelectionVisibility.Regenerate(Game.compensation * ((Cursor.item.type != Item.Type.None) && (UI_Element.hoveredElement.type == UI_Element.ElementType.ItemSlot) ? 1 : -1));
             slotSelectionLocation = Vector2.Lerp(slotSelectionLocation, slotSelectionTarget, Game.compensation * 0.5f);
         }
 
@@ -182,6 +207,11 @@ namespace YetAnotherRoguelike.UI
         public void OnPageChange()
         {
             elements = inventoryElements[page];
+
+            if (page == InventoryPage.Crafting)
+            {
+                craftingParent.UpdateList();
+            }
         }
 
         public override void Draw()
@@ -190,9 +220,16 @@ namespace YetAnotherRoguelike.UI
             {
                 x.Draw(Game.spriteBatch, offsetX:containerOffset);
             }
-            // draw the selection box for the hotbar
-            hotbarSelectRect.X += containerOffset;
-            Game.spriteBatch.Draw(hotbarSelectionSprite, hotbarSelectRect, Color.White);
+            switch (page)
+            {
+                case InventoryPage.Storage:
+                    // draw the selection box for the hotbar
+                    hotbarSelectRect.X += containerOffset;
+                    Game.spriteBatch.Draw(hotbarSelectionSprite, hotbarSelectRect, null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 1f);
+                    break;
+                default:
+                    break;
+            }
             Rectangle _slotRect = new Rectangle(
                 new Point(
                     (int)(slotSelectionLocation.X
@@ -203,12 +240,59 @@ namespace YetAnotherRoguelike.UI
                         - slotSelectionOffset)
                     ),
                 slotSelectionRect.Size);
-            Game.spriteBatch.Draw(slotSelectionSprite, _slotRect, Color.White * MathF.Sin(slotSelectionVisibility.Percent()) * MathF.PI);
+            Game.spriteBatch.Draw(slotSelectionSprite, _slotRect, null, Color.White * MathF.Sin(slotSelectionVisibility.Percent()) * MathF.PI, 0f, Vector2.Zero, SpriteEffects.None, 1f);
         }
+
+        #region Updates
+        void StorageUpdate()
+        {
+            hotbarSelectProgress = GeneralDependencies.Lerp(hotbarSelectProgress, Player.Instance.selectionIndex, Game.compensation * 0.5f, snapWeight: 0.01f);
+            /*hotbarSelectRect.Location = new Point(
+                    (int)((rowLength + 1f) * UI_ItemSlot.size)
+                        - hotbarSelectionOffset,
+                    (int)((((float)hotbarSelectProgress / (float)Player.hotbarSize) * (int)((MathF.Ceiling((float)Player.inventorySize / (float)rowLength)) * UI_ItemSlot.size))
+                        + (Game.screenSize.Y * 0.5f)
+                        - ((MathF.Ceiling((float)Player.inventorySize / (float)rowLength) - 1f) * UI_ItemSlot.size * 0.5f))
+                        - hotbarSelectionOffset
+                    );*/
+            hotbarSelectRect.Location = new Point(
+                    (int)(
+                    (((rowLength - 1) * UI_ItemSlot.size) * ((float)hotbarSelectProgress / ((float)Player.hotbarSize - 1f)))
+                    + (UI_ItemSlot.size * 0.5f)
+                    + background.rect.Left
+                    - hotbarSelectionOffset
+                    ),
+                    (int)(
+                    background.rect.Bottom
+                    - (1.5f * UI_ItemSlot.size)
+                    - hotbarSelectionOffset
+                    ));
+
+            if ((Cursor.item.type != Item.Type.None) && (hoveredContainer != null) && (hoveredContainer == this) && (UI_Element.hoveredElement.type == UI_Element.ElementType.ItemSlot))
+            {
+                slotSelectionTarget = UI_Element.hoveredElement.rect.Location.ToVector2();
+            }
+        }
+
+        void CraftingUpdate()
+        {
+
+        }
+
+        void EquipmentUpdate()
+        {
+
+        }
+        #endregion
 
         public override void Toggle()
         {
             opened = !opened;
+            if (opened)
+            {
+                page = InventoryPage.Storage;
+            }
+            OnPageChange();
         }
 
         public override void OnScreenResize()
@@ -221,27 +305,60 @@ namespace YetAnotherRoguelike.UI
             {
                 i.value.rect.Location = new Point(
                     (int)(
-                        (((i.index % rowLength) + 0.5f) * UI_ItemSlot.size)),
+                        (((i.index % rowLength) + 0.5f) * UI_ItemSlot.size)
+                        + background.rect.Left
+                        ),
                     (int)(
                         (MathF.Floor(i.index / rowLength) * UI_ItemSlot.size)
-                        + (Game.screenSize.Y * 0.5f)
-                        - (MathF.Ceiling((float)Player.inventorySize / (float)rowLength) * UI_ItemSlot.size * 0.5f))
+                        + background.rect.Top
+                        + (UI_ItemSlot.size * 0.5f)
+                        )
+                    /*+ (Game.screenSize.Y * 0.5f)
+                    - (MathF.Ceiling((float)Player.inventorySize / (float)rowLength) * UI_ItemSlot.size * 0.5f))*/
                     );
             }
 
             foreach (var i in (hotbarSlots.Select((value, index) => new { value, index })))
             {
-                i.value.rect.Location = new Point(
+                /*i.value.rect.Location = new Point(
                     (int)((rowLength + 1f) * UI_ItemSlot.size),
                     (int)((((float)i.index / (float)Player.hotbarSize) * (int)((MathF.Ceiling((float)Player.inventorySize / (float)rowLength)) * UI_ItemSlot.size))
                         + (Game.screenSize.Y * 0.5f)
                         - ((MathF.Ceiling((float)Player.inventorySize / (float)rowLength) - 1f) * UI_ItemSlot.size * 0.5f))
+                    );*/
+                i.value.rect.Location = new Point(
+                    (int)(
+                    (((rowLength - 1) * UI_ItemSlot.size) * ((float)i.index / ((float)Player.hotbarSize - 1f)))
+                    + (UI_ItemSlot.size * 0.5f)
+                    + background.rect.Left
+                    ),
+                    (int)(
+                    background.rect.Bottom
+                    - (1.5f * UI_ItemSlot.size)
+                    ));
+            }
+
+            foreach (var x in tabButtons.Select((value, index) => new { value, index }))
+            {
+                x.value.rect.Location = new Point(
+                    x.index * (background.rect.Width / 3),
+                    background.rect.Top - UI_ItemSlot.size
                     );
             }
+
+            craftingParent.rect = new Rectangle(
+                (int)(background.rect.Left + (UI_ItemSlot.size * 0.5f)),
+                (int)(background.rect.Top + UI_ItemSlot.size),
+                (int)(background.rect.Width - UI_ItemSlot.size),
+                (int)(background.rect.Height - (UI_ItemSlot.size * 2f))
+                );
+
+            craftingParent.OnScreenResize(background.rect);
         }
 
         public enum InventoryPage
         {
+            None,
             Storage,
             Crafting,
             Equipment

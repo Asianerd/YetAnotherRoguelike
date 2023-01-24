@@ -17,17 +17,17 @@ namespace YetAnotherRoguelike.UI
         {
             base.Draw(spritebatch);
 
-            spritebatch.Draw(backgroundSprite[0], new Rectangle(offsetX + rect.X, offsetY + rect.Y, pixel, pixel), Color.White);
-            spritebatch.Draw(backgroundSprite[1], new Rectangle(offsetX + rect.X + pixel, offsetY + rect.Y, rect.Width - (pixel * 2), pixel), Color.White);
-            spritebatch.Draw(backgroundSprite[2], new Rectangle(offsetX + rect.Right - pixel, offsetY + rect.Y, pixel, pixel), Color.White);
+            spritebatch.Draw(backgroundSprite[0], new Rectangle(offsetX + rect.X, offsetY + rect.Y, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.1f);
+            spritebatch.Draw(backgroundSprite[1], new Rectangle(offsetX + rect.X + pixel, offsetY + rect.Y, rect.Width - (pixel * 2), pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.1f);
+            spritebatch.Draw(backgroundSprite[2], new Rectangle(offsetX + rect.Right - pixel, offsetY + rect.Y, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.1f);
 
-            spritebatch.Draw(backgroundSprite[3], new Rectangle(offsetX + rect.X, offsetY + rect.Y + pixel, pixel, rect.Height - (pixel * 2)), Color.White);
-            spritebatch.Draw(backgroundSprite[4], new Rectangle(offsetX + rect.X + pixel, offsetY + rect.Y + pixel, rect.Width - pixel, rect.Height - (pixel * 2)), Color.White);
-            spritebatch.Draw(backgroundSprite[5], new Rectangle(offsetX + rect.Right - pixel, offsetY + rect.Y + pixel, pixel, rect.Height - (pixel * 2)), Color.White);
+            spritebatch.Draw(backgroundSprite[3], new Rectangle(offsetX + rect.X, offsetY + rect.Y + pixel, pixel, rect.Height - (pixel * 2)), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.1f);
+            spritebatch.Draw(backgroundSprite[4], new Rectangle(offsetX + rect.X + pixel, offsetY + rect.Y + pixel, rect.Width - (pixel * 2), rect.Height - (pixel * 2)), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.1f);
+            spritebatch.Draw(backgroundSprite[5], new Rectangle(offsetX + rect.Right - pixel, offsetY + rect.Y + pixel, pixel, rect.Height - (pixel * 2)), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.1f);
 
-            spritebatch.Draw(backgroundSprite[6], new Rectangle(offsetX + rect.X, offsetY + rect.Bottom - pixel, pixel, pixel), Color.White);
-            spritebatch.Draw(backgroundSprite[7], new Rectangle(offsetX + rect.X + pixel, offsetY + rect.Bottom - pixel, rect.Width - (pixel * 2), pixel), Color.White);
-            spritebatch.Draw(backgroundSprite[8], new Rectangle(offsetX + rect.Right - pixel, offsetY + rect.Bottom - pixel, pixel, pixel), Color.White);
+            spritebatch.Draw(backgroundSprite[6], new Rectangle(offsetX + rect.X, offsetY + rect.Bottom - pixel, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.1f);
+            spritebatch.Draw(backgroundSprite[7], new Rectangle(offsetX + rect.X + pixel, offsetY + rect.Bottom - pixel, rect.Width - (pixel * 2), pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.1f);
+            spritebatch.Draw(backgroundSprite[8], new Rectangle(offsetX + rect.Right - pixel, offsetY + rect.Bottom - pixel, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.1f);
         }
     }
 }

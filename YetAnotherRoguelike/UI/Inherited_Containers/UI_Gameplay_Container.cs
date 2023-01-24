@@ -46,44 +46,49 @@ namespace YetAnotherRoguelike.UI
             if (Player.Instance.cursorTile != null)
             {
                 tileSelectionTarget = Player.Instance.cursorTile.tileCoordinatesV;
-            }
 
-            Tile _targeted = Chunk.FetchTileAt(Cursor.tPosition.X, Cursor.tPosition.Y);
 
-            JSON_ItemData result = JSON_ItemData.FetchData(Player.Instance.selectedItem.type);
-            switch (Player.Instance.selectedItem.selectionType)
-            {
-                case Item.Species.Tool:
-                    if ((result != null) && (Player.Instance.cursorTile.type != Tile.BlockType.Air))
-                    {
-                        tileSelectionProgress.Regenerate(Game.compensation * 3f);
-                    }
-                    else
-                    {
-                        tileSelectionProgress.Regenerate(-Game.compensation);
-                    }
-                    break;
-                case Item.Species.Placeable:
-                    if ((result != null) && (Player.Instance.cursorTile.type == Tile.BlockType.Air))
-                    {
-                        tileSelectionProgress.Regenerate(Game.compensation * 3f);
-                    }
-                    else
-                    {
-                        if ((Player.Instance.cursorTile != null) && (Player.Instance.cursorTile.type != Tile.BlockType.Air) && (Cursor.tSubPosition.Y >= 0.5f) && (_targeted.neighbours[1, 2] == Tile.BlockType.Air))
+                Tile _targeted = Chunk.FetchTileAt(Cursor.tPosition.X, Cursor.tPosition.Y);
+
+                JSON_ItemData result = JSON_ItemData.FetchData(Player.Instance.selectedItem.type);
+                switch (Player.Instance.selectedItem.selectionType)
+                {
+                    case Item.Species.Tool:
+                        if ((result != null) && (Player.Instance.cursorTile.type != Tile.BlockType.Air))
                         {
                             tileSelectionProgress.Regenerate(Game.compensation * 3f);
-                            tileSelectionTarget.Y++;
                         }
                         else
                         {
                             tileSelectionProgress.Regenerate(-Game.compensation);
                         }
-                    }
-                    break;
-                default:
-                    tileSelectionProgress.Regenerate(-Game.compensation);
-                    break;
+                        break;
+                    case Item.Species.Placeable:
+                        if ((result != null) && (Player.Instance.cursorTile.type == Tile.BlockType.Air))
+                        {
+                            tileSelectionProgress.Regenerate(Game.compensation * 3f);
+                        }
+                        else
+                        {
+                            if ((Player.Instance.cursorTile != null) && (Player.Instance.cursorTile.type != Tile.BlockType.Air) && (Cursor.tSubPosition.Y >= 0.5f) && (_targeted.neighbours[1, 2] == Tile.BlockType.Air))
+                            {
+                                tileSelectionProgress.Regenerate(Game.compensation * 3f);
+                                tileSelectionTarget.Y++;
+                            }
+                            else
+                            {
+                                tileSelectionProgress.Regenerate(-Game.compensation);
+                            }
+                        }
+                        break;
+                    default:
+                        tileSelectionProgress.Regenerate(-Game.compensation);
+                        break;
+                }
+            }
+            else
+            {
+                tileSelectionProgress.Regenerate(-Game.compensation);
             }
 
             tileSelectionPosition.X = GeneralDependencies.Lerp(tileSelectionPosition.X, tileSelectionTarget.X, 0.2f * Game.compensation, 0.01f);
@@ -94,7 +99,7 @@ namespace YetAnotherRoguelike.UI
         {
             base.Draw();
             Game.spriteBatch.Draw(tileSelectionSprite, (tileSelectionPosition * Tile.tileSize) + Camera.renderOffset, null, Color.White * (tileSelectionProgress.Percent() + ((MathF.Sin((float)tileSelectionBob.Percent() * 2f * MathF.PI) * 0.2f) - 0.5f)), 0f, tileSelectionSpriteOrigin, Tile.spriteRenderScale, SpriteEffects.None, 1f);
-            if (Player.Instance.cursorTile.neighbours[1, 2] == Tile.BlockType.Air)
+            if ((Player.Instance.cursorTile != null) && (Player.Instance.cursorTile.neighbours[1, 2] == Tile.BlockType.Air))
             {
                 Game.spriteBatch.Draw(tileSelectionSprite, ((tileSelectionPosition + new Vector2(0, 0.75f)) * Tile.tileSize) + Camera.renderOffset, null, Color.White * (tileSelectionProgress.Percent() + ((MathF.Sin((float)tileSelectionBob.Percent() * 2f * MathF.PI) * 0.2f) - 0.5f)), 0f, tileSelectionSpriteOrigin, new Vector2(1, 0.5f) * Tile.spriteRenderScale, SpriteEffects.None, 1f);
             }

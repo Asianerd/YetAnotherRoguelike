@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace YetAnotherRoguelike.UI.Inherited_Elements
+namespace YetAnotherRoguelike.UI
 {
     class UI_Inventory_TabButton : UI_Element
     {
@@ -27,9 +27,10 @@ namespace YetAnotherRoguelike.UI.Inherited_Elements
             base.Update();
             if (hovered)
             {
+                Cursor.state = Cursor.CursorStates.Select;
                 if (MouseInput.left.active)
                 {
-
+                    UI_Inventory_Container.Instance.ChangePage(page);
                 }
             }
         }
@@ -38,17 +39,28 @@ namespace YetAnotherRoguelike.UI.Inherited_Elements
         {
             base.Draw(spritebatch, offsetX, offsetY);
 
-            spritebatch.Draw(backgroundSprite[0], new Rectangle(offsetX + rect.X, offsetY + rect.Y, pixel, pixel), Color.White);
-            spritebatch.Draw(backgroundSprite[1], new Rectangle(offsetX + rect.X + pixel, offsetY + rect.Y, rect.Width - (pixel * 2), pixel), Color.White);
-            spritebatch.Draw(backgroundSprite[2], new Rectangle(offsetX + rect.Right - pixel, offsetY + rect.Y, pixel, pixel), Color.White);
+            Rectangle renderedRect = new Rectangle(
+                rect.X + offsetX,
+                rect.Y + offsetY,
+                rect.Width,
+                rect.Height
+                );
 
-            spritebatch.Draw(backgroundSprite[3], new Rectangle(offsetX + rect.X, offsetY + rect.Y + pixel, pixel, rect.Height - (pixel * 2)), Color.White);
-            spritebatch.Draw(backgroundSprite[4], new Rectangle(offsetX + rect.X + pixel, offsetY + rect.Y + pixel, rect.Width - pixel, rect.Height - (pixel * 2)), Color.White);
-            spritebatch.Draw(backgroundSprite[5], new Rectangle(offsetX + rect.Right - pixel, offsetY + rect.Y + pixel, pixel, rect.Height - (pixel * 2)), Color.White);
+            float layer = UI_Inventory_Container.Instance.page == page ? 0.95f : 0.05f;
+            Color color = Color.White * (UI_Inventory_Container.Instance.page == page ? 1 : 0.5f);
+            color.A = 255;
 
-            spritebatch.Draw(backgroundSprite[6], new Rectangle(offsetX + rect.X, offsetY + rect.Bottom - pixel, pixel, pixel), Color.White);
-            spritebatch.Draw(backgroundSprite[7], new Rectangle(offsetX + rect.X + pixel, offsetY + rect.Bottom - pixel, rect.Width - (pixel * 2), pixel), Color.White);
-            spritebatch.Draw(backgroundSprite[8], new Rectangle(offsetX + rect.Right - pixel, offsetY + rect.Bottom - pixel, pixel, pixel), Color.White);
+            spritebatch.Draw(tabSprite[0], new Rectangle(renderedRect.X, renderedRect.Y, pixel, pixel), null, color, 0f, Vector2.Zero, SpriteEffects.None, layer);
+            spritebatch.Draw(tabSprite[1], new Rectangle(renderedRect.X + pixel, renderedRect.Y, renderedRect.Width - (pixel * 2), pixel), null, color, 0f, Vector2.Zero, SpriteEffects.None, layer);
+            spritebatch.Draw(tabSprite[2], new Rectangle(renderedRect.Right - pixel, renderedRect.Y, pixel, pixel), null, color, 0f, Vector2.Zero, SpriteEffects.None, layer);
+
+            spritebatch.Draw(tabSprite[3], new Rectangle(renderedRect.X, renderedRect.Y + pixel, pixel, renderedRect.Height - (pixel * 2)), null, color, 0f, Vector2.Zero, SpriteEffects.None, layer);
+            spritebatch.Draw(tabSprite[4], new Rectangle(renderedRect.X + pixel, renderedRect.Y + pixel, renderedRect.Width - (pixel * 2), renderedRect.Height - (pixel * 2)), null, color, 0f, Vector2.Zero, SpriteEffects.None, layer);
+            spritebatch.Draw(tabSprite[5], new Rectangle(renderedRect.Right - pixel, renderedRect.Y + pixel, pixel, renderedRect.Height - (pixel * 2)), null, color, 0f, Vector2.Zero, SpriteEffects.None, layer);
+
+            spritebatch.Draw(tabSprite[6], new Rectangle(renderedRect.X, renderedRect.Bottom - pixel, pixel, pixel), null, color, 0f, Vector2.Zero, SpriteEffects.None, layer);
+            spritebatch.Draw(tabSprite[7], new Rectangle(renderedRect.X + pixel, renderedRect.Bottom - pixel, renderedRect.Width - (pixel * 2), pixel), null, color, 0f, Vector2.Zero, SpriteEffects.None, layer);
+            spritebatch.Draw(tabSprite[8], new Rectangle(renderedRect.Right - pixel, renderedRect.Bottom - pixel, pixel, pixel), null, color, 0f, Vector2.Zero, SpriteEffects.None, layer);
         }
     }
 }

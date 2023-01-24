@@ -74,7 +74,7 @@ namespace YetAnotherRoguelike.Scenes
             Game.spriteBatch.End();
 
             // draw UI here
-            Game.spriteBatch.Begin(samplerState:SamplerState.PointClamp);
+            Game.spriteBatch.Begin(samplerState:SamplerState.PointClamp, sortMode:SpriteSortMode.FrontToBack);
             UI.UI_Gameplay_Container.Instance.Draw();
             UI.UI_Inventory_Container.Instance.Draw();
             Game.spriteBatch.End();

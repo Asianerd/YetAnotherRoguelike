@@ -323,3 +323,11 @@ D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\C
 D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Player\tileSelectionSprite.xnb
 D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\UI\Cursors\mining.xnb
 D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\UI\Cursors\placing.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\UI\Inventory\TabButton.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\UI\Inventory\CraftingParentBackground.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\UI\Inventory\CraftingParentBottomPanel.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\UI\Inventory\CraftingParentTopPanel.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\UI\Inventory\CraftingChildArrow.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\UI\Inventory\CraftingChildBackground.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\UI\Inventory\CraftingParentBackgroundBorder.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\UI\Inventory\CraftingChildOutline.xnb

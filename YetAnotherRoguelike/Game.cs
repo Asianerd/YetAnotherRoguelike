@@ -71,6 +71,8 @@ namespace YetAnotherRoguelike
         {
             Data.JSON_BlockData.Initialize();
             Data.JSON_ItemData.Initialize();
+            Item.Initialize();
+            Data.JSON_CraftingData.Initialize(); // crafting data needs items initialized
 
             PerlinNoise.Initialize();
             var _ = new GaussianBlur();
@@ -81,7 +83,6 @@ namespace YetAnotherRoguelike
 
             // move to main game scene init?
             Chunk.Initialize();
-            Item.Initialize();
             GroundItem.Initialize();
             Tile.Initialize();
 
@@ -214,6 +215,7 @@ namespace YetAnotherRoguelike
             if (showDebug)
             {
                 string debugText = $"FPS : {fps}\n" +
+                    $"Scroll : {MouseInput.scrollVel}\n" +
                     $"Pos : {(int)Player.Instance.position.X}:{(int)Player.Instance.position.Y}\n" +
                     $"Loaded Chunks : {Chunk.chunks.Count}\n" +
                     $"Lights : {LightSource.sources.Count}\n" +

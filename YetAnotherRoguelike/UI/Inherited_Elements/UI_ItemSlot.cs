@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace YetAnotherRoguelike.UI.Inherited_Elements
+namespace YetAnotherRoguelike.UI
 {
     class UI_ItemSlot : UI_Element
     {
@@ -102,7 +102,7 @@ namespace YetAnotherRoguelike.UI.Inherited_Elements
                 rect.Height
                 );
 
-            spritebatch.Draw(slotSprite, drawnRect, Color.White);
+            spritebatch.Draw(slotSprite, drawnRect, null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.2f);
             if (item.type == Item.Type.None)
             {
                 return;
@@ -112,10 +112,10 @@ namespace YetAnotherRoguelike.UI.Inherited_Elements
                 drawnRect.Y + offsetY,
                 drawnRect.Width,
                 drawnRect.Height
-                ), Color.White);
+                ), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.205f);
             if (item.amount != 1)
             {
-                spritebatch.DrawString(mainFont, item.amount.ToString(), drawnRect.Location.ToVector2(), Color.White);
+                spritebatch.DrawString(mainFont, item.amount.ToString(), drawnRect.Location.ToVector2(), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.21f);
             }
         }
     }

@@ -1,0 +1,29 @@
+[
+    {
+        "input": {
+            "Stone": 3
+        },
+        "output": {
+            "Bauxite": 3
+        }
+    },
+    {
+        "input": {
+            "Stone": 3,
+            "Coal": 2
+        },
+        "output": {
+            "Bauxite": 3
+        }
+    },
+    {
+        "input": {
+            "Stone": 3,
+            "Bismuth": 2,
+            "Coal": 2
+        },
+        "output": {
+            "Bauxite": 3
+        }
+    }
+]

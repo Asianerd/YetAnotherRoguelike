@@ -72,11 +72,27 @@
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Hotbar/marker.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Hotbar/Pointer.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Hotbar/selection_indicator.png</File>
+    <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Inventory/CraftingChildArrow.png</File>
+    <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Inventory/CraftingChildBackground.png</File>
+    <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Inventory/CraftingChildOutline.png</File>
+    <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Inventory/CraftingParentBackground.png</File>
+    <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Inventory/CraftingParentBackgroundBorder.png</File>
+    <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Inventory/CraftingParentBottomPanel.png</File>
+    <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Inventory/CraftingParentTopPanel.png</File>
+    <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Inventory/TabButton.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Storage_Items/hotbar_selection_sprite.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Storage_Items/item_slot.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Storage_Items/selection_sprite.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

@@ -7,6 +7,8 @@ namespace YetAnotherRoguelike
     class MouseInput
     {
         public static MouseInput right, left;
+        public static float scrollVel; // the current speed of scrolling
+        static float previousScroll;
 
         public static void Initialize()
         {
@@ -18,8 +20,10 @@ namespace YetAnotherRoguelike
         {
             right.Update(Game.mouseState.RightButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed);
             left.Update(Game.mouseState.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed);
-        }
 
+            scrollVel = Game.mouseState.ScrollWheelValue - previousScroll;
+            previousScroll = Game.mouseState.ScrollWheelValue;
+        }
 
         public bool isPressed, wasPressed, active;
 

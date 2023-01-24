@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using YetAnotherRoguelike.UI.Inherited_Elements;
 
 namespace YetAnotherRoguelike.UI
 {
@@ -46,7 +45,7 @@ namespace YetAnotherRoguelike.UI
 
         public virtual void Update()
         {
-            Debug.WriteLine("Test");
+            
         }
 
         public virtual void FetchHovered()

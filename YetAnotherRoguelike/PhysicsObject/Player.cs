@@ -16,7 +16,7 @@ namespace YetAnotherRoguelike.PhysicsObject
         public static Texture2D sprite = null;
         public static Vector2 spriteOrigin;
 
-        public static int inventorySize = 35; // 32 slots
+        public static int inventorySize = 25;
         public static int hotbarSize = 4;
         public static float dropDistance = 0.5f; // how far to drop items
 
@@ -267,6 +267,7 @@ namespace YetAnotherRoguelike.PhysicsObject
                         x.amount = x.stackSize;
                         GroundItem.collection.Add(new GroundItem(new Item(item.type, balance), position, position, false));
                     }
+                    OnInventoryModify();
                     return;
                 }
                 else
@@ -289,9 +290,15 @@ namespace YetAnotherRoguelike.PhysicsObject
                         x.amount -= leftover;
                         GroundItem.collection.Add(new GroundItem(new Item(item.type, leftover), position, position, false));
                     }
+                    OnInventoryModify();
                     return;
                 }
             }
+        }
+
+        public void OnInventoryModify()
+        {
+            UI.UI_Inventory_CraftingParent.Instance.UpdateList();
         }
         #endregion
 

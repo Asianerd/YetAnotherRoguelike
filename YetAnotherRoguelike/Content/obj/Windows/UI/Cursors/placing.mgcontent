@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <SourceFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Cursors/placing.png</SourceFile>
-  <SourceTime>2023-01-24T02:53:19.4195788+08:00</SourceTime>
+  <SourceTime>2023-01-24T03:14:07.9001638+08:00</SourceTime>
   <DestFile>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/bin/Windows/UI/Cursors/placing.xnb</DestFile>
-  <DestTime>2023-01-24T03:01:12.6491116+08:00</DestTime>
+  <DestTime>2023-01-24T13:13:41.5414462+08:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2020-08-10T16:17:54+08:00</ImporterTime>
   <Processor>TextureProcessor</Processor>
