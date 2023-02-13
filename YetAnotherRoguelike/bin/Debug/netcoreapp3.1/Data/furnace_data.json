@@ -1,0 +1,21 @@
+{
+    "examples":{
+        "item_id": ["temperature", "time (seconds)"]
+    },
+    "fuel":{
+        "Coal": [1000, 30],
+        "Hematite": [123012, 30]
+    },
+    "loot_table":[
+        {
+            "temperature":1000,
+            "inputs":{
+                "Hematite":1,
+                "Sphalerite":1
+            },
+            "output":{
+                "Bauxite":1
+            }
+        }
+    ]
+}

@@ -20,6 +20,8 @@ namespace YetAnotherRoguelike.Tile_Classes
         public static Vector2 lowerSpriteOffset;
         public static Color lowerSpriteTint;
 
+        public static Tile targetedTile;
+
         static float _renderScale = 1f;
         public static float renderScale
         {
@@ -69,9 +71,17 @@ namespace YetAnotherRoguelike.Tile_Classes
         {
             //return BlockType.Air;
             BlockType type = BlockType.Air;
+
             if (p > 0.5f)
             {
                 type = BlockType.Stone;
+
+                if (PerlinNoise.OrganicTilesInstance.GetNoise(pos.X, pos.Y) <= 0.02f)
+                {
+                    type = BlockType.Clay;
+                    return type;
+                }
+
                 float chance = PerlinNoise.OreInstance.GetNoise(pos.X, pos.Y);
                 if (chance >= 0.55f)
                 {
@@ -106,6 +116,7 @@ namespace YetAnotherRoguelike.Tile_Classes
             {
                 /*BlockType.Neon_Blue => new Tile(tCoords, cCoords, t, new LightSource(tCoords.ToVector2(), new Color(82, 241, 242), 25, 10)),
                 BlockType.Neon_Purple => new Tile(tCoords, cCoords, t, new LightSource(tCoords.ToVector2(), new Color(255, 0, 244), 25, 10)),*/
+                BlockType.Rudimentary_Furnace => new Tile_RudimentaryFurnace(tCoords, cCoords),
                 _ => new Tile(tCoords, cCoords, t,
                 l : blockLightData.Contains(t) ? new LightSource(tCoords.ToVector2(),
                 Data.JSON_BlockData.blockData[t].lightColor,
@@ -123,18 +134,19 @@ namespace YetAnotherRoguelike.Tile_Classes
          */
         public Point tileCoordinates;
         public Vector2 tileCoordinatesV; // vector2 version of tile coordinate for performance
-        Vector2 renderedPosition; // "world position" basically tile position * tilesize
+        public Vector2 renderedPosition; // "world position" basically tile position * tilesize
         public Point chunkTileCoordinates; // position in the chunk; (0, 0) to (chunkSize, chunkSize)
         public Point chunkCoordinates; // position of parent chunk
         //public Rectangle rect; // rectangle in tile coordinates
         public BlockType type;
+        public bool interactable = false;
+        public bool targeted;
         bool isAir;
         public bool updateSpriteNextFrame = true;
 
         public GameValue durability, durabilityCooldown = new GameValue(0, 30, 1);
 
         int spriteIndex = 0;
-        int spriteIndexOffset = 0; // different selection of sprites in the same tilesheet
         bool isEmissive = false;
         public LightSource lightsource;
 
@@ -260,8 +272,6 @@ namespace YetAnotherRoguelike.Tile_Classes
                 return;
             }
 
-            //UpdateColor();
-
             if (neighbours[1, 2] == BlockType.Air)
             {
                 spritebatch.Draw(tileSprites[type][
@@ -273,13 +283,9 @@ namespace YetAnotherRoguelike.Tile_Classes
             if (durability.Percent() != 1f)
             {
                 float _drawnLayer = Math.Clamp(drawnLayer + 0.05f, 0f, 1f);
-                //spritebatch.Draw(Game.emptySprite, new Rectangle(new Vector2(renderedPosition.X + 4 - (tileSize / 2f), renderedPosition.Y + 20 - (tileSize / 2f)).ToPoint(), new Point(56, 24)), Color.Black * 0.5f);
                 spritebatch.Draw(Game.emptySprite, new Rectangle(new Vector2(renderedPosition.X + 4 - (tileSize / 2f), renderedPosition.Y + 20 - (tileSize / 2f)).ToPoint(), new Point(56, 24)), null, Color.Black * 0.5f, 0f, Vector2.Zero, SpriteEffects.None, _drawnLayer - 0.01f);
-                //spritebatch.Draw(Game.emptySprite, new Rectangle(new Vector2(renderedPosition.X + 8 - (tileSize / 2f), renderedPosition.Y + 24 - (tileSize / 2f)).ToPoint(), new Point((int)(48f * (1f - (float)durability.Percent())), 16)), Color.White);
                 spritebatch.Draw(Game.emptySprite, new Rectangle(new Vector2(renderedPosition.X + 8 - (tileSize / 2f), renderedPosition.Y + 24 - (tileSize / 2f)).ToPoint(), new Point((int)(48f * (1f - (float)durability.Percent())), 16)), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, _drawnLayer);
             }
-
-            //spritebatch.DrawString(Game.mainFont, drawnLayer.ToString(), renderedPosition, Color.White);
         }
 
         public virtual void OnDestroy() // when block is destroyed
@@ -351,6 +357,8 @@ namespace YetAnotherRoguelike.Tile_Classes
             Stone,
             Concrete,
 
+            Clay,
+
             Neon_Blue,
             Neon_Purple,
             Neon_Yellow,
@@ -370,6 +378,7 @@ namespace YetAnotherRoguelike.Tile_Classes
             Argentite, // Silver
             Bismuth,
 
+            Rudimentary_Furnace,
             Blast_Furnace
         }
     }

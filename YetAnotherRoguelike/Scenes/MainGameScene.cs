@@ -24,16 +24,29 @@ namespace YetAnotherRoguelike.Scenes
         {
             base.Update();
 
+            if (Tile.targetedTile != null)
+            {
+                Tile.targetedTile.targeted = false;
+            }
+            Tile.targetedTile = null;
+
+
+            foreach (Entity e in entities)
+            {
+                e.Update();
+            }
+            if (Tile.targetedTile != null)
+            {
+                Tile.targetedTile.targeted = true;
+            }
+
+
             foreach (Chunk x in Chunk.chunks)
             {
                 x.Update();
             }
             Chunk.chunks = Chunk.chunks.Where(n => !n.dead).ToList();
 
-            foreach (Entity e in entities)
-            {
-                e.Update();
-            }
 
             UI.UI_Container.UpdateAll();
 
@@ -76,6 +89,7 @@ namespace YetAnotherRoguelike.Scenes
             // draw UI here
             Game.spriteBatch.Begin(samplerState:SamplerState.PointClamp, sortMode:SpriteSortMode.FrontToBack);
             UI.UI_Gameplay_Container.Instance.Draw();
+            UI.UI_Furnace.Instance.Draw();
             UI.UI_Inventory_Container.Instance.Draw();
             Game.spriteBatch.End();
         }
