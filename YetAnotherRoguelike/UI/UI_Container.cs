@@ -16,7 +16,9 @@ namespace YetAnotherRoguelike.UI
             UI_Element.Initialize();
             containers = new List<UI_Container>() {
                 new UI_Inventory_Container(),
-                new UI_Gameplay_Container()
+                new UI_Gameplay_Container(),
+
+                new UI_Furnace()
             };
         }
 

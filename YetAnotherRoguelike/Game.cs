@@ -20,7 +20,7 @@ namespace YetAnotherRoguelike
         public static GraphicsDeviceManager graphics;
         public static SpriteBatch spriteBatch;
         public static Vector2 screenSize = new Vector2(1920, 1080);
-        //public static Vector2 screenSize = new Vector2(500, 500);
+        //public static Vector2 screenSize = new Vector2(700, 700);
         //public static Vector2 screenSize = new Vector2(1000, 1000);
         public static Rectangle playArea = new Rectangle(0, 0, 0, 0); // measured in tile-coordinates
         public static Texture2D emptySprite;
@@ -38,6 +38,7 @@ namespace YetAnotherRoguelike
         public static int seed = random.Next(0, 10000);
 
         public static float fps = 0f;
+        public static float updateTime = 0f;
         public static int fpsOffset = 0; // a little timer just for ease of reading fps
         public static bool showDebug = false;
 
@@ -73,6 +74,7 @@ namespace YetAnotherRoguelike
             Data.JSON_ItemData.Initialize();
             Item.Initialize();
             Data.JSON_CraftingData.Initialize(); // crafting data needs items initialized
+            Data.JSON_FurnaceData.Initialize();
 
             PerlinNoise.Initialize();
             var _ = new GaussianBlur();
@@ -205,6 +207,7 @@ namespace YetAnotherRoguelike
             {
                 fpsOffset = 0;
                 fps = (float)Math.Round(1f / gameTime.ElapsedGameTime.TotalSeconds);
+                updateTime = (float)Math.Round(gameTime.ElapsedGameTime.TotalMilliseconds, 2);
             }
 
             GraphicsDevice.Clear(Scene.currentScene.backgroundColor);
@@ -215,11 +218,12 @@ namespace YetAnotherRoguelike
             if (showDebug)
             {
                 string debugText = $"FPS : {fps}\n" +
-                    $"Scroll : {MouseInput.scrollVel}\n" +
+                    $"Targeted : {(Tile.targetedTile == null ? "None" : Tile.targetedTile.type.ToString())}\n" +
                     $"Pos : {(int)Player.Instance.position.X}:{(int)Player.Instance.position.Y}\n" +
                     $"Loaded Chunks : {Chunk.chunks.Count}\n" +
                     $"Lights : {LightSource.sources.Count}\n" +
-                    $"Ground items : {GroundItem.collection.Count}";
+                    $"Ground items : {GroundItem.collection.Count}\n" +
+                    $"Update time : {updateTime}ms";
                 spriteBatch.Draw(emptySprite, new Rectangle(new Point(0, 0), mainFont.MeasureString(debugText).ToPoint()), Color.Black * 0.2f);
                 spriteBatch.DrawString(mainFont, debugText, Vector2.Zero, Color.White);
             }

@@ -243,6 +243,7 @@ namespace YetAnotherRoguelike
             }
 
             float _scale = ((1f + MathF.Sin(animationAge.Percent() * MathF.PI * 2f)) * 0.2f) + 0.5f;
+            //float _scale = 1.2f;
             spritebatch.Draw(shadowSprite, (position - finalPositionOffset + shadowSpriteOffset) * Tile_Classes.Tile.tileSize, null, Color.White, 0f, shadowSpriteOrigin, Tile_Classes.Tile.renderScale * _scale, SpriteEffects.None, drawnLayer);
         }
     }

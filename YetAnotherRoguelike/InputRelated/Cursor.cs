@@ -66,19 +66,25 @@ namespace YetAnotherRoguelike
                 cursorOrigins.Add(x, cursorSprites[x].Bounds.Size.ToVector2() * 0.5f);
             }
 
-            light = new LightSource(Vector2.Zero, Color.White, 10, 15);
+            light = new LightSource(Vector2.Zero, Color.White, 5000, 500);
             item = Item.Empty();
             //LightSource.Append(light);
         }
 
         public static void Update()
         {
-            state = Player.Instance.selectedItem.selectionType switch
+            if (UI.UI_Element.hoveredElement == null)
             {
-                Item.Species.Placeable => CursorStates.Placing,
-                Item.Species.Tool => CursorStates.Mining,
-                _ => CursorStates.Default
-            };
+                state = Player.Instance.selectedItem.selectionType switch
+                {
+                    Item.Species.Placeable => CursorStates.Placing,
+                    Item.Species.Tool => CursorStates.Mining,
+                    _ => CursorStates.Default
+                };
+            } else
+            {
+                state = CursorStates.Default;
+            }
 
             position = Game.mouseState.Position;
             Vector2 tPos = ((position.ToVector2() - Camera.renderOffset) / Tile.tileSize) - new Vector2(0, 0.5f);
