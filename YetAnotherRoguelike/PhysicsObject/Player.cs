@@ -22,10 +22,12 @@ namespace YetAnotherRoguelike.PhysicsObject
 
         public Point currentChunkPos;
         public Chunk[,] surroundingChunks = new Chunk[3, 3];
+        public Tile[,] neighbourTiles = new Tile[5, 5];
 
         public Tile cursorTile;
 
         public List<Item> inventory;
+        public Dictionary<Item.Type, int> inventoryItemCount; // for performance reasons
         public List<Item> hotbar;
         public int selectionIndex = 0;
         public Item selectedItem
@@ -34,6 +36,9 @@ namespace YetAnotherRoguelike.PhysicsObject
         }
 
         public Tile.BlockType tilePlaced; // null if selected item doesnt have a tilePlaced
+
+        public float speed; // current speed of player, used to close UI containers and etc
+        Vector2 _previousPosition;
 
         public Player(Vector2 pos, Texture2D _sprite):base(pos, new Vector2(0.5f, 0.5f))
         {
@@ -58,12 +63,14 @@ namespace YetAnotherRoguelike.PhysicsObject
             {
                 hotbar.Add(Item.Empty());
             }
+
+            inventory[0] = new Item(Item.Type.Hematite, 10);
+            inventory[1] = new Item(Item.Type.Sphalerite, 10);
+            hotbar[0] = new Item(Item.Type.Rudimentary_Furnace, 1);
         }
 
         public override void Update()
         {
-            bool hasMoved = false;
-
             Vector2 final = Vector2.Zero;
             foreach (Keys x in new Keys[] { Keys.W, Keys.A, Keys.S, Keys.D })
             {
@@ -75,12 +82,15 @@ namespace YetAnotherRoguelike.PhysicsObject
             if ((final.X != 0) || (final.Y != 0))
             {
                 final.Normalize();
-                hasMoved = true;
             }
             final *= Input.collection[Keys.LeftShift].isPressed ? 0.25f : 0.12f;
             velocity = final;
 
             base.Update();
+
+            speed = Vector2.Distance(position, _previousPosition);
+            _previousPosition.X = (float)position.X;
+            _previousPosition.Y = (float)position.Y;
 
             currentChunkPos = Chunk.TileToChunkCoordinates((int)position.X, (int)position.Y);
             for (int x = -Chunk.chunkGenerationRange; x <= Chunk.chunkGenerationRange; x++)
@@ -95,7 +105,19 @@ namespace YetAnotherRoguelike.PhysicsObject
             {
                 for (int y = -1; y < 2; y++)
                 {
-                    surroundingChunks[x + 1, y + 1] = (Chunk.FetchChunkAt(currentChunkPos.X + x, currentChunkPos.Y + y));
+                    surroundingChunks[x + 1, y + 1] = (Chunk.FetchChunkWithCoords(currentChunkPos.X + x, currentChunkPos.Y + y));
+                }
+            }
+
+            for (int x = -2; x < 3; x++)
+            {
+                for (int y = -2; y < 3; y++)
+                {
+                    neighbourTiles[x + 2, y + 2] = Chunk.FetchTileAt((int)(MathF.Round(position.X) + x), (int)(MathF.Round(position.Y - 0.5f) + y), surroundingChunks);
+                    if (neighbourTiles[x + 2, y + 2].interactable)
+                    {
+                        Tile.targetedTile = neighbourTiles[x + 2, y + 2];
+                    }
                 }
             }
 
@@ -131,6 +153,14 @@ namespace YetAnotherRoguelike.PhysicsObject
                 if (cursorTile != null)
                 {
                     Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.BlockType.Neon_G));
+                }
+            }
+
+            if (Input.collection[Keys.D3].active)
+            {
+                if (cursorTile != null)
+                {
+                    Chunk.FetchChunkAt(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y).ReplaceTile(new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.CreateTile(new Point(cursorTile.tileCoordinates.X, cursorTile.tileCoordinates.Y), new Point(cursorTile.chunkTileCoordinates.X, cursorTile.chunkTileCoordinates.Y), Tile.BlockType.Neon_Blue));
                 }
             }*/
 
@@ -177,7 +207,7 @@ namespace YetAnotherRoguelike.PhysicsObject
             {
                 if ((cursorTile != null) && (cursorTile.type != Tile.BlockType.Air))
                 {
-                    cursorTile.DecreaseDurability(-500f * Game.compensation);
+                    cursorTile.DecreaseDurability(-5f * Game.compensation);
                 }
             }
         }
@@ -298,7 +328,42 @@ namespace YetAnotherRoguelike.PhysicsObject
 
         public void OnInventoryModify()
         {
+            inventoryItemCount = new Dictionary<Item.Type, int>();
+            foreach (Item x in inventory)
+            {
+                if (!inventoryItemCount.ContainsKey(x.type))
+                {
+                    inventoryItemCount.Add(x.type, 0);
+                }
+                inventoryItemCount[x.type] += x.amount;
+            }
+
             UI.UI_Inventory_CraftingParent.Instance.UpdateList();
+        }
+
+        public void InventoryRemove(Item.Type type, int amount)
+        {
+            int toBeRemoved = amount;
+            while (toBeRemoved > 0) // while loops are the scariest things
+            {
+                foreach (Item x in inventory)
+                {
+                    if (x.type == type)
+                    {
+                        if (x.amount >= toBeRemoved)
+                        {
+                            x.amount -= toBeRemoved;
+                            toBeRemoved = 0; // <- just to be safe
+                            return;
+                        }
+                        else 
+                        {
+                            toBeRemoved -= x.amount;
+                            x.amount = 0;
+                        }
+                    }
+                }
+            }
         }
         #endregion
 

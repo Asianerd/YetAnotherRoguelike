@@ -19,8 +19,6 @@ namespace YetAnotherRoguelike.Data
                 x.SetData();
                 craftingData.Add(x);
             }
-
-            Debug.WriteLine($"Crafting data count : {craftingData.Count}");
         }
 
         public JSON_CraftingData() { }

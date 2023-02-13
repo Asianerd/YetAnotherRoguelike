@@ -194,7 +194,14 @@ namespace YetAnotherRoguelike.UI
                 x.Update();
             }
 
-            slotSelectionVisibility.Regenerate(Game.compensation * ((Cursor.item.type != Item.Type.None) && (UI_Element.hoveredElement.type == UI_Element.ElementType.ItemSlot) ? 1 : -1));
+            if (UI_Element.hoveredElement != null)
+            {
+                slotSelectionVisibility.Regenerate(Game.compensation * ((Cursor.item.type != Item.Type.None) && (UI_Element.hoveredElement.type == UI_Element.ElementType.ItemSlot) ? 1 : -1));
+            }
+            else
+            {
+                slotSelectionVisibility.Regenerate(-Game.compensation);
+            }
             slotSelectionLocation = Vector2.Lerp(slotSelectionLocation, slotSelectionTarget, Game.compensation * 0.5f);
         }
 
@@ -210,7 +217,9 @@ namespace YetAnotherRoguelike.UI
 
             if (page == InventoryPage.Crafting)
             {
-                craftingParent.UpdateList();
+                Player.Instance.OnInventoryModify();
+                // OnInventoryModify() already calls craftingParent.UpdateList()
+                //craftingParent.UpdateList();
             }
         }
 

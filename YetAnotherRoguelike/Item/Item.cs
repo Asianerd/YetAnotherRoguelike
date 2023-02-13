@@ -61,6 +61,10 @@ namespace YetAnotherRoguelike
             return new Item(Type.None, 0);
         }
 
+        public static Item DeepCopy(Item x)
+        {
+            return new Item(x.type, x.amount);
+        }
 
 
         public Type type;
@@ -131,6 +135,19 @@ namespace YetAnotherRoguelike
             }
         }
 
+        public void AssignData(Item x)
+        {
+            type = x.type;
+            amount = x.amount;
+
+            UpdateSelf();
+        }
+
+        public bool IsSame(Item x)
+        {
+            return (type == x.type) && (amount == x.amount);
+        }
+
 
         public enum Species
         {
@@ -145,8 +162,11 @@ namespace YetAnotherRoguelike
             None,
 
             Stone,
-            Coal,
 
+            Clay,
+                Clay_Cast,
+
+            Coal,
             Bauxite,
             Hematite,
             Sphalerite,
@@ -154,7 +174,9 @@ namespace YetAnotherRoguelike
             Galena,
             Cinnabar,
             Argentite,
-            Bismuth
+            Bismuth,
+
+            Rudimentary_Furnace,
         }
 
         public enum StackType

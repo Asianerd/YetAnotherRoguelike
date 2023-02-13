@@ -2,6 +2,9 @@
     "Stone": {
         "tile_placed": "Stone"
     },
+    "Rudimentary_Furnace": {
+        "tile_placed": "Rudimentary_Furnace"
+    },
     "Coal": {
         "selection_type": "Tool"
     }

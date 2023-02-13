@@ -1,29 +1,18 @@
 [
     {
         "input": {
-            "Stone": 3
+            "Clay": 5
         },
         "output": {
-            "Bauxite": 3
+            "Clay_Cast": 1
         }
     },
     {
         "input": {
-            "Stone": 3,
-            "Coal": 2
+            "Stone": 10
         },
         "output": {
-            "Bauxite": 3
-        }
-    },
-    {
-        "input": {
-            "Stone": 3,
-            "Bismuth": 2,
-            "Coal": 2
-        },
-        "output": {
-            "Bauxite": 3
+            "Rudimentary_Furnace": 1
         }
     }
 ]
