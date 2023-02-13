@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using YetAnotherRoguelike.Data;
+using YetAnotherRoguelike.PhysicsObject;
 
 namespace YetAnotherRoguelike.UI
 {
@@ -107,14 +108,53 @@ namespace YetAnotherRoguelike.UI
             }
 
             collection = new List<UI_Inventory_CraftingChild>();
+
+            List<JSON_CraftingData> craftable = new List<JSON_CraftingData>(), uncraftable = new List<JSON_CraftingData>();
             foreach (JSON_CraftingData x in JSON_CraftingData.craftingData)
+            {
+                bool c = true;
+
+                foreach (Item i in x.ingredients)
+                {
+                    if (!Player.Instance.inventoryItemCount.ContainsKey(i.type))
+                    {
+                        c = false;
+                        continue;
+                    }
+                    if (Player.Instance.inventoryItemCount[i.type] < i.amount)
+                    {
+                        c = false;
+                    }
+                }
+
+                if (c)
+                {
+                    craftable.Add(x);
+                }
+                else
+                {
+                    uncraftable.Add(x);
+                }
+            }
+
+            foreach (JSON_CraftingData x in craftable)
             {
                 collection.Add(new UI_Inventory_CraftingChild(this, parentContainer, new Rectangle(
                     rect.Left,
                     rect.Top + (int)(collection.Count * UI_ItemSlot.size),
                     rect.Width,
                     UI_ItemSlot.size
-                    ), x.ingredients, x.product));
+                    ), x.ingredients, x.product, true));
+            }
+
+            foreach (JSON_CraftingData x in uncraftable)
+            {
+                collection.Add(new UI_Inventory_CraftingChild(this, parentContainer, new Rectangle(
+                    rect.Left,
+                    rect.Top + (int)(collection.Count * UI_ItemSlot.size),
+                    rect.Width,
+                    UI_ItemSlot.size
+                    ), x.ingredients, x.product, false));
             }
 
             maxScroll = rect.Height - (collection.Count * UI_ItemSlot.size);
