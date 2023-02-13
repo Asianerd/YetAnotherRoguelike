@@ -182,7 +182,40 @@ namespace YetAnotherRoguelike.Tile_Classes
             return null;
         }
 
+        public static Chunk FetchChunkAt(int x, int y, Chunk[,] collection) // Fetches the chunk that contains the tile-coordinate
+        {
+            int tx = (int)Math.Floor(x / (float)chunkSize);
+            int ty = (int)Math.Floor(y / (float)chunkSize);
+
+            for (int cx = 0; cx < collection.GetLength(0); cx++)
+            {
+                for (int cy = 0; cy < collection.GetLength(1); cy++)
+                {
+                    if (collection[cx, cy].position.X == tx)
+                    {
+                        if (collection[cx, cy].position.Y == ty)
+                        {
+                            return collection[cx, cy];
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
         public static Tile FetchTileAt(int x, int y, List<Chunk> collection) // Fetches the tile at the tile-coordinate
+        {
+            Chunk _c = FetchChunkAt(x, y, collection);
+
+            if (_c == null)
+            {
+                return null;
+            }
+
+            return _c.contents[FixCoords(x), FixCoords(y)];
+        }
+
+        public static Tile FetchTileAt(int x, int y, Chunk[,] collection) // Fetches the tile at the tile-coordinate
         {
             Chunk _c = FetchChunkAt(x, y, collection);
 
