@@ -64,6 +64,7 @@ namespace YetAnotherRoguelike
     {
         public static PerlinNoise Instance;
         public static PerlinNoise OreInstance;
+        public static PerlinNoise OrganicTilesInstance; // for organic tiles like clay, etc etc
         /*public static Texture2D demoSprite;*/
 
         public static void Initialize()
@@ -79,6 +80,14 @@ namespace YetAnotherRoguelike
             OreInstance.SetFractalLacunarity(2);
             OreInstance.SetFractalGain(1.2f);
             OreInstance.SetFrequency(0.5f);
+
+            OrganicTilesInstance = new PerlinNoise(new Random(Game.seed + 100).Next(-Game.seed, Game.seed));
+            OrganicTilesInstance.SetNoiseType(NoiseType.Cellular);
+            OrganicTilesInstance.SetFractalType(FractalType.FBm);
+            OrganicTilesInstance.SetFractalOctaves(1);
+            OrganicTilesInstance.SetFractalLacunarity(2);
+            OrganicTilesInstance.SetFractalGain(1.2f);
+            OrganicTilesInstance.SetFrequency(0.07f);
 
             /*OreInstance.SetFractalOctaves(3);
             OreInstance.SetCellularDistanceFunction(CellularDistanceFunction.EuclideanSq);
