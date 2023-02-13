@@ -68,6 +68,20 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/defaultFont.spritefont
 
+#begin Fonts/inconsolata.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/inconsolata.spritefont
+
+#begin Fonts/workSans.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/workSans.spritefont
+
 #begin Item_sprites/argentite.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -128,6 +142,30 @@
 /processorParam:TextureFormat=Color
 /build:Item_sprites/cinnabar.png
 
+#begin Item_sprites/clay.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Item_sprites/clay.png
+
+#begin Item_sprites/clay_cast.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Item_sprites/clay_cast.png
+
 #begin Item_sprites/coal.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -163,6 +201,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Item_sprites/hematite.png
+
+#begin Item_sprites/rudimentary_furnace.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Item_sprites/rudimentary_furnace.png
 
 #begin Item_sprites/sphalerite.png
 /importer:TextureImporter
@@ -338,6 +388,18 @@
 /processorParam:TextureFormat=Color
 /build:Tiles/cinnabar.png
 
+#begin Tiles/clay.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Tiles/clay.png
+
 #begin Tiles/coal_ore.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -469,6 +531,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Tiles/neon_yellow.png
+
+#begin Tiles/rudimentary_furnace.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Tiles/rudimentary_furnace.png
 
 #begin Tiles/sphalerite.png
 /importer:TextureImporter
@@ -746,6 +820,30 @@
 /processorParam:TextureFormat=Color
 /build:UI/Cursors/select_pressed.png
 
+#begin UI/Furnace/FurnaceProgress.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/Furnace/FurnaceProgress.png
+
+#begin UI/Furnace/FurnaceProgressBar.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/Furnace/FurnaceProgressBar.png
+
 #begin UI/Hotbar/Hotbar_raw.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -817,6 +915,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:UI/Inventory/CraftingChildArrow.png
+
+#begin UI/Inventory/CraftingChildArrowProgress.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/Inventory/CraftingChildArrowProgress.png
 
 #begin UI/Inventory/CraftingChildBackground.png
 /importer:TextureImporter

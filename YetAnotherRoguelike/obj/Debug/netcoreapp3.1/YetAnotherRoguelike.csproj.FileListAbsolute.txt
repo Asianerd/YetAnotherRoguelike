@@ -331,3 +331,14 @@ D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\C
 D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\UI\Inventory\CraftingChildBackground.xnb
 D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\UI\Inventory\CraftingParentBackgroundBorder.xnb
 D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\UI\Inventory\CraftingChildOutline.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\UI\Inventory\CraftingChildArrowProgress.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Fonts\inconsolata.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Fonts\work_sans.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Fonts\workSans.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Tiles\clay.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Item_sprites\clay.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Item_sprites\clay_cast.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Tiles\rudimentary_furnace.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Item_sprites\rudimentary_furnace.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\UI\Furnace\FurnaceProgress.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\UI\Furnace\FurnaceProgressBar.xnb
