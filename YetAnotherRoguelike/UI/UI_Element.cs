@@ -88,7 +88,9 @@ namespace YetAnotherRoguelike.UI
         {
             // not necessary to always assign
             Unset,
-            ItemSlot
+            ItemSlot,
+            CraftingChildInput,
+            CraftingChildOutput
         }
     }
 }

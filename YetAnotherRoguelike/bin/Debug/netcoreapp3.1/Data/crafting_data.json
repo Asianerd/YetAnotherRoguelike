@@ -14,5 +14,13 @@
         "output": {
             "Rudimentary_Furnace": 1
         }
+    },
+    {
+        "input": {
+            "Stone": 5
+        },
+        "output": {
+            "Crucible": 1
+        }
     }
 ]

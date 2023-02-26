@@ -21,6 +21,7 @@ namespace YetAnotherRoguelike
         public static SpriteBatch spriteBatch;
         public static Vector2 screenSize = new Vector2(1920, 1080);
         //public static Vector2 screenSize = new Vector2(700, 700);
+        //public static Vector2 screenSize = new Vector2(200, 200);
         //public static Vector2 screenSize = new Vector2(1000, 1000);
         public static Rectangle playArea = new Rectangle(0, 0, 0, 0); // measured in tile-coordinates
         public static Texture2D emptySprite;
@@ -218,8 +219,11 @@ namespace YetAnotherRoguelike
             if (showDebug)
             {
                 string debugText = $"FPS : {fps}\n" +
-                    $"Targeted : {(Tile.targetedTile == null ? "None" : Tile.targetedTile.type.ToString())}\n" +
+                    $"Targeted : {(Tile.targetedTile == null ? "None" : Tile.targetedTile.type.ToString())} " + (Tile.targetedTile == null ? "" : $"({Tile.targetedTile.tileCoordinates.X}:{Tile.targetedTile.tileCoordinates.Y})") + "\n" +
                     $"Pos : {(int)Player.Instance.position.X}:{(int)Player.Instance.position.Y}\n" +
+                    $"Cursor Pos : {mouseState.Position}\n" +
+                    $"Iron(III) Sulfide (Fe₂S₃)²\n" +
+                    $"Angle : {Cursor.angleToPlayer}\n" +
                     $"Loaded Chunks : {Chunk.chunks.Count}\n" +
                     $"Lights : {LightSource.sources.Count}\n" +
                     $"Ground items : {GroundItem.collection.Count}\n" +

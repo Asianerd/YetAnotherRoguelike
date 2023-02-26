@@ -10,11 +10,11 @@
         {
             "temperature":1000,
             "inputs":{
-                "Hematite":1,
-                "Sphalerite":1
+                "Hematite":1
             },
             "output":{
-                "Bauxite":1
+                "Slag":5,
+                "Fe":10
             }
         }
     ]

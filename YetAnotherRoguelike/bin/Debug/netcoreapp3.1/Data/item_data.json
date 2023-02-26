@@ -1,11 +1,15 @@
 {
+    "None": {
+        "name":""
+    },
     "Stone": {
         "tile_placed": "Stone"
     },
-    "Rudimentary_Furnace": {
-        "tile_placed": "Rudimentary_Furnace"
+    "Clay_Cast": {
+        "name":"Clay Cast"
     },
-    "Coal": {
-        "selection_type": "Tool"
+    "Rudimentary_Furnace": {
+        "name":"Rudimentary Furnace",
+        "tile_placed": "Rudimentary_Furnace"
     }
 }

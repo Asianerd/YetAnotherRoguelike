@@ -109,6 +109,7 @@ namespace YetAnotherRoguelike.PhysicsObject
                 }
             }
 
+            List<Tile> targetedTiles = new List<Tile>();
             for (int x = -2; x < 3; x++)
             {
                 for (int y = -2; y < 3; y++)
@@ -116,8 +117,29 @@ namespace YetAnotherRoguelike.PhysicsObject
                     neighbourTiles[x + 2, y + 2] = Chunk.FetchTileAt((int)(MathF.Round(position.X) + x), (int)(MathF.Round(position.Y - 0.5f) + y), surroundingChunks);
                     if (neighbourTiles[x + 2, y + 2].interactable)
                     {
-                        Tile.targetedTile = neighbourTiles[x + 2, y + 2];
+                        targetedTiles.Add(neighbourTiles[x + 2, y + 2]);
                     }
+                }
+            }
+
+            if (targetedTiles.Count <= 0)
+            {
+                Tile.targetedTile = null;
+            }
+
+            float lowestDiff = 1000;
+            foreach (Tile x in targetedTiles)
+            {
+                float d = MathF.Atan2(
+                        ((Game.screenSize.Y * 0.5f) - Camera.renderOffset.Y) - x.renderedPosition.Y,
+                        ((Game.screenSize.X * 0.5f) - Camera.renderOffset.X) - x.renderedPosition.X
+                        ) + MathF.PI;
+
+                float diff = MathF.Abs(Cursor.angleToPlayer - d);
+                if (diff < lowestDiff)
+                {
+                    lowestDiff = diff;
+                    Tile.targetedTile = x;
                 }
             }
 
@@ -291,11 +313,31 @@ namespace YetAnotherRoguelike.PhysicsObject
                     // if its an empty slot
                     x.type = item.type;
                     x.amount = item.amount;
+                    Debug.WriteLine("---");
+                    if (x.data == null)
+                    {
+                        Debug.WriteLine("null");
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"{x.data.ContainsKey(Item.DataType.Chemical)}");
+                    }
+                    // TODO:.data field does not carry over when bringing from furnace to inventory
+                    x.data = item.data;
+                    if (x.data == null)
+                    {
+                        Debug.WriteLine("null");
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"{x.data.ContainsKey(Item.DataType.Chemical)}");
+                    }
+                    Debug.WriteLine("---");
                     if (x.Full(over:true))
                     {
                         int balance = x.amount - x.stackSize;
                         x.amount = x.stackSize;
-                        GroundItem.collection.Add(new GroundItem(new Item(item.type, balance), position, position, false));
+                        GroundItem.collection.Add(new GroundItem(new Item(item.type, balance, item.data), position, position, false));
                     }
                     OnInventoryModify();
                     return;
@@ -318,7 +360,7 @@ namespace YetAnotherRoguelike.PhysicsObject
                     {
                         leftover = x.amount - x.stackSize;
                         x.amount -= leftover;
-                        GroundItem.collection.Add(new GroundItem(new Item(item.type, leftover), position, position, false));
+                        GroundItem.collection.Add(new GroundItem(new Item(item.type, leftover, item.data), position, position, false));
                     }
                     OnInventoryModify();
                     return;
@@ -360,6 +402,7 @@ namespace YetAnotherRoguelike.PhysicsObject
                         {
                             toBeRemoved -= x.amount;
                             x.amount = 0;
+                            x.data = null;
                         }
                     }
                 }

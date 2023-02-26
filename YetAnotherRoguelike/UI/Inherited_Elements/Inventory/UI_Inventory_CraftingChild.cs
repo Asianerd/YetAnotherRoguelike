@@ -70,16 +70,22 @@ namespace YetAnotherRoguelike.UI
         {
             base.Update();
 
+            if (hovered)
+            {
+                if (craftable)
+                {
+                    Cursor.state = Cursor.CursorStates.Select;
+                    progress.Regenerate(Game.compensation * (MouseInput.left.isPressed ? 4f : 0f));
+                }
+
+                Point normalized = Game.mouseState.Position - rect.Location;
+
+                type = normalized.X >= rect.Width - UI_ItemSlot.size ? ElementType.CraftingChildOutput : ElementType.CraftingChildInput;
+            }
+
             if (!craftable)
             {
                 return;
-            }
-
-            if (hovered)
-            {
-                Cursor.state = Cursor.CursorStates.Select;
-
-                progress.Regenerate(Game.compensation * (MouseInput.left.isPressed ? 4f : 0f));
             }
 
             if (progress.Percent() >= 1f)
@@ -112,7 +118,7 @@ namespace YetAnotherRoguelike.UI
                 spritebatch.Draw(blank, multiRect, null, disabledColor, 0f, Vector2.Zero, SpriteEffects.None, 0.375f);
             }
 
-            spritebatch.Draw(backgroundSprite[0], new Rectangle(multiRect.X, multiRect.Y, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.3f);
+            /*spritebatch.Draw(backgroundSprite[0], new Rectangle(multiRect.X, multiRect.Y, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.3f);
             spritebatch.Draw(backgroundSprite[1], new Rectangle(multiRect.X + pixel, multiRect.Y, multiRect.Width - (pixel * 2), pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.3f);
             spritebatch.Draw(backgroundSprite[2], new Rectangle(multiRect.Right - pixel, multiRect.Y, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.3f);
 
@@ -122,7 +128,9 @@ namespace YetAnotherRoguelike.UI
 
             spritebatch.Draw(backgroundSprite[6], new Rectangle(multiRect.X, multiRect.Bottom - pixel, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.3f);
             spritebatch.Draw(backgroundSprite[7], new Rectangle(multiRect.X + pixel, multiRect.Bottom - pixel, multiRect.Width - (pixel * 2), pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.3f);
-            spritebatch.Draw(backgroundSprite[8], new Rectangle(multiRect.Right - pixel, multiRect.Bottom - pixel, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.3f);
+            spritebatch.Draw(backgroundSprite[8], new Rectangle(multiRect.Right - pixel, multiRect.Bottom - pixel, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.3f);*/
+
+            GeneralDependencies.NineSliceDraw(spritebatch, backgroundSprite, multiRect, pixel, Color.White, 0.3f);
 
             Rectangle progressRect = new Rectangle(0, 0, (int)(arrowProgressSize.X * progress.Percent()), arrowProgressSize.Y);
             spritebatch.Draw(arrowSprite, multiRect.Location.ToVector2() + arrowOffset, null, Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.31f);
@@ -130,7 +138,7 @@ namespace YetAnotherRoguelike.UI
 
             foreach (var x in inputs.Select((value, index) => new { value, index }))
             {
-                spritebatch.Draw(Item.itemSprites[x.value.type], multiRect.Location.ToVector2() + (itemIncrement * (x.index + 0.5f)) + itemOffset, null, Color.White, 0f, Item.spriteOrigin, 3f, SpriteEffects.None, 0.32f);
+                spritebatch.Draw(x.value.FetchSprite(), multiRect.Location.ToVector2() + (itemIncrement * (x.index + 0.5f)) + itemOffset, null, Color.White, 0f, Item.spriteOrigin, 3f, SpriteEffects.None, 0.32f);
 
                 int _inInventory = Player.Instance.inventoryItemCount.ContainsKey(x.value.type) ? Player.Instance.inventoryItemCount[x.value.type] : 0;
                 int _needed = x.value.amount;
@@ -150,7 +158,7 @@ namespace YetAnotherRoguelike.UI
             }
 
             Vector2 _stringSize = mainFont.MeasureString(output.amount.ToString());
-            spritebatch.Draw(Item.itemSprites[output.type], multiRect.Location.ToVector2() + itemOffset + outputOffset, null, Color.White, 0f, Item.spriteOrigin, 3f, SpriteEffects.None, 0.32f);
+            spritebatch.Draw(output.FetchSprite(), multiRect.Location.ToVector2() + itemOffset + outputOffset, null, Color.White, 0f, Item.spriteOrigin, 3f, SpriteEffects.None, 0.32f);
             spritebatch.DrawString(mainFont, output.amount.ToString(), multiRect.Location.ToVector2() + itemOffset + outputOffset + new Vector2(UI_ItemSlot.size * 0.2f, (_stringSize.Y * 0.5f)), Color.White, 0f, _stringSize * 0.5f, 0.9f, SpriteEffects.None, 0.325f);
 
             if (!hovered)
@@ -158,7 +166,7 @@ namespace YetAnotherRoguelike.UI
                 return;
             }
 
-            spritebatch.Draw(outlineSprite[0], new Rectangle(multiRect.X, multiRect.Y, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.37f);
+            /*spritebatch.Draw(outlineSprite[0], new Rectangle(multiRect.X, multiRect.Y, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.37f);
             spritebatch.Draw(outlineSprite[1], new Rectangle(multiRect.X + pixel, multiRect.Y, multiRect.Width - (pixel * 2), pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.37f);
             spritebatch.Draw(outlineSprite[2], new Rectangle(multiRect.Right - pixel, multiRect.Y, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.37f);
 
@@ -168,7 +176,24 @@ namespace YetAnotherRoguelike.UI
 
             spritebatch.Draw(outlineSprite[6], new Rectangle(multiRect.X, multiRect.Bottom - pixel, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.37f);
             spritebatch.Draw(outlineSprite[7], new Rectangle(multiRect.X + pixel, multiRect.Bottom - pixel, multiRect.Width - (pixel * 2), pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.37f);
-            spritebatch.Draw(outlineSprite[8], new Rectangle(multiRect.Right - pixel, multiRect.Bottom - pixel, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.37f);
+            spritebatch.Draw(outlineSprite[8], new Rectangle(multiRect.Right - pixel, multiRect.Bottom - pixel, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.37f);*/
+
+            GeneralDependencies.NineSliceDraw(spritebatch, outlineSprite, multiRect, pixel, Color.White, 0.37f);
+        }
+
+        public string FetchInput()
+        {
+            string final = "";
+            foreach (Item x in inputs)
+            {
+                final += $"({(Player.Instance.inventoryItemCount.ContainsKey(x.type) ? Player.Instance.inventoryItemCount[x.type] : 0)}/{x.amount}) {x.FetchName()}\n";
+            }
+            return final;
+        }
+
+        public string FetchOutput()
+        {
+            return $"x{output.amount} {output.FetchName()}";
         }
     }
 }

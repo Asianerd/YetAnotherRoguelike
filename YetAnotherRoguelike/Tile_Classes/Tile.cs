@@ -116,7 +116,8 @@ namespace YetAnotherRoguelike.Tile_Classes
             {
                 /*BlockType.Neon_Blue => new Tile(tCoords, cCoords, t, new LightSource(tCoords.ToVector2(), new Color(82, 241, 242), 25, 10)),
                 BlockType.Neon_Purple => new Tile(tCoords, cCoords, t, new LightSource(tCoords.ToVector2(), new Color(255, 0, 244), 25, 10)),*/
-                BlockType.Rudimentary_Furnace => new Tile_RudimentaryFurnace(tCoords, cCoords),
+                BlockType.Rudimentary_Furnace => new Tile_BaseFurnace(tCoords, cCoords, BlockType.Rudimentary_Furnace, new LightSource(tCoords.ToVector2(), new Color(255, 189, 0), 1, 0)),
+                BlockType.Blast_Furnace => new Tile_BaseFurnace(tCoords, cCoords, BlockType.Blast_Furnace, new LightSource(tCoords.ToVector2(), new Color(255, 189, 0), 1, 0)),
                 _ => new Tile(tCoords, cCoords, t,
                 l : blockLightData.Contains(t) ? new LightSource(tCoords.ToVector2(),
                 Data.JSON_BlockData.blockData[t].lightColor,

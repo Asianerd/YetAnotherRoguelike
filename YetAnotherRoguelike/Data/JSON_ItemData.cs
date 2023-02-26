@@ -19,8 +19,21 @@ namespace YetAnotherRoguelike.Data
             {
                 var x = item.Value;
                 x.itemType = Enum.GetValues(typeof(Item.Type)).Cast<Item.Type>().Where(n => n.ToString() == item.Key).First();
-                x.SetData();
                 itemData.Add(x.itemType, x);
+            }
+            foreach (Item.Type x in Enum.GetValues(typeof(Item.Type)).Cast<Item.Type>())
+            {
+                if (itemData.ContainsKey(x))
+                {
+                    continue;
+                }
+                var i = new JSON_ItemData();
+                i.itemType = x;
+                itemData.Add(x, i);
+            }
+            foreach (JSON_ItemData x in itemData.Values)
+            {
+                x.SetData();
             }
         }
 
@@ -33,6 +46,7 @@ namespace YetAnotherRoguelike.Data
             return null;
         }
 
+        public string name { get; set; }
         public string tile_placed { get; set; }
         public string stack_type { get; set; }
         public string selection_type { get; set; }
@@ -46,6 +60,10 @@ namespace YetAnotherRoguelike.Data
 
         public void SetData()
         {
+            if (name == null)
+            {
+                name = itemType.ToString();
+            }
             if (tile_placed != null)
             {
                 tilePlaced = Enum.GetValues(typeof(Tile.BlockType)).Cast<Tile.BlockType>().Where(n => n.ToString() == tile_placed).First();

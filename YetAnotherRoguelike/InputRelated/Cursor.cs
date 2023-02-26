@@ -53,6 +53,7 @@ namespace YetAnotherRoguelike
          *      #   #   #
          *      #(0.5,1)#
          */
+        public static float angleToPlayer; // radians?
 
         public static LightSource light;
 
@@ -92,6 +93,11 @@ namespace YetAnotherRoguelike
             tPos = new Vector2(MathF.Round(tPos.X), MathF.Round(tPos.Y));
             tPosition = tPos.ToPoint();
 
+            angleToPlayer = MathF.Atan2(
+                ((Game.screenSize.Y * 0.5f) - Game.mouseState.Position.Y),
+                ((Game.screenSize.X * 0.5f) - Game.mouseState.Position.X)
+                ) + MathF.PI;
+
             light.position = tPositionV;
 
             if (item.type == Item.Type.None)
@@ -110,9 +116,10 @@ namespace YetAnotherRoguelike
                         MathF.Cos(angle),
                         MathF.Sin(angle)
                         ) * Player.dropDistance;
-                    GroundItem.collection.Add(new GroundItem(new Item(item.type, item.amount), Player.Instance.position + offset, Player.Instance.position, true));
+                    GroundItem.collection.Add(new GroundItem(new Item(item.type, item.amount, item.data), Player.Instance.position + offset, Player.Instance.position, true));
                     item.type = Item.Type.None;
                     item.amount = 0;
+                    item.data = null;
                 }
             }
         }
@@ -129,7 +136,7 @@ namespace YetAnotherRoguelike
             if (item.type != Item.Type.None)
             {
                 state = CursorStates.Grabbing;
-                Game.spriteBatch.Draw(Item.itemSprites[item.type], position.ToVector2(), null, Color.White, 0f, Item.spriteOrigin, 3f, SpriteEffects.None, 0f);
+                Game.spriteBatch.Draw(item.FetchSprite(), position.ToVector2(), null, Color.White, 0f, Item.spriteOrigin, 3f, SpriteEffects.None, 0f);
             }
             Game.spriteBatch.Draw(cursorSprites[state], Game.mouseState.Position.ToVector2(), null, Color.White, 0f, cursorOrigins[state], 3f, SpriteEffects.None, 0f);
         }

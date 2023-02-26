@@ -14,7 +14,7 @@ namespace YetAnotherRoguelike.UI
 
         public Item item;
 
-        public UI_ItemSlot(UI_Container p,Rectangle r, Item i) : base(p, r, ElementType.ItemSlot)
+        public UI_ItemSlot(UI_Container p, Rectangle r, Item i) : base(p, r, ElementType.ItemSlot)
         {
             rect = r;
             item = i;
@@ -56,13 +56,18 @@ namespace YetAnotherRoguelike.UI
                 }
                 else
                 {
-                    Item temp = new Item(Cursor.item.type, Cursor.item.amount);
+                    Item temp = new Item(Cursor.item.type, Cursor.item.amount, Cursor.item.data);
+
+                    /*if (Cursor.item.type == Item.Type.Crucible)
+                        Debug.WriteLine(Chemical.collection[Cursor.item.data[Item.DataType.Chemical]].Total());*/
 
                     Cursor.item.type = item.type;
                     Cursor.item.amount = item.amount;
+                    Cursor.item.data = item.data;
 
                     item.type = temp.type;
                     item.amount = temp.amount;
+                    item.data = temp.data;
                 }
             }
             else if (MouseInput.right.active)
@@ -72,23 +77,26 @@ namespace YetAnotherRoguelike.UI
                     int removed = item.amount / 2;
 
                     int added = item.amount - removed;
-                    Cursor.item = new Item(item.type, added);
+                    Cursor.item = new Item(item.type, added, item.data);
                     item.amount -= added;
                     if (item.amount <= 0)
                     {
                         item.type = Item.Type.None;
                         item.amount = 0;
+                        item.data = null;
                     }
                 }
                 else
                 {
-                    Item temp = new Item(Cursor.item.type, Cursor.item.amount);
+                    Item temp = new Item(Cursor.item.type, Cursor.item.amount, Cursor.item.data);
 
                     Cursor.item.type = item.type;
                     Cursor.item.amount = item.amount;
+                    Cursor.item.data = item.data;
 
                     item.type = temp.type;
                     item.amount = temp.amount;
+                    item.data = temp.data;
                 }
             }
         }
@@ -107,7 +115,7 @@ namespace YetAnotherRoguelike.UI
             {
                 return;
             }
-            spritebatch.Draw(Item.itemSprites[item.type], new Rectangle(
+            spritebatch.Draw(item.FetchSprite(), new Rectangle(
                 drawnRect.X + offsetX,
                 drawnRect.Y + offsetY,
                 drawnRect.Width,

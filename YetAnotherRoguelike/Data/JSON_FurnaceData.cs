@@ -29,10 +29,10 @@ namespace YetAnotherRoguelike.Data
         public class Recipe
         {
             public List<Item> inputs;
-            public Item output;
+            public Chemical output;
             public int temperature;
 
-            public Recipe(List<Item> _i, Item _o, int _t)
+            public Recipe(List<Item> _i, Chemical _o, int _t)
             {
                 inputs = _i;
                 output = _o;
@@ -73,21 +73,28 @@ namespace YetAnotherRoguelike.Data
 
             public void AssignData()
             {
+                Chemical outputs = new Chemical(new Dictionary<Chemical.Element, double>());
+
+                foreach (KeyValuePair<string, double> x in output)
+                {
+                    outputs.composition.Add(
+                        Enum.GetValues(typeof(Chemical.Element)).Cast<Chemical.Element>().Where(n => n.ToString() == x.Key).First(),
+                        x.Value
+                        );
+                }
+
                 recipes.Add(new Recipe(
                     inputs.Select(n => new Item(
                         Enum.GetValues(typeof(Item.Type)).Cast<Item.Type>().Where(i => i.ToString() == n.Key).First(),
                         n.Value
                         )).ToList(),
-                    new Item(
-                        Enum.GetValues(typeof(Item.Type)).Cast<Item.Type>().Where(i => i.ToString() == output.ToList()[0].Key).First(),
-                        output.ToList()[0].Value
-                        ),
+                    outputs,
                     temperature
                     ));
             }
 
             public Dictionary<string, int> inputs { get; set; }
-            public Dictionary<string, int> output { get; set; }
+            public Dictionary<string, double> output { get; set; }
             public int temperature { get; set; }
         }
     }

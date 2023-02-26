@@ -113,7 +113,7 @@ namespace YetAnotherRoguelike.UI
             {
                 return;
             }
-            background.Draw(Game.spriteBatch) ;
+            background.Draw(Game.spriteBatch);
             foreach (UI_ItemSlot x in inputs)
             {
                 x.Draw(Game.spriteBatch);

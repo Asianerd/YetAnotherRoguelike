@@ -232,7 +232,7 @@ namespace YetAnotherRoguelike
             Vector2 renderedPosition = position * Tile_Classes.Tile.tileSize;
             renderedPosition.Y += MathF.Sin(animationAge.Percent() * MathF.PI * 2f) * Tile_Classes.Tile.tileSize * 0.1f;
             drawnLayer = Camera.GetDrawnLayer(renderedPosition.Y);
-            spritebatch.Draw(Item.itemSprites[item.type], renderedPosition, null, color, 0f, Item.spriteOrigin, Tile_Classes.Tile.renderScale * 3f, SpriteEffects.None, drawnLayer);
+            spritebatch.Draw(item.FetchSprite(), renderedPosition, null, color, 0f, Item.spriteOrigin, Tile_Classes.Tile.renderScale * 3f, SpriteEffects.None, drawnLayer);
         }
 
         public void DrawShadow(SpriteBatch spritebatch)

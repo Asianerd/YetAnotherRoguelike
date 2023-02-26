@@ -136,5 +136,20 @@ namespace YetAnotherRoguelike
             }
             return r;
         }
+
+        public static void NineSliceDraw(SpriteBatch sb, List<Texture2D> s, Rectangle r, int p, Color c, float l)
+        {
+            sb.Draw(s[0], new Rectangle(r.X         , r.Y, p                , p), null, c, 0f, Vector2.Zero, SpriteEffects.None, l);
+            sb.Draw(s[1], new Rectangle(r.X + p     , r.Y, r.Width - p - p  , p), null, c, 0f, Vector2.Zero, SpriteEffects.None, l);
+            sb.Draw(s[2], new Rectangle(r.Right - p , r.Y, p                , p), null, c, 0f, Vector2.Zero, SpriteEffects.None, l);
+
+            sb.Draw(s[3], new Rectangle(r.X         , r.Y + p, p                , r.Height - p - p), null, c, 0f, Vector2.Zero, SpriteEffects.None, l);
+            sb.Draw(s[4], new Rectangle(r.X + p     , r.Y + p, r.Width - p - p  , r.Height - p - p), null, c, 0f, Vector2.Zero, SpriteEffects.None, l);
+            sb.Draw(s[5], new Rectangle(r.Right - p , r.Y + p, p                , r.Height - p - p), null, c, 0f, Vector2.Zero, SpriteEffects.None, l);
+
+            sb.Draw(s[6], new Rectangle(r.X         , r.Bottom - p, p               , p), null, c, 0f, Vector2.Zero, SpriteEffects.None, l);
+            sb.Draw(s[7], new Rectangle(r.X + p     , r.Bottom - p, r.Width - p - p , p), null, c, 0f, Vector2.Zero, SpriteEffects.None, l);
+            sb.Draw(s[8], new Rectangle(r.Right - p , r.Bottom - p, p               , p), null, c, 0f, Vector2.Zero, SpriteEffects.None, l);
+        }
     }
 }
