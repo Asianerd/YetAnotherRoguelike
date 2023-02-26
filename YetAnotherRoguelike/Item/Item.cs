@@ -37,6 +37,7 @@ namespace YetAnotherRoguelike
             {
                 itemStackTypes.Add(x, StackType.Regular);
             }
+            itemStackTypes[Type.Crucible] = StackType.Single;
 
             stackSizes = new Dictionary<StackType, int>()
             {
@@ -63,7 +64,7 @@ namespace YetAnotherRoguelike
 
         public static Item DeepCopy(Item x)
         {
-            return new Item(x.type, x.amount);
+            return new Item(x.type, x.amount, x.data);
         }
 
 
@@ -81,12 +82,45 @@ namespace YetAnotherRoguelike
         public int stackSize;
         public Species selectionType = Species.Unset;
 
-        public Item(Type t, int a)
+        public Dictionary<DataType, int> data;
+
+        public Item(Type t, int a, Dictionary<DataType, int> d = null)
         {
             type = t;
             amount = a;
 
+            data = d;
+
+            if (d == null)
+            {
+                switch (t)
+                {
+                    case Type.Crucible:
+                        SetData(DataType.Chemical, Chemical.RegisterNewChemical(new Dictionary<Chemical.Element, double>()));
+                        break;
+                    default:
+                        break;
+                }
+            }
+
             stackSize = itemStackTypes.ContainsKey(type) ? stackSizes[itemStackTypes[type]] : maxStackSize;
+        }
+
+        public void SetData(DataType address, int d)
+        {
+            if (data == null)
+            {
+                data = new Dictionary<DataType, int>();
+            }
+
+            if (data.ContainsKey(address))
+            {
+                data[address] = d;
+            }
+            else
+            {
+                data.Add(address, d);
+            }
         }
 
         public void UpdateStackSize()
@@ -118,6 +152,7 @@ namespace YetAnotherRoguelike
             {
                 type = Type.None;
                 _amount = 0;
+                data = null;
             }
             UpdateSelectionType();
         }
@@ -139,14 +174,36 @@ namespace YetAnotherRoguelike
         {
             type = x.type;
             amount = x.amount;
+            data = x.data;
 
             UpdateSelf();
         }
 
         public bool IsSame(Item x)
         {
-            return (type == x.type) && (amount == x.amount);
+            return (type == x.type) && (amount == x.amount) && (data == x.data);
         }
+
+        #region Fetches
+        public Texture2D FetchSprite()
+        {
+            return itemSprites[type];
+        }
+
+        public string FetchName()
+        {
+            return JSON_ItemData.itemData[type].name;
+        }
+
+        public string FetchDescription()
+        {
+            return type switch
+            {
+                Type.Crucible => Chemical.collection[data[DataType.Chemical]].ToString(),
+                _ => ""
+            };
+        }
+        #endregion
 
 
         public enum Species
@@ -164,7 +221,7 @@ namespace YetAnotherRoguelike
             Stone,
 
             Clay,
-                Clay_Cast,
+            Clay_Cast,
 
             Coal,
             Bauxite,
@@ -177,12 +234,19 @@ namespace YetAnotherRoguelike
             Bismuth,
 
             Rudimentary_Furnace,
+
+            Crucible,
         }
 
         public enum StackType
         {
             Regular,
             Single
+        }
+
+        public enum DataType
+        {
+            Chemical
         }
     }
 }
