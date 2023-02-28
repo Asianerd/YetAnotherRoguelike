@@ -101,7 +101,8 @@ namespace YetAnotherRoguelike.Tile_Classes
             }
             else
             {
-                if (Chemical.collection[crucible.data[Item.DataType.Chemical]].IsFull())
+                //if (Chemical.collection[crucible.data[Item.DataType.Chemical]].IsFull())
+                if (((Chemical)crucible.data[Item.DataType.Chemical]).IsFull())
                 {
                     canSmelt = false;
                 }
@@ -185,7 +186,7 @@ namespace YetAnotherRoguelike.Tile_Classes
                 // add both chemical compositions together
                 //TODO:finish this
                 //((Item_Crucible)crucible).chemical.Add(currentOutput);
-                Chemical.collection[crucible.data[Item.DataType.Chemical]].Add(currentOutput);
+                ((Chemical)crucible.data[Item.DataType.Chemical]).Add(currentOutput);
             }
 
             // create deepcopy of recipe

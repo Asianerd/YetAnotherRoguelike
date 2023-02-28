@@ -8,7 +8,7 @@ namespace YetAnotherRoguelike.UI
 {
     class UI_Element
     {
-        public static Texture2D blank;
+        public static Texture2D blank, twoXBlank, hdBlank;
         public static SpriteFont mainFont;
         public static UI_Element hoveredElement;
 
@@ -24,6 +24,8 @@ namespace YetAnotherRoguelike.UI
         public static void Initialize()
         {
             blank = Game.Instance.Content.Load<Texture2D>("blank");
+            twoXBlank = Game.Instance.Content.Load<Texture2D>("twoXblank");
+            hdBlank = Game.Instance.Content.Load<Texture2D>("hd_blank");
             mainFont = Game.Instance.Content.Load<SpriteFont>("Fonts/defaultFont");
             backgroundSprite = GeneralDependencies.Split(Game.Instance.Content.Load<Texture2D>("UI/background2"), 4, 4);
 

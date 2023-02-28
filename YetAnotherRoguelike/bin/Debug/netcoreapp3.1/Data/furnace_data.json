@@ -16,6 +16,16 @@
                 "Slag":5,
                 "Fe":10
             }
+        },
+        {
+            "temperature":1000,
+            "inputs":{
+                "Bauxite":1
+            },
+            "output":{
+                "Slag":5,
+                "Al":10
+            }
         }
     ]
 }

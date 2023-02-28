@@ -50,11 +50,14 @@ namespace YetAnotherRoguelike
             {
                 blockDrops.Add(
                     t,
-                    Data.JSON_BlockData.blockData.ContainsKey(t) && (Data.JSON_BlockData.blockData[t].loot != null) ? (
-                        Data.JSON_BlockData.blockData[t].lootData
+                    JSON_BlockData.blockData.ContainsKey(t) && (JSON_BlockData.blockData[t].loot != null) ? (
+                        JSON_BlockData.blockData[t].lootData
                     ) : new Dictionary<Type, int>()
                     );
             }
+
+            Chemical.Initialize();
+            ChemicalContainer.Initialize();
         }
 
         public static Item Empty()
@@ -82,9 +85,9 @@ namespace YetAnotherRoguelike
         public int stackSize;
         public Species selectionType = Species.Unset;
 
-        public Dictionary<DataType, int> data;
+        public Dictionary<DataType, ItemData> data;
 
-        public Item(Type t, int a, Dictionary<DataType, int> d = null)
+        public Item(Type t, int a, Dictionary<DataType, ItemData> d = null)
         {
             type = t;
             amount = a;
@@ -96,7 +99,8 @@ namespace YetAnotherRoguelike
                 switch (t)
                 {
                     case Type.Crucible:
-                        SetData(DataType.Chemical, Chemical.RegisterNewChemical(new Dictionary<Chemical.Element, double>()));
+                        //SetData(DataType.Chemical, Chemical.RegisterNewChemical(new Dictionary<Chemical.Element, double>()));
+                        SetData(DataType.Chemical, new Chemical(new Dictionary<Chemical.Element, double>()));
                         break;
                     default:
                         break;
@@ -106,20 +110,20 @@ namespace YetAnotherRoguelike
             stackSize = itemStackTypes.ContainsKey(type) ? stackSizes[itemStackTypes[type]] : maxStackSize;
         }
 
-        public void SetData(DataType address, int d)
+        public void SetData(DataType address, ItemData itemData)
         {
             if (data == null)
             {
-                data = new Dictionary<DataType, int>();
+                data = new Dictionary<DataType, ItemData>();
             }
 
             if (data.ContainsKey(address))
             {
-                data[address] = d;
+                data[address] = itemData;
             }
             else
             {
-                data.Add(address, d);
+                data.Add(address, itemData);
             }
         }
 
@@ -187,19 +191,45 @@ namespace YetAnotherRoguelike
         #region Fetches
         public Texture2D FetchSprite()
         {
-            return itemSprites[type];
+            return type switch {
+                Type.Crucible => ((Chemical)data[DataType.Chemical]).FetchSprite(),
+                _ => itemSprites[type]
+            };
         }
 
         public string FetchName()
         {
-            return JSON_ItemData.itemData[type].name;
+            if ((data != null) && (data.Count >= 1))
+            {
+                switch (data.Keys.ToList()[0])
+                {
+                    case DataType.Chemical:
+                        Chemical chem = (Chemical)data[DataType.Chemical];
+                        return $"{chem.container.type} {JSON_ItemData.itemData[type].name} ({(chem.Total() >= 1 ? Math.Round(chem.Total(), 3) : (int)(chem.Total() * 1000f))}/{chem.container.Size()}{(chem.Total() >= 1 ? "ℓ" : "mℓ")})";
+                    default:
+                        return JSON_ItemData.itemData[type].name;
+                }
+            }
+            else
+            {
+                return JSON_ItemData.itemData[type].name;
+            }
+            // too expensive, needs like multiple casts 💀💀💀
+            /*return data != null ? 
+                data.Count >= 1 ? data.Keys.ToList()[0] switch
+                        {
+                            DataType.Chemical => $"{((Chemical)data[DataType.Chemical]).container.type} {JSON_ItemData.itemData[type].name} ({(((Chemical)data[DataType.Chemical]).Total() > 1 ? ((Chemical)data[DataType.Chemical]).Total() : ((Chemical)data[DataType.Chemical]).Total() * 1000)}{(((Chemical)data[DataType.Chemical]).Total() > 1 ? "ℓ" : "mℓ")})",
+                            _ => JSON_ItemData.itemData[type].name
+                        }
+                    : JSON_ItemData.itemData[type].name
+                : JSON_ItemData.itemData[type].name;*/
         }
 
         public string FetchDescription()
         {
             return type switch
             {
-                Type.Crucible => Chemical.collection[data[DataType.Chemical]].ToString(),
+                Type.Crucible => ((Chemical)data[DataType.Chemical]).ToString(),
                 _ => ""
             };
         }
@@ -246,6 +276,7 @@ namespace YetAnotherRoguelike
 
         public enum DataType
         {
+            None,
             Chemical
         }
     }

@@ -178,7 +178,9 @@ namespace YetAnotherRoguelike.UI
             spritebatch.Draw(backgroundSprite[7], new Rectangle(rect.X + offsetX + pixel, rect.Bottom + offsetY - pixel, rect.Width - (pixel * 2), pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.2f);
             spritebatch.Draw(backgroundSprite[8], new Rectangle(rect.Right + offsetX - pixel, rect.Bottom + offsetY - pixel, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.2f);*/
 
-            GeneralDependencies.NineSliceDraw(spritebatch, backgroundSprite, rect, pixel, Color.White, 0.2f);
+            Point offset = new Point(offsetX, offsetY);
+
+            GeneralDependencies.NineSliceDraw(spritebatch, backgroundSprite, rect, pixel, Color.White, 0.2f, offset);
 
             foreach (UI_Inventory_CraftingChild x in collection)
             {
@@ -197,7 +199,7 @@ namespace YetAnotherRoguelike.UI
             spritebatch.Draw(topPanel[7], new Rectangle(topPanelRect.X + offsetX + pixel, topPanelRect.Bottom + offsetY - pixel, topPanelRect.Width - (pixel * 2), pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.4f);
             spritebatch.Draw(topPanel[8], new Rectangle(topPanelRect.Right + offsetX - pixel, topPanelRect.Bottom + offsetY - pixel, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.4f);*/
 
-            GeneralDependencies.NineSliceDraw(spritebatch, topPanel, topPanelRect, pixel, Color.White, 0.4f);
+            GeneralDependencies.NineSliceDraw(spritebatch, topPanel, topPanelRect, pixel, Color.White, 0.4f, offset);
 
             /*spritebatch.Draw(bottomPanel[0], new Rectangle(bottomPanelRect.X + offsetX, bottomPanelRect.Y + offsetY, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.4f);
             spritebatch.Draw(bottomPanel[1], new Rectangle(bottomPanelRect.X + offsetX + pixel, bottomPanelRect.Y + offsetY, bottomPanelRect.Width - (pixel * 2), pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.4f);
@@ -211,7 +213,7 @@ namespace YetAnotherRoguelike.UI
             spritebatch.Draw(bottomPanel[7], new Rectangle(bottomPanelRect.X + offsetX + pixel, bottomPanelRect.Bottom + offsetY - pixel, bottomPanelRect.Width - (pixel * 2), pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.4f);
             spritebatch.Draw(bottomPanel[8], new Rectangle(bottomPanelRect.Right + offsetX - pixel, bottomPanelRect.Bottom + offsetY - pixel, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.4f);*/
 
-            GeneralDependencies.NineSliceDraw(spritebatch, bottomPanel, bottomPanelRect, pixel, Color.White, 0.4f);
+            GeneralDependencies.NineSliceDraw(spritebatch, bottomPanel, bottomPanelRect, pixel, Color.White, 0.4f, offset);
 
 
 
@@ -227,7 +229,7 @@ namespace YetAnotherRoguelike.UI
             spritebatch.Draw(backgroundBorderSprite[7], new Rectangle(rect.X + offsetX + pixel, rect.Bottom + offsetY - pixel, rect.Width - (pixel * 2), pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.35f);
             spritebatch.Draw(backgroundBorderSprite[8], new Rectangle(rect.Right + offsetX - pixel, rect.Bottom + offsetY - pixel, pixel, pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.35f);*/
 
-            GeneralDependencies.NineSliceDraw(spritebatch, backgroundBorderSprite, rect, pixel, Color.White, 0.35f);
+            GeneralDependencies.NineSliceDraw(spritebatch, backgroundBorderSprite, rect, pixel, Color.White, 0.35f, offset);
         }
     }
 }

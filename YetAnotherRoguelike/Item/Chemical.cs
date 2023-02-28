@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace YetAnotherRoguelike
 {
-    class Chemical
+    class Chemical : ItemData
     {
         public enum Element
         {
@@ -21,55 +23,56 @@ namespace YetAnotherRoguelike
         }
 
         #region Statics
-        /* long story short, items cant be inherited, current itemslot system will break
-         * so items will have a data field, just like minecraft NBT tags
-         * for crucible items, their tag will be an int pointing to the key in the collection of chemicals
-         * so to access the chemical of a crucible, itll go something like
-         *      int key = crucible.nbt["chemical_key"];
-         *      Chemical chem = Chemical.collection[key];
-         */
-        public static Dictionary<int, Chemical> collection = new Dictionary<int, Chemical>();
-        // potential memory leak :flushed:
+        public static Dictionary<Element, Color> elementColors;
 
-        public static int RegisterNewChemical(Dictionary<Element, double> c)
+        public static void Initialize()
         {
-            return (new Chemical(c).address);
+            elementColors = new Dictionary<Element, Color>()
+            {
+                { Element.Slag, GeneralDependencies.HexToColor("3e4256") },
+                { Element.Al, GeneralDependencies.HexToColor("b3b4b7") },
+                { Element.Fe, GeneralDependencies.HexToColor("d12c2c") },
+                { Element.Zn, GeneralDependencies.HexToColor("92898a") },
+                { Element.Cu, GeneralDependencies.HexToColor("e68049") },
+                { Element.Pb, GeneralDependencies.HexToColor("5c6274") },
+                { Element.Hg, GeneralDependencies.HexToColor("e8e8e8") },
+                { Element.Ag, GeneralDependencies.HexToColor("d8d8d8") },
+                { Element.Bi, GeneralDependencies.HexToColor("75e9e5") }
+            };
+        }
+
+        public static Chemical Fit(Chemical subject, Chemical add)
+        {
+            //double difference = Math.Abs((add.Total() + subject.Total()) - subject.Total());
+            double overflow = (subject.Total() + add.Total()) - subject.container.Size();
+            double rate = (subject.container.Size() - subject.Total()) / add.Total();
+            if (overflow <= 0)
+            {
+                return subject;
+            }
+
+            foreach (KeyValuePair<Element, double> x in add.composition)
+            {
+                subject.AddElement(x.Key, x.Value * rate);
+            }
+
+            return subject;
         }
         #endregion
 
         #region Instance
+        public Dictionary<Element, double> composition; // sum of all values must be less than container.Size()
+        public ChemicalContainer container;
 
-        public int address;
-        public Dictionary<Element, double> composition;
-        // allows a sum of 100.0 values
-
-        public Chemical(Dictionary<Element, double> _composition)
+        public Chemical(Dictionary<Element, double> _composition):base()
         {
             composition = _composition;
-
-            int current = -1;
-            bool found = false;
-            foreach (int x in collection.Keys)
-            {
-                current++;
-
-                if (current != x)
-                {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found)
-            {
-                current++;
-            }
-            collection.Add(current, this);
-            address = current;
+            container = new ChemicalContainer();
         }
 
         public bool IsFull()
         {
-            return Total() >= 100;
+            return Total() >= container.Size();
         }
 
         public double Total()
@@ -98,7 +101,7 @@ namespace YetAnotherRoguelike
 
         public void Add(Chemical c)
         {
-            if ((Total() + c.Total()) <= 100)
+            if ((Total() + c.Total()) <= container.Size())
             {
                 foreach(KeyValuePair<Element, double> x in c.composition)
                 {
@@ -111,32 +114,20 @@ namespace YetAnotherRoguelike
             }
         }
 
-        public static Chemical Fit(Chemical subject, Chemical add)
-        {
-            //double difference = Math.Abs((add.Total() + subject.Total()) - subject.Total());
-            double overflow = (subject.Total() + add.Total()) - 100;
-            double rate = (100 - subject.Total()) / add.Total();
-            if (overflow <= 0)
-            {
-                return subject;
-            }
-
-            foreach (KeyValuePair<Element, double> x in add.composition)
-            {
-                subject.AddElement(x.Key, x.Value * rate);
-            }
-
-            return subject;
-        }
-
         public override string ToString()
         {
-            string final = $"Capacity : {Total()}%\n";
+            //string final = $"{Total()}%\n";
+            string final = $"";
             foreach (KeyValuePair<Element, double> x in composition)
             {
-                final += $" {x.Key} : {Math.Round(x.Value, 2)}%\n";
+                final += $"   {x.Key} {(x.Value > 1 ? Math.Round(x.Value, 3) : (int)(x.Value * 1000f))}{(x.Value > 1 ? "ℓ" : "mℓ")}\n";
             }
             return final;
+        }
+
+        public Texture2D FetchSprite()
+        {
+            return ChemicalContainer.crucibleSprites[container.type][Total() > 0 ? 1 : 0];
         }
         #endregion
     }

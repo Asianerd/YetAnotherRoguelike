@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using YetAnotherRoguelike.PhysicsObject;
 using YetAnotherRoguelike.Graphics;
 using YetAnotherRoguelike.Tile_Classes;
+using System.Linq;
 
 namespace YetAnotherRoguelike
 {
@@ -230,6 +231,11 @@ namespace YetAnotherRoguelike
                     $"Update time : {updateTime}ms";
                 spriteBatch.Draw(emptySprite, new Rectangle(new Point(0, 0), mainFont.MeasureString(debugText).ToPoint()), Color.Black * 0.2f);
                 spriteBatch.DrawString(mainFont, debugText, Vector2.Zero, Color.White);
+
+                foreach (var x in Chemical.elementColors.Select((value, index) => new { value, index }))
+                {
+                    spriteBatch.Draw(emptySprite, new Rectangle(x.index * 30, 400, 30, 30), Chemical.elementColors[x.value.Key]);
+                }
             }
 
             Cursor.Draw();

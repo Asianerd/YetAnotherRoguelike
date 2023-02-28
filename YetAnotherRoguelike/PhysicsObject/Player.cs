@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -66,6 +67,17 @@ namespace YetAnotherRoguelike.PhysicsObject
 
             inventory[0] = new Item(Item.Type.Hematite, 10);
             inventory[1] = new Item(Item.Type.Sphalerite, 10);
+            inventory[2] = new Item(Item.Type.Stone, 100);
+
+            for (int i = 0; i <= 10; i++)
+            {
+                inventory[i] = new Item(Item.Type.Crucible, 1);
+                Chemical c = (Chemical)inventory[i].data[Item.DataType.Chemical];
+                foreach (Chemical.Element x in Enum.GetValues(typeof(Chemical.Element)).Cast<Chemical.Element>())
+                {
+                    c.AddElement(x, (double)(Game.random.Next(50, 500) / 1000f));
+                }
+            }
             hotbar[0] = new Item(Item.Type.Rudimentary_Furnace, 1);
         }
 
