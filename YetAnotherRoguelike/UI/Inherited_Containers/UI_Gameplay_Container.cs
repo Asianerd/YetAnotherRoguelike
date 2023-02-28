@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using YetAnotherRoguelike.Data;
 using YetAnotherRoguelike.Graphics;
@@ -27,6 +28,10 @@ namespace YetAnotherRoguelike.UI
         public Vector2 interactionTooltipLocation;
         public GameValue interactionTooltipProgress;
 
+        public List<Texture2D> chemicalBarSprite;
+        public List<Texture2D> chemicalBarBorderSprite;
+        public List<Texture2D> chemicalBarFillSprite;
+
         // for all the gameplay stuff like health, etc etc etc
         public UI_Gameplay_Container():base(new List<UI_Element>(), true)
         {
@@ -49,6 +54,10 @@ namespace YetAnotherRoguelike.UI
             interactionTooltipSpriteOrigin = interactionTooltipSprite.Bounds.Size.ToVector2() / 2f;
             interactionTooltipLocation = new Vector2(0, 0);
             interactionTooltipProgress = new GameValue(0, 20, 1);
+
+            chemicalBarSprite = GeneralDependencies.Split(Game.Instance.Content.Load<Texture2D>("UI/Gameplay/Chemical/chemicalBar"), 2, 2);
+            chemicalBarBorderSprite = GeneralDependencies.Split(Game.Instance.Content.Load<Texture2D>("UI/Gameplay/Chemical/chemicalBarBorder"), 2, 2);
+            chemicalBarFillSprite = GeneralDependencies.Split(Game.Instance.Content.Load<Texture2D>("UI/Gameplay/Chemical/chemicalBarFill"), 2, 2);
         }
 
         public override void Update()
@@ -130,13 +139,20 @@ namespace YetAnotherRoguelike.UI
             }
             else
             {
+                int fontWidth = 13, fontHeight = 26; // the y of mainFont.MeasureString("?");
                 bool _found = true;
+                Item.DataType _special = Item.DataType.None;
                 string final = "";
                 switch (UI_Element.hoveredElement.type)
                 {
                     case UI_Element.ElementType.ItemSlot:
-                        final = ((UI_ItemSlot)UI_Element.hoveredElement).item.FetchName() + "\n" + ((UI_ItemSlot)UI_Element.hoveredElement).item.FetchDescription();
-                        if (((UI_ItemSlot)UI_Element.hoveredElement).item.type == Item.Type.None)
+                        Item item = ((UI_ItemSlot)UI_Element.hoveredElement).item;
+                        final = item.FetchName() + "\n" + item.FetchDescription();
+                        if ((item.data != null) && (item.data.Count >= 1))
+                        {
+                            _special = item.data.Keys.ToList()[0];
+                        }
+                        if (item.type == Item.Type.None)
                         {
                             _found = false;
                         }
@@ -163,19 +179,49 @@ namespace YetAnotherRoguelike.UI
                     UI_Element.multiRect.X = (int)(renderedPosition.X - (UI_ItemSlot.size * 0.25f));
                     UI_Element.multiRect.Y = (int)(renderedPosition.Y - (UI_ItemSlot.size * 0.25f));
                     UI_Element.multiRect.Size = (size + new Vector2(UI_ItemSlot.size * 0.5f)).ToPoint();
+                    //UI_Element.multiRect.Size.Y = _special == Item.DataType.Chemical ? 0 : UI_Element.multiRect.Size.Y;
                     //UI_Element.multiRect.Size = size.ToPoint();
 
-                    Game.spriteBatch.Draw(tooltipSprite[0], new Rectangle(UI_Element.multiRect.X, UI_Element.multiRect.Y, UI_Element.pixel, UI_Element.pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.98f);
-                    Game.spriteBatch.Draw(tooltipSprite[1], new Rectangle(UI_Element.multiRect.X + UI_Element.pixel, UI_Element.multiRect.Y, UI_Element.multiRect.Width - (UI_Element.pixel * 2), UI_Element.pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.98f);
-                    Game.spriteBatch.Draw(tooltipSprite[2], new Rectangle(UI_Element.multiRect.Right - UI_Element.pixel, UI_Element.multiRect.Y, UI_Element.pixel, UI_Element.pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.98f);
+                    switch (_special)
+                    {
+                        case Item.DataType.Chemical:
+                            Chemical chem = ((Chemical)(((UI_ItemSlot)UI_Element.hoveredElement).item.data[Item.DataType.Chemical]));
+                            Rectangle chemicalBarRect = new Rectangle(UI_Element.multiRect.X + (int)(UI_ItemSlot.size * 0.25f), UI_Element.multiRect.Y + (int)(UI_ItemSlot.size * 0.75), (int)(UI_ItemSlot.size * 0.25f), (int)(fontHeight * chem.container.Size()));
 
-                    Game.spriteBatch.Draw(tooltipSprite[3], new Rectangle(UI_Element.multiRect.X, UI_Element.multiRect.Y + UI_Element.pixel, UI_Element.pixel, UI_Element.multiRect.Height - (UI_Element.pixel * 2)), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.98f);
-                    Game.spriteBatch.Draw(tooltipSprite[4], new Rectangle(UI_Element.multiRect.X + UI_Element.pixel, UI_Element.multiRect.Y + UI_Element.pixel, UI_Element.multiRect.Width - (UI_Element.pixel * 2), UI_Element.multiRect.Height - (UI_Element.pixel * 2)), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.98f);
-                    Game.spriteBatch.Draw(tooltipSprite[5], new Rectangle(UI_Element.multiRect.Right - UI_Element.pixel, UI_Element.multiRect.Y + UI_Element.pixel, UI_Element.pixel, UI_Element.multiRect.Height - (UI_Element.pixel * 2)), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.98f);
+                            int _wantedHeight = chemicalBarRect.Height + UI_ItemSlot.size;
+                            if (_wantedHeight > UI_Element.multiRect.Height)
+                            {
+                                UI_Element.multiRect.Height = _wantedHeight;
+                            }
 
-                    Game.spriteBatch.Draw(tooltipSprite[6], new Rectangle(UI_Element.multiRect.X, UI_Element.multiRect.Bottom - UI_Element.pixel, UI_Element.pixel, UI_Element.pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.98f);
-                    Game.spriteBatch.Draw(tooltipSprite[7], new Rectangle(UI_Element.multiRect.X + UI_Element.pixel, UI_Element.multiRect.Bottom - UI_Element.pixel, UI_Element.multiRect.Width - (UI_Element.pixel * 2), UI_Element.pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.98f);
-                    Game.spriteBatch.Draw(tooltipSprite[8], new Rectangle(UI_Element.multiRect.Right - UI_Element.pixel, UI_Element.multiRect.Bottom - UI_Element.pixel, UI_Element.pixel, UI_Element.pixel), null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.98f);
+                            GeneralDependencies.NineSliceDraw(Game.spriteBatch, chemicalBarSprite, chemicalBarRect, 6, Color.White, 0.915f);
+                            // bar fill is drawn at layer 0.92 -> 0.98
+                            GeneralDependencies.NineSliceDraw(Game.spriteBatch, chemicalBarBorderSprite, chemicalBarRect, 6, Color.White, 0.99f);
+
+                            double _accumulated = 0;
+                            foreach (var x in chem.composition.Reverse().Select((value, index) => new { value, index }))
+                            {
+                                int index = chem.composition.Count - x.index;
+                                Rectangle r = new Rectangle(
+                                    chemicalBarRect.X,
+                                    chemicalBarRect.Bottom - (int)((((x.value.Value + _accumulated) / chem.container.Size()) * chemicalBarRect.Height)),
+                                    chemicalBarRect.Width,
+                                    (int)(((x.value.Value / chem.container.Size()) * chemicalBarRect.Height))
+                                    );
+                                GeneralDependencies.DrawLine(Game.spriteBatch, r.Center, r.Center + new Point(fontWidth, 0), 1, Chemical.elementColors[x.value.Key], 1f);
+                                Point d = new Point(chemicalBarRect.X + (fontWidth * 2), chemicalBarRect.Y + (((index - 1) * fontHeight) + (int)(fontHeight * 0.25)));
+                                GeneralDependencies.DrawLine(Game.spriteBatch, r.Center + new Point(fontWidth, 0), d, 1, Chemical.elementColors[x.value.Key], 1f);
+                                GeneralDependencies.DrawLine(Game.spriteBatch, d, d + new Point((int)(fontWidth * 0.5), 0), 1, Chemical.elementColors[x.value.Key], 1f);
+                                _accumulated += x.value.Value;
+                                r.Height = (int)(((_accumulated / chem.container.Size()) * chemicalBarRect.Height));
+                                Game.spriteBatch.Draw(UI_Element.blank, r, null, Chemical.elementColors[x.value.Key], 0f, Vector2.Zero, SpriteEffects.None, 0.93f + (0.001f * (float)((float)index  / (float)chem.composition.Count)));
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+
+                    GeneralDependencies.NineSliceDraw(Game.spriteBatch, tooltipSprite, UI_Element.multiRect, UI_Element.pixel, Color.White, 0.91f);
 
                     Game.spriteBatch.DrawString(Game.mainFont, final, renderedPosition, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
                 }
