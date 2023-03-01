@@ -73,7 +73,7 @@ namespace YetAnotherRoguelike.Data
 
             public void AssignData()
             {
-                Chemical outputs = new Chemical(new Dictionary<Chemical.Element, double>());
+                Chemical outputs = new Chemical(new Dictionary<Chemical.Element, double>(), ChemicalContainer.CrucibleType.Infinite);
 
                 foreach (KeyValuePair<string, double> x in output)
                 {

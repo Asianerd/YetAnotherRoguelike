@@ -94,13 +94,21 @@ namespace YetAnotherRoguelike
 
             data = d;
 
-            if (d == null)
+            if (data == null)
             {
                 switch (t)
                 {
                     case Type.Crucible:
-                        //SetData(DataType.Chemical, Chemical.RegisterNewChemical(new Dictionary<Chemical.Element, double>()));
-                        SetData(DataType.Chemical, new Chemical(new Dictionary<Chemical.Element, double>()));
+                        /*//SetData(DataType.Chemical, Chemical.RegisterNewChemical(new Dictionary<Chemical.Element, double>()));
+                        string _r = GetDataParameters("crucible_size");
+                        SetData(DataType.Chemical, new Chemical(new Dictionary<Chemical.Element, double>(),
+                            _r == null ? ChemicalContainer.CrucibleType.Medium :
+                            GeneralDependencies.ParseEnum<ChemicalContainer.CrucibleType>(_r)
+                            ));*/
+                        SetData(DataType.Chemical, new Chemical(
+                            new Dictionary<Chemical.Element, double>(),
+                            ChemicalContainer.CrucibleType.Medium
+                            ));
                         break;
                     default:
                         break;
@@ -109,6 +117,19 @@ namespace YetAnotherRoguelike
 
             stackSize = itemStackTypes.ContainsKey(type) ? stackSizes[itemStackTypes[type]] : maxStackSize;
         }
+
+        /*public string GetDataParameters(string location)
+        {
+            if (data == null)
+            {
+                return null;
+            }
+            if (data[DataType.Parameters] == null)
+            {
+                return null;
+            }
+            return ((InitializationParameters)data[DataType.Parameters]).GetParameter(location);
+        }*/
 
         public void SetData(DataType address, ItemData itemData)
         {
@@ -205,7 +226,7 @@ namespace YetAnotherRoguelike
                 {
                     case DataType.Chemical:
                         Chemical chem = (Chemical)data[DataType.Chemical];
-                        return $"{chem.container.type} {JSON_ItemData.itemData[type].name} ({(chem.Total() >= 1 ? Math.Round(chem.Total(), 3) : (int)(chem.Total() * 1000f))}/{chem.container.Size()}{(chem.Total() >= 1 ? "ℓ" : "mℓ")})";
+                        return $"{chem.container.type} {JSON_ItemData.itemData[type].name} ({Math.Round(chem.Total(), 3)}/{chem.container.Size()}ℓ)";
                     default:
                         return JSON_ItemData.itemData[type].name;
                 }
@@ -277,7 +298,10 @@ namespace YetAnotherRoguelike
         public enum DataType
         {
             None,
-            Chemical
+            Chemical,
+
+            /*Parameters // used for initializing items with data
+                // "crucible_size" : "Large" -> creates Item of type Crucible which is Large*/
         }
     }
 }

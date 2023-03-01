@@ -18,7 +18,8 @@ namespace YetAnotherRoguelike.Data
             foreach (KeyValuePair<string, JSON_ItemData> item in JsonSerializer.Deserialize<Dictionary<string, JSON_ItemData>>(File.ReadAllText("Data/item_data.json")))
             {
                 var x = item.Value;
-                x.itemType = Enum.GetValues(typeof(Item.Type)).Cast<Item.Type>().Where(n => n.ToString() == item.Key).First();
+                //x.itemType = Enum.GetValues(typeof(Item.Type)).Cast<Item.Type>().Where(n => n.ToString() == item.Key).First();
+                x.itemType = GeneralDependencies.ParseEnum<Item.Type>(item.Key);
                 itemData.Add(x.itemType, x);
             }
             foreach (Item.Type x in Enum.GetValues(typeof(Item.Type)).Cast<Item.Type>())
