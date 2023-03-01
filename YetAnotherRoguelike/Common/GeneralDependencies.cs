@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Text;
@@ -11,6 +12,7 @@ namespace YetAnotherRoguelike
     public static class GeneralDependencies
     {
         public static Dictionary<Keys, Vector2> axialVectors;
+        //public static Dictionary<string, Dictionary<>>
 
         public static void Initialize()
         {
@@ -39,6 +41,12 @@ namespace YetAnotherRoguelike
                 return end;
             }
             return start + progress * (end - start);
+        }
+
+        public static T ParseEnum<T>(string name)
+        {
+            return Enum.GetValues(typeof(T)).Cast<T>().Where(n => n.ToString() == name).First();
+            // no default value provided, if an enum isnt casted properly, an error deserves to be thrown
         }
 
         public static Color HexToColor(string hex)

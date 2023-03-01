@@ -22,6 +22,8 @@
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Item_sprites/clay_cast.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Item_sprites/coal.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Item_sprites/crucible.png</File>
+    <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Item_sprites/Crucible/Infinite.png</File>
+    <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Item_sprites/Crucible/Infinite_filled.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Item_sprites/Crucible/Large.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Item_sprites/Crucible/Large_filled.png</File>
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/Item_sprites/Crucible/Medium.png</File>
@@ -110,6 +112,8 @@
     <File>D:/GithubRepos/YetAnotherRoguelike/YetAnotherRoguelike/Content/UI/Storage_Items/selection_sprite.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

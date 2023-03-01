@@ -14,8 +14,15 @@ namespace YetAnotherRoguelike.UI
     class UI_Gameplay_Container : UI_Container
     {
         public static UI_Gameplay_Container Instance = null;
-        public static Texture2D tileSelectionSprite;
-        public static Vector2 tileSelectionSpriteOrigin;
+        public Texture2D tileSelectionSprite;
+        public Vector2 tileSelectionSpriteOrigin;
+
+        public Texture2D slotSelectionSprite;
+        public int slotSelectionOffset = 4;
+        public Rectangle slotSelectionRect;
+        public Vector2 slotSelectionTarget;
+        public Vector2 slotSelectionLocation;
+        public GameValue slotSelectionVisibility;
 
         public Vector2 tileSelectionPosition;
         public Vector2 tileSelectionTarget;
@@ -42,6 +49,11 @@ namespace YetAnotherRoguelike.UI
 
             tileSelectionSprite = Game.Instance.Content.Load<Texture2D>("Player/tileSelectionSprite");
             tileSelectionSpriteOrigin = tileSelectionSprite.Bounds.Size.ToVector2() / 2f;
+
+            slotSelectionRect = new Rectangle(0, 0, (int)(UI_ItemSlot.size + (slotSelectionOffset * 2f)), (int)(UI_ItemSlot.size + (slotSelectionOffset * 2f)));
+            slotSelectionSprite = Game.Instance.Content.Load<Texture2D>("UI/Storage_Items/selection_sprite");
+            slotSelectionTarget = new Vector2(0);
+            slotSelectionVisibility = new GameValue(0, 20, 1, 0);
 
             tileSelectionPosition = Vector2.Zero;
             tileSelectionTarget = Vector2.Zero;
@@ -111,16 +123,34 @@ namespace YetAnotherRoguelike.UI
                 tileSelectionProgress.Regenerate(-Game.compensation);
             }
 
+            // Slot selection outline
+            if ((Cursor.item.type != Item.Type.None) && (UI_Element.hoveredElement != null) && (UI_Element.hoveredElement.type == UI_Element.ElementType.ItemSlot))
+            {
+                slotSelectionTarget = UI_Element.hoveredElement.rect.Location.ToVector2();
+                slotSelectionVisibility.Regenerate(Game.compensation);
+            }
+            else
+            {
+                slotSelectionVisibility.Regenerate(-Game.compensation);
+            }
+            slotSelectionLocation = Vector2.Lerp(slotSelectionLocation, slotSelectionTarget, Game.compensation * 0.5f);
+            //
+
+            // Tile selection
             tileSelectionPosition.X = GeneralDependencies.Lerp(tileSelectionPosition.X, tileSelectionTarget.X, 0.2f * Game.compensation, 0.01f);
             tileSelectionPosition.Y = GeneralDependencies.Lerp(tileSelectionPosition.Y, tileSelectionTarget.Y, 0.2f * Game.compensation, 0.01f);
+            //
 
+            // Mining outline
             if (Tile.targetedTile != null)
             {
+                // goes to tile
                 interactionTooltipLocation = Vector2.Lerp(interactionTooltipLocation, Tile.targetedTile.renderedPosition + Camera.renderOffset, 0.1f);
                 interactionTooltipProgress.Regenerate(Game.compensation);
             }
             else
             {
+                // goes to player
                 interactionTooltipLocation = Vector2.Lerp(interactionTooltipLocation, (Player.Instance.position * Tile.tileSize) + Camera.renderOffset, 0.1f);
                 interactionTooltipProgress.Regenerate(-Game.compensation * 3);
             }
@@ -139,6 +169,23 @@ namespace YetAnotherRoguelike.UI
             }
             else
             {
+                // draws the outline of selected item slot
+                /*Rectangle _slotRect = new Rectangle(
+                new Point(
+                    (int)(slotSelectionLocation.X
+                        + (MathF.Sin((1f - openedValue.Percent()) * MathF.PI * 0.5f) * background.rect.Width)
+                        - background.rect.Width
+                        - slotSelectionOffset),
+                    (int)(slotSelectionLocation.Y
+                        - slotSelectionOffset)
+                    ),
+                slotSelectionRect.Size);*/
+
+                slotSelectionRect.X = (int)(slotSelectionLocation.X - slotSelectionOffset);
+                slotSelectionRect.Y = (int)(slotSelectionLocation.Y - slotSelectionOffset);
+                Game.spriteBatch.Draw(slotSelectionSprite, slotSelectionRect, null, Color.White * MathF.Sin(slotSelectionVisibility.Percent()) * MathF.PI, 0f, Vector2.Zero, SpriteEffects.None, 0.8f);
+
+                // draws the item tooltip
                 int fontWidth = 13, fontHeight = 26; // the y of mainFont.MeasureString("?");
                 bool _found = true;
                 Item.DataType _special = Item.DataType.None;
@@ -186,7 +233,16 @@ namespace YetAnotherRoguelike.UI
                     {
                         case Item.DataType.Chemical:
                             Chemical chem = ((Chemical)(((UI_ItemSlot)UI_Element.hoveredElement).item.data[Item.DataType.Chemical]));
-                            Rectangle chemicalBarRect = new Rectangle(UI_Element.multiRect.X + (int)(UI_ItemSlot.size * 0.25f), UI_Element.multiRect.Y + (int)(UI_ItemSlot.size * 0.75), (int)(UI_ItemSlot.size * 0.25f), (int)(fontHeight * chem.container.Size()));
+                            if (chem.Total() <= 0)
+                            {
+                                break;
+                            }
+                            Rectangle chemicalBarRect = new Rectangle(
+                                UI_Element.multiRect.X + (int)(UI_ItemSlot.size * 0.25f),
+                                UI_Element.multiRect.Y + (int)(UI_ItemSlot.size * 0.75),
+                                (int)(fontWidth * ChemicalContainer.crucibleBarSizes[chem.container.type].X),
+                                (int)(fontHeight * ChemicalContainer.crucibleBarSizes[chem.container.type].Y)
+                                );
 
                             int _wantedHeight = chemicalBarRect.Height + UI_ItemSlot.size;
                             if (_wantedHeight > UI_Element.multiRect.Height)
@@ -208,10 +264,14 @@ namespace YetAnotherRoguelike.UI
                                     chemicalBarRect.Width,
                                     (int)(((x.value.Value / chem.container.Size()) * chemicalBarRect.Height))
                                     );
-                                GeneralDependencies.DrawLine(Game.spriteBatch, r.Center, r.Center + new Point(fontWidth, 0), 1, Chemical.elementColors[x.value.Key], 1f);
-                                Point d = new Point(chemicalBarRect.X + (fontWidth * 2), chemicalBarRect.Y + (((index - 1) * fontHeight) + (int)(fontHeight * 0.25)));
-                                GeneralDependencies.DrawLine(Game.spriteBatch, r.Center + new Point(fontWidth, 0), d, 1, Chemical.elementColors[x.value.Key], 1f);
+                                int w = (int)(chemicalBarRect.Width * 0.5f) + (int)(fontWidth * 0.5f);
+                                GeneralDependencies.DrawLine(Game.spriteBatch, r.Center, r.Center + new Point(w, 0), 1, Chemical.elementColors[x.value.Key], 1f);
+                                // -
+                                Point d = new Point(r.Center.X + w + (int)(fontWidth), chemicalBarRect.Y + (((index - 1) * fontHeight) + (int)(fontHeight * 0.25)));
+                                GeneralDependencies.DrawLine(Game.spriteBatch, r.Center + new Point(w, 0), d, 1, Chemical.elementColors[x.value.Key], 1f);
+                                // /
                                 GeneralDependencies.DrawLine(Game.spriteBatch, d, d + new Point((int)(fontWidth * 0.5), 0), 1, Chemical.elementColors[x.value.Key], 1f);
+                                // -
                                 _accumulated += x.value.Value;
                                 r.Height = (int)(((_accumulated / chem.container.Size()) * chemicalBarRect.Height));
                                 Game.spriteBatch.Draw(UI_Element.blank, r, null, Chemical.elementColors[x.value.Key], 0f, Vector2.Zero, SpriteEffects.None, 0.93f + (0.001f * (float)((float)index  / (float)chem.composition.Count)));

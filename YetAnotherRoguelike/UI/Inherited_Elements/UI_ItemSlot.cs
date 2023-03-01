@@ -34,7 +34,7 @@ namespace YetAnotherRoguelike.UI
             }
             if (MouseInput.left.active)
             {
-                if (Cursor.item.type == item.type)
+                if ((Cursor.item.type == item.type) && (Cursor.item.data == item.data))
                 {
                     int toAdd, toRemove, canAdd = item.stackSize - item.amount;
                     if (Cursor.item.amount > canAdd)

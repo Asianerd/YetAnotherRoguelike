@@ -357,3 +357,5 @@ D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\C
 D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Item_sprites\Crucible\Medium_filled.xnb
 D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Item_sprites\Crucible\Small.xnb
 D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Item_sprites\Crucible\Small_filled.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Item_sprites\Crucible\Infinite.xnb
+D:\GithubRepos\YetAnotherRoguelike\YetAnotherRoguelike\bin\Debug\netcoreapp3.1\Content\Item_sprites\Crucible\Infinite_filled.xnb

@@ -58,16 +58,26 @@ namespace YetAnotherRoguelike
 
             return subject;
         }
+
+        public static double Total(Dictionary<Element, double> c)
+        {
+            double final = 0;
+            foreach (double x in c.Values)
+            {
+                final += x;
+            }
+            return final;
+        }
         #endregion
 
         #region Instance
         public Dictionary<Element, double> composition; // sum of all values must be less than container.Size()
         public ChemicalContainer container;
 
-        public Chemical(Dictionary<Element, double> _composition):base()
+        public Chemical(Dictionary<Element, double> _composition, ChemicalContainer.CrucibleType t):base()
         {
             composition = _composition;
-            container = new ChemicalContainer();
+            container = new ChemicalContainer(t);
         }
 
         public bool IsFull()
@@ -90,13 +100,29 @@ namespace YetAnotherRoguelike
             return Total() <= 0;
         }
 
-        public void AddElement(Element e, double a)
+        public void AddElement(Element e, double a, bool force = false)
         {
+            double total = Total();
+            double remainder = container.Size() - total;
+
+            if (remainder <= 0)
+            {
+                return;
+            }
+
             if (!composition.ContainsKey(e))
             {
                 composition.Add(e, 0);
             }
-            composition[e] += a;
+
+            if (a > remainder)
+            {
+                composition[e] += remainder;
+            }
+            else
+            {
+                composition[e] += a;
+            }
         }
 
         public void Add(Chemical c)
@@ -120,7 +146,7 @@ namespace YetAnotherRoguelike
             string final = $"";
             foreach (KeyValuePair<Element, double> x in composition)
             {
-                final += $"   {x.Key} {(x.Value > 1 ? Math.Round(x.Value, 3) : (int)(x.Value * 1000f))}{(x.Value > 1 ? "ℓ" : "mℓ")}\n";
+                final += $"{container.spaces}{x.Key} {(x.Value > 1 ? Math.Round(x.Value, 3) : (int)(x.Value * 1000f))}{(x.Value > 1 ? "ℓ" : "mℓ")}\n";
             }
             return final;
         }

@@ -209,6 +209,30 @@
 /processorParam:TextureFormat=Color
 /build:Item_sprites/crucible.png
 
+#begin Item_sprites/Crucible/Infinite.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Item_sprites/Crucible/Infinite.png
+
+#begin Item_sprites/Crucible/Infinite_filled.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Item_sprites/Crucible/Infinite_filled.png
+
 #begin Item_sprites/Crucible/Large.png
 /importer:TextureImporter
 /processor:TextureProcessor

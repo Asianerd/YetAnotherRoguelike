@@ -20,8 +20,8 @@ namespace YetAnotherRoguelike
 
         public static GraphicsDeviceManager graphics;
         public static SpriteBatch spriteBatch;
-        public static Vector2 screenSize = new Vector2(1920, 1080);
-        //public static Vector2 screenSize = new Vector2(700, 700);
+        //public static Vector2 screenSize = new Vector2(1920, 1080);
+        public static Vector2 screenSize = new Vector2(700, 700);
         //public static Vector2 screenSize = new Vector2(200, 200);
         //public static Vector2 screenSize = new Vector2(1000, 1000);
         public static Rectangle playArea = new Rectangle(0, 0, 0, 0); // measured in tile-coordinates

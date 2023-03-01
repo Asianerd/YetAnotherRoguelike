@@ -13,8 +13,8 @@
                 "Hematite":1
             },
             "output":{
-                "Slag":5,
-                "Fe":10
+                "Slag":0.1,
+                "Fe":0.2
             }
         },
         {
@@ -23,8 +23,8 @@
                 "Bauxite":1
             },
             "output":{
-                "Slag":5,
-                "Al":10
+                "Slag":0.1,
+                "Al":0.2
             }
         }
     ]

@@ -139,6 +139,10 @@ namespace YetAnotherRoguelike.UI
 
             foreach (JSON_CraftingData x in craftable)
             {
+                /*if (x.data != null)
+                {
+                    Debug.WriteLine(((Chemical)x.data[Item.DataType.Chemical]).ToString());
+                }*/
                 collection.Add(new UI_Inventory_CraftingChild(this, parentContainer, new Rectangle(
                     rect.Left,
                     rect.Top + (int)(collection.Count * UI_ItemSlot.size),

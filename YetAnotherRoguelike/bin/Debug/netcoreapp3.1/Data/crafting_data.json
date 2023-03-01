@@ -21,6 +21,40 @@
         },
         "output": {
             "Crucible": 1
+        },
+        "d" : {
+            "Chemical" : {
+                "crucible_size" : "Small",
+                "Fe" : "0.1"
+            }
+        }
+    },
+    {
+        "input": {
+            "Stone": 20
+        },
+        "output": {
+            "Crucible": 1
+        },
+        "d" : {
+            "Chemical" : {
+                "crucible_size" : "Medium",
+                "Fe" : "0.1"
+            }
+        }
+    },
+    {
+        "input": {
+            "Stone": 50
+        },
+        "output": {
+            "Crucible": 1
+        },
+        "d" : {
+            "Chemical" : {
+                "crucible_size" : "Large",
+                "Fe" : "0.1"
+            }
         }
     }
 ]

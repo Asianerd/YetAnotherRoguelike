@@ -96,7 +96,7 @@ namespace YetAnotherRoguelike.UI
                 {
                     Player.Instance.InventoryRemove(x.type, x.amount);
                 }
-                GroundItem.collection.Add(new GroundItem(new Item(output.type, output.amount), Player.Instance.position, Player.Instance.position, c: false));
+                GroundItem.collection.Add(new GroundItem(new Item(output.type, output.amount, ItemData.DeepCopy(output.data)), Player.Instance.position, Player.Instance.position, c: false));
             }
 
             progress.Regenerate(Game.compensation * -3f);

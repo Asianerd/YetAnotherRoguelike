@@ -31,10 +31,10 @@ namespace YetAnotherRoguelike.UI
         public List<UI_ItemSlot> itemSlots;
         public List<UI_ItemSlot> hotbarSlots;
 
-        public Rectangle slotSelectionRect;
+        /*public Rectangle slotSelectionRect;
         public Vector2 slotSelectionTarget;
         public Vector2 slotSelectionLocation;
-        public GameValue slotSelectionVisibility;
+        public GameValue slotSelectionVisibility;*/
 
         public Rectangle hotbarSelectRect;
         public float hotbarSelectProgress = 0;
@@ -108,10 +108,10 @@ namespace YetAnotherRoguelike.UI
             hotbarSelectRect = new Rectangle(0, 0, (int)(UI_ItemSlot.size + (hotbarSelectionOffset * 2f)), (int)(UI_ItemSlot.size + (hotbarSelectionOffset * 2f)));
             hotbarSelectionSprite = Game.Instance.Content.Load<Texture2D>("UI/Storage_Items/hotbar_selection_sprite");
 
-            slotSelectionRect = new Rectangle(0, 0, (int)(UI_ItemSlot.size + (slotSelectionOffset * 2f)), (int)(UI_ItemSlot.size + (slotSelectionOffset * 2f)));
+            /*slotSelectionRect = new Rectangle(0, 0, (int)(UI_ItemSlot.size + (slotSelectionOffset * 2f)), (int)(UI_ItemSlot.size + (slotSelectionOffset * 2f)));
             slotSelectionSprite = Game.Instance.Content.Load<Texture2D>("UI/Storage_Items/selection_sprite");
             slotSelectionTarget = new Vector2(0);
-            slotSelectionVisibility = new GameValue(0, 20, 1, 0);
+            slotSelectionVisibility = new GameValue(0, 20, 1, 0);*/
 
             inventoryElements[InventoryPage.Storage].Add(background);
             foreach (UI_ItemSlot x in itemSlots)
@@ -194,7 +194,7 @@ namespace YetAnotherRoguelike.UI
                 x.Update();
             }
 
-            if (UI_Element.hoveredElement != null)
+            /*if (UI_Element.hoveredElement != null)
             {
                 slotSelectionVisibility.Regenerate(Game.compensation * ((Cursor.item.type != Item.Type.None) && (UI_Element.hoveredElement.type == UI_Element.ElementType.ItemSlot) ? 1 : -1));
             }
@@ -202,7 +202,7 @@ namespace YetAnotherRoguelike.UI
             {
                 slotSelectionVisibility.Regenerate(-Game.compensation);
             }
-            slotSelectionLocation = Vector2.Lerp(slotSelectionLocation, slotSelectionTarget, Game.compensation * 0.5f);
+            slotSelectionLocation = Vector2.Lerp(slotSelectionLocation, slotSelectionTarget, Game.compensation * 0.5f);*/
         }
 
         public void ChangePage(InventoryPage p)
@@ -234,12 +234,12 @@ namespace YetAnotherRoguelike.UI
                 case InventoryPage.Storage:
                     // draw the selection box for the hotbar
                     hotbarSelectRect.X += containerOffset;
-                    Game.spriteBatch.Draw(hotbarSelectionSprite, hotbarSelectRect, null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 1f);
+                    Game.spriteBatch.Draw(hotbarSelectionSprite, hotbarSelectRect, null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.8f);
                     break;
                 default:
                     break;
             }
-            Rectangle _slotRect = new Rectangle(
+            /*Rectangle _slotRect = new Rectangle(
                 new Point(
                     (int)(slotSelectionLocation.X
                         + (MathF.Sin((1f - openedValue.Percent()) * MathF.PI * 0.5f) * background.rect.Width)
@@ -249,7 +249,7 @@ namespace YetAnotherRoguelike.UI
                         - slotSelectionOffset)
                     ),
                 slotSelectionRect.Size);
-            Game.spriteBatch.Draw(slotSelectionSprite, _slotRect, null, Color.White * MathF.Sin(slotSelectionVisibility.Percent()) * MathF.PI, 0f, Vector2.Zero, SpriteEffects.None, 1f);
+            Game.spriteBatch.Draw(slotSelectionSprite, _slotRect, null, Color.White * MathF.Sin(slotSelectionVisibility.Percent()) * MathF.PI, 0f, Vector2.Zero, SpriteEffects.None, 0.8f);*/
         }
 
         #region Updates
@@ -277,10 +277,10 @@ namespace YetAnotherRoguelike.UI
                     - hotbarSelectionOffset
                     ));
 
-            if ((Cursor.item.type != Item.Type.None) && (hoveredContainer != null) && (hoveredContainer == this) && (UI_Element.hoveredElement.type == UI_Element.ElementType.ItemSlot))
+            /*if ((Cursor.item.type != Item.Type.None) && (hoveredContainer != null) && (hoveredContainer == this) && (UI_Element.hoveredElement.type == UI_Element.ElementType.ItemSlot))
             {
                 slotSelectionTarget = UI_Element.hoveredElement.rect.Location.ToVector2();
-            }
+            }*/
         }
 
         void CraftingUpdate()

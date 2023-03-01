@@ -65,19 +65,22 @@ namespace YetAnotherRoguelike.PhysicsObject
                 hotbar.Add(Item.Empty());
             }
 
-            inventory[0] = new Item(Item.Type.Hematite, 10);
-            inventory[1] = new Item(Item.Type.Sphalerite, 10);
-            inventory[2] = new Item(Item.Type.Stone, 100);
-
-            for (int i = 0; i <= 10; i++)
+            for (int i = 0; i <= 5; i++)
             {
                 inventory[i] = new Item(Item.Type.Crucible, 1);
                 Chemical c = (Chemical)inventory[i].data[Item.DataType.Chemical];
-                foreach (Chemical.Element x in Enum.GetValues(typeof(Chemical.Element)).Cast<Chemical.Element>())
+                List<Chemical.Element> e = Enum.GetValues(typeof(Chemical.Element)).Cast<Chemical.Element>().ToList();
+                while (e.Count >= 1)
                 {
-                    c.AddElement(x, (double)(Game.random.Next(50, 500) / 1000f));
+                    int _i = Game.random.Next(0, e.Count - 1);
+                    c.AddElement(e[_i], (double)(Game.random.Next(50, 500) / 1000f));
+                    e.RemoveAt(_i);
                 }
             }
+            inventory[6] = new Item(Item.Type.Hematite, 256);
+            inventory[7] = new Item(Item.Type.Hematite, 256);
+            inventory[8] = new Item(Item.Type.Stone, 256);
+            inventory[9] = new Item(Item.Type.Stone, 256);
             hotbar[0] = new Item(Item.Type.Rudimentary_Furnace, 1);
         }
 
@@ -325,26 +328,7 @@ namespace YetAnotherRoguelike.PhysicsObject
                     // if its an empty slot
                     x.type = item.type;
                     x.amount = item.amount;
-                    Debug.WriteLine("---");
-                    if (x.data == null)
-                    {
-                        Debug.WriteLine("null");
-                    }
-                    else
-                    {
-                        Debug.WriteLine($"{x.data.ContainsKey(Item.DataType.Chemical)}");
-                    }
-                    // TODO:.data field does not carry over when bringing from furnace to inventory
                     x.data = item.data;
-                    if (x.data == null)
-                    {
-                        Debug.WriteLine("null");
-                    }
-                    else
-                    {
-                        Debug.WriteLine($"{x.data.ContainsKey(Item.DataType.Chemical)}");
-                    }
-                    Debug.WriteLine("---");
                     if (x.Full(over:true))
                     {
                         int balance = x.amount - x.stackSize;
